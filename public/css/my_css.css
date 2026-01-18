@@ -1,0 +1,95 @@
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    padding-top: 10px;
+}
+
+.rwd-table {
+    background: #fff;
+    overflow: hidden;
+}
+
+.rwd-table tr:nth-of-type(2n){
+    background: #eee;
+}
+.rwd-table th,
+.rwd-table td {
+    margin: 0.5em 1em;
+}
+.rwd-table {
+    min-width: 100%;
+}
+
+.rwd-table th {
+    display: none;
+}
+
+.rwd-table td {
+    display: block;
+}
+
+.rwd-table td:before {
+    content: attr(data-th);
+    font-weight: bold;
+    width: 6em;
+    display: inline-block;
+}
+
+.rwd-table th, .rwd-table td {
+    text-align: left;
+}
+
+.rwd-table th, .rwd-table td:before {
+    color: #0044ff;
+    font-weight: bold;
+}
+
+@media (min-width: 850px) {
+    .rwd-table td:before {
+        display: none;
+    }
+    .rwd-table th, .rwd-table td {
+        display: table-cell;
+        padding: 0.25em 0.5em;
+    }
+    .rwd-table th:first-child,
+    .rwd-table td:first-child {
+        padding-left: 0;
+    }
+    .rwd-table th:last-child,
+    .rwd-table td:last-child {
+        padding-right: 0;
+    }
+    .rwd-table th,
+    .rwd-table td {
+        padding: 1em !important;
+    }
+}
+
+
+
+.error {
+    color:red;
+}
+
+.image-button {
+	border: 2px solid #ccc;       /* 邊框 */
+	border-radius: 10px;          /* 圓角 */
+	padding: 4px;                 /* 內距讓圖片不貼邊 */
+	transition: 0.3s ease-in-out; /* 平滑過渡效果 */
+	display: inline-block;
+}
+
+.image-button:hover {
+	border-color: #007bff;        /* hover 邊框顏色 */
+	box-shadow: 0 0 10px rgba(0,123,255,0.4); /* hover 陰影 */
+	transform: scale(1.03);       /* 微微放大 */
+}
+
+.image-button img {
+	border-radius: 10px; /* 圖片本身也圓角 */
+	display: block;
+}
