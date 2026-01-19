@@ -17,13 +17,46 @@ if (isset($_SERVER['HTTP_HOST'])) {
 }
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\SetupController;
-use App\Http\Controllers\OpenIDController;
-use App\Http\Controllers\Auth\MLoginController;
-use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\GLoginController;
-
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\MLoginController;
+use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\CalendarWeekController;
+use App\Http\Controllers\ClassroomOrderController;
+use App\Http\Controllers\ClubsController;
+use App\Http\Controllers\ContentsController;
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\FixController;
+use App\Http\Controllers\GroupController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\InsideFilesController;
+use App\Http\Controllers\LendsController;
+use App\Http\Controllers\LinksController;
+use App\Http\Controllers\LunchController;
+use App\Http\Controllers\LunchListController;
+use App\Http\Controllers\LunchOrderController;
+use App\Http\Controllers\LunchSetupController;
+use App\Http\Controllers\LunchSpecialController;
+use App\Http\Controllers\LunchStuController;
+use App\Http\Controllers\LunchTodayController;
+use App\Http\Controllers\MeetingController;
+use App\Http\Controllers\MonthlyCalendarController;
+use App\Http\Controllers\OpenFileController;
+use App\Http\Controllers\OpenIDController;
+use App\Http\Controllers\PhotoLinksController;
+use App\Http\Controllers\PostsController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\RssFeedController;
+use App\Http\Controllers\SchoolMarqueeController;
+use App\Http\Controllers\SetupController;
+use App\Http\Controllers\SimulationController;
+use App\Http\Controllers\SportMeetingController;
+use App\Http\Controllers\TaskController;
+//use App\Http\Controllers\TeacherAbsentController;
+use App\Http\Controllers\TreesController;
+use App\Http\Controllers\UserPowerController;
+use App\Http\Controllers\UsersController;
+use App\Http\Controllers\WrenchController;
 
 Route::post('webhook', [HomeController::class, 'webhook'])->name('webhook');
 Route::get('close', [SetupController::class, 'close'])->name('close');
@@ -232,6 +265,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('lunch_stus/store_ps/{lunch_order}', [LunchStuController::class, 'store_ps'])->name('lunch_stus.store_ps');
 
     // 假別管理 (TeacherAbsent)
+    /**
     Route::get('teacher_absents/index/{select_semester?}', [TeacherAbsentController::class, 'index'])->name('teacher_absents.index');
     Route::get('teacher_absents/create', [TeacherAbsentController::class, 'create'])->name('teacher_absents.create');
     Route::post('teacher_absents/store', [TeacherAbsentController::class, 'store'])->name('teacher_absents.store');
@@ -255,6 +289,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('teacher_absents/travel/{teacher_absent_outlay}/edit_outlay', [TeacherAbsentController::class, 'edit_outlay'])->name('teacher_absents.edit_outlay');
     Route::post('teacher_absents/travel/{teacher_absent_outlay}/update_outlay', [TeacherAbsentController::class, 'update_outlay'])->name('teacher_absents.update_outlay');
     Route::post('teacher_absents/travel/travel_print', [TeacherAbsentController::class, 'travel_print'])->name('teacher_absents.travel_print');
+     */
 
     // 內部文件
     Route::get('inside_files/{path?}', [InsideFilesController::class, 'index'])->name('inside_files.index');

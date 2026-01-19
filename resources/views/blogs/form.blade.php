@@ -6,15 +6,15 @@
             <label for="content">標題圖片( 不大於5MB )
                 <small class="text-secondary">jpeg, png 檔</small>
             </label>
-            {{ Form::file('title_image', ['class' => 'form-control']) }}
+            <input type="file" name="title_image" class="form-control">
         </div>
         <div class="form-group">
             <label for="title">標題*</label>
-            {{ Form::text('title',null,['id'=>'title','class' => 'form-control','required'=>'required', 'placeholder' => '標題']) }}
+            <input type="text" name="title" id="title" value="{{ old('title', $blog->title) }}" class="form-control" placeholder="標題" required>
         </div>
         <div class="form-group">
             <label for="content">內文*</label>
-            {{ Form::textarea('content',null,['id'=>'my-editor','class'=>'form-control','required'=>'required']) }}
+            <textarea name="content" id="my-editor" class="form-control" required>{{ old('content', $blog->content) }}</textarea>
         </div>
         <script src="{{ asset('mycke/ckeditor.js') }}"></script>
         <script>

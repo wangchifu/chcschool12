@@ -34,11 +34,13 @@
             <div class="card my-4">
                 <h3 class="card-header">基本設定</h3>
                 <div class="card-body">
-                    @include('layouts.errors')
-                    {{ Form::open(['route' => ['setups.text',$setup->id], 'method' => 'patch','id'=>'this_form1']) }}
+                    @include('layouts.errors')    
+                    <form action="{{ route('setups.text', $setup->id) }}" method="POST" id="this_form1">
+                        @csrf
+                        @method('PATCH')
                     <div class="form-group">
-                        <label for="site_name">網站名稱</label>
-                        {{ Form::text('site_name',$setup->site_name,['class' => 'form-control','required'=>'required']) }}
+                        <label for="site_name">網站名稱</label>                        
+                        <input type="text" name="site_name" value="{{ $setup->site_name }}" class="form-control" required>
                     </div>
                     <div class="form-group">
                         <label for="views">學校真實IP範圍</label><br>
@@ -48,29 +50,29 @@
                                 <td>
                                     IPv4 從
                                 </td>
-                                <td>
-                                    {{ Form::text('ip1',$setup->ip1,['class' => 'form-control']) }}
+                                <td>                                    
+                                    <input type="text" name="ip1" value="{{ old('ip1', $setup->ip1) }}" class="form-control">
                                 </td>
                                 <td>
                                     到
                                 </td>
-                                <td>
-                                    {{ Form::text('ip2',$setup->ip2,['class' => 'form-control']) }}
+                                <td>                                    
+                                    <input type="text" name="ip2" value="{{ old('ip2', $setup->ip2) }}" class="form-control">
                                 </td>
                             </tr>
                             <tr>
                                 <td>
                                     IPv6
                                 </td>
-                                <td colspan="3">
-                                    {{ Form::text('ipv6',$setup->ipv6,['class' => 'form-control','placeholder'=>'如：2001:288:5637::/48']) }}
+                                <td colspan="3">                                    
+                                    <input type="text" name="ipv6" value="{{ old('ipv6', $setup->ipv6) }}" class="form-control" placeholder="如：2001:288:5637::/48">
                                 </td>
                             </tr>
                         </table>
                     </div>
                     <div class="form-group">
-                        <label for="views">瀏覽人數</label>
-                        {{ Form::text('views',$setup->views,['class' => 'form-control','required'=>'required']) }}
+                        <label for="views">瀏覽人數</label>                        
+                        <input type="text" name="views" value="{{ old('views', $setup->views) }}" class="form-control" required>
                     </div>
                     <div class="form-group">
                         <label for="basic-addon5">網頁背景色</label>[<a href="https://www.toolskk.com/color" target="_blank">色碼表</a>]
@@ -86,7 +88,7 @@
                     </div>
                     <div class="form-group">
                         <label for="footer">置底 (id="footer")</label>
-                        {{ Form::textarea('footer',$setup->footer,['id'=>'footer','class'=>'form-control']) }}
+                        <textarea name="footer" id="footer" class="form-control">{{ old('footer', $setup->footer) }}</textarea>
                     </div>
                     <script src="{{ asset('mycke/ckeditor.js') }}"></script>
                     <script>
@@ -126,7 +128,7 @@
                                         </label>
                                     </div>
                                     <label for="close_website">原因</label>
-                                    {{ Form::text('close_website',$setup->close_website,['class' => 'form-control']) }}
+                                    <input type="text" name="close_website" value="{{ old('close_website', $setup->close_website) }}" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -136,10 +138,12 @@
                             <i class="fas fa-save"></i> 儲存設定
                         </button>
                     </div>
-                    {{ Form::close() }}
+                    </form>
                 </div>
             </div>
-            {{ Form::open(['route' => ['setups.nav_color',$setup->id], 'method' => 'patch','id'=>'this_form2']) }}
+            <form action="{{ route('setups.nav_color', $setup->id) }}" method="POST" id="this_form2">
+                @csrf
+                @method('PATCH')
             <div class="card my-4">
                 <h3 class="card-header">導覽列設定</h3>
                 <div class="card-body">                    
@@ -212,22 +216,22 @@
                             </tr>
                             <tr>
                                 <td>
-                                    {{ Form::text('homepage_name',$setup->homepage_name,['class' => 'form-control','placeholder'=>'首頁']) }}
+                                    <input type="text" name="homepage_name" value="{{ old('homepage_name', $setup->homepage_name) }}" class="form-control" placeholder="首頁">
+                                </td>
+                                <td>                                    
+                                    <input type="text" name="post_name" value="{{ old('post_name', $setup->post_name) }}" class="form-control" placeholder="公告系統">
                                 </td>
                                 <td>
-                                    {{ Form::text('post_name',$setup->post_name,['class' => 'form-control','placeholder'=>'公告系統']) }}
+                                    <input type="text" name="openfile_name" value="{{ old('openfile_name', $setup->openfile_name) }}" class="form-control" placeholder="檔案庫">
+                                </td>
+                                <td>                                    
+                                    <input type="text" name="department_name" value="{{ old('department_name', $setup->department_name) }}" class="form-control" placeholder="學校介紹">
+                                </td>
+                                <td>                                    
+                                    <input type="text" name="schoolexec_name" value="{{ old('schoolexec_name', $setup->schoolexec_name) }}" class="form-control" placeholder="校務行政">
                                 </td>
                                 <td>
-                                    {{ Form::text('openfile_name',$setup->openfile_name,['class' => 'form-control','placeholder'=>'檔案庫']) }}
-                                </td>
-                                <td>
-                                    {{ Form::text('department_name',$setup->department_name,['class' => 'form-control','placeholder'=>'學校介紹']) }}
-                                </td>
-                                <td>
-                                    {{ Form::text('schoolexec_name',$setup->schoolexec_name,['class' => 'form-control','placeholder'=>'校務行政']) }}
-                                </td>
-                                <td>
-                                    {{ Form::text('setup_name',$setup->setup_name,['class' => 'form-control','placeholder'=>'系統設定']) }}
+                                    <input type="text" name="setup_name" value="{{ old('setup_name', $setup->setup_name) }}" class="form-control" placeholder="系統設定">
                                 </td>
                             </tr>
                         </table>
@@ -244,7 +248,7 @@
                     </div>
                 </div>
             </div>
-            {{ Form::close() }}
+            </form>
         </div>
     </div>
     <script src="{{ asset('colorpicker/dist/js/bootstrap-colorpicker.js') }}"></script>

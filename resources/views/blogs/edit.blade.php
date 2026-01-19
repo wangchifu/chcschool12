@@ -15,7 +15,9 @@
                     <li class="breadcrumb-item active" aria-current="page">修改文章</li>
                 </ol>
             </nav>
-            {{ Form::model($blog,['route' => ['blogs.update',$blog->id],'files' => true, 'method' => 'PATCH','id'=>'this_form']) }}
+            <form action="{{ route('blogs.update', $blog->id) }}" method="POST" id="this_form" enctype="multipart/form-data">
+                @csrf
+                @method('PATCH')
                 <div class="card my-4">
                     <h3 class="card-header">文章資料</h3>
                     <div class="card-body">
@@ -31,15 +33,15 @@
                                 ?>
                                 <a href="{{ route('blogs.delete_title_image',$blog->id) }}" class="badge badge-danger" id="fileDel" onclick="return confirm('確定刪標題圖片')"><i class="fas fa-times-circle"></i> 刪</a>
                             @endif
-                            {{ Form::file('title_image', ['class' => 'form-control']) }}
+                            <input type="file" name="title_image" class="form-control">
                         </div>
                         <div class="form-group">
-                            <label for="title">標題*</label>
-                            {{ Form::text('title',null,['id'=>'title','class' => 'form-control','required'=>'required', 'placeholder' => '標題']) }}
+                            <label for="title">標題*</label>                            
+                            <input type="text" name="title" id="title" value="{{ old('title', $blog->title) }}" class="form-control" placeholder="標題" required>
                         </div>
                         <div class="form-group">
-                            <label for="content">內文*</label>
-                            {{ Form::textarea('content',null,['id'=>'my-editor','class'=>'form-control','required'=>'required']) }}
+                            <label for="content">內文*</label>                            
+                            <textarea name="content" id="my-editor" class="form-control" required>{{ old('content', $blog->content) }}</textarea>
                         </div>
                         <script src="{{ asset('mycke/ckeditor.js') }}"></script>
                         <script>
@@ -58,7 +60,7 @@
                         </div>
                     </div>
                 </div>
-            {{ Form::close() }}
+            </form>
         </div>
     </div>
     <script>

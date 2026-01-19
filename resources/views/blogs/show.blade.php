@@ -64,8 +64,8 @@
                                     <a href="#" class="btn btn-danger btn-sm" onclick="if(confirm('確定刪除？')) document.getElementById('delete{{ $blog->id }}').submit();else return false;"><i class="fas fa-trash"></i> 刪除</a>
                                 @endif
                             @endauth
-                            {{ Form::open(['route' => ['blogs.destroy',$blog->id], 'method' => 'DELETE','id'=>'delete'.$blog->id]) }}
-                            {{ Form::close() }}
+                            <form action="{{ route('blogs.destroy', $blog->id) }}" method="POST" id="delete{{ $blog->id }}" style="display:inline;"> @csrf @method('DELETE')
+                            </form>
                         </div>
                         <div class="card-body">
                             <div class="image-container">
