@@ -57,6 +57,8 @@ use App\Http\Controllers\TreesController;
 use App\Http\Controllers\UserPowerController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\WrenchController;
+use App\Http\Controllers\ReportStudentController;
+use App\Http\Controllers\StudentAccountController;
 
 Route::post('webhook', [HomeController::class, 'webhook'])->name('webhook');
 Route::get('close', [SetupController::class, 'close'])->name('close');
@@ -166,6 +168,10 @@ Route::post('lends/print_lend', [LendsController::class, 'print_lend'])->name('l
 
 // --- 報修系統 ---
 Route::get('fixes/{fix}/show_clean', [FixController::class, 'show_clean'])->where('fix', '[0-9]+')->name('fixes.show_clean');
+
+//學生帳號
+Route::get('student_account/check', [StudentAccountController::class, 'check'])->name('student_account.check');
+Route::post('student_account/do_check', [StudentAccountController::class, 'do_check'])->name('student_account.do_check');
 
 // 登入的使用者可用
 Route::group(['middleware' => 'auth'], function () {
@@ -356,6 +362,31 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('lends/delete_order/{lend_order}', [LendsController::class, 'delete_order'])->name('lends.delete_order');
     Route::post('lends/update_other_order/{lend_order}', [LendsController::class, 'update_other_order'])->name('lends.update_other_order');
     Route::post('store_line_notify', [LendsController::class, 'store_line_notify'])->name('store_line_notify');
+
+
+//填報學生
+    Route::get('report_student/index', [ReportStudentController::class,'index'])->name('report_students.index');    
+    Route::get('report_student/admin', [ReportStudentController::class,'admin'])->name('report_students.admin');    
+    Route::get('report_student/{report_student}/admin_result', [ReportStudentController::class,'admin_result'])->name('report_students.admin_result');    
+    Route::get('report_student/{report_student}/admin_result_download', [ReportStudentController::class,'admin_result_download'])->name('report_students.admin_result_download');    
+    Route::get('report_student/{report_student}/admin_item', [ReportStudentController::class,'admin_item'])->name('report_students.admin_item');    
+    Route::post('report_student/admin_item_store', [ReportStudentController::class,'admin_item_store'])->name('report_students.admin_item_store');    
+    Route::get('report_student/{report_student_item}/admin_item_delete', [ReportStudentController::class,'admin_item_delete'])->name('report_students.admin_item_delete');        
+    Route::get('report_student/{semester}/stu_adm_more/{student_class_id?}', [ReportStudentController::class,'stu_adm_more'])->name('report_students.stu_adm_more');
+    Route::get('report_student/{club_student}/stu_disable/{student_class_id}', [ReportStudentController::class,'stu_disable'])->name('report_students.stu_disable');
+    Route::post('report_student/store_report_student', [ReportStudentController::class,'store_report_student'])->name('report_students.store_report_student');
+    Route::post('report_student/{report_student}/update_report_student', [ReportStudentController::class,'update_report_student'])->name('report_students.update_report_student');
+    Route::get('report_student/{report_student}/delete_report_student', [ReportStudentController::class,'delete_report_student'])->name('report_students.delete_report_student');    
+    Route::get('report_student/{report_student}/teacher_fill', [ReportStudentController::class,'teacher_fill'])->name('report_students.teacher_fill');
+    Route::post('report_student/{report_student}/save_teacher_fill', [ReportStudentController::class,'save_teacher_fill'])->name('report_students.save_teacher_fill');
+
+    //學生帳號
+
+
+    Route::get('student_account/index', [StudentAccountController::class,'index'])->name('student_account.index');   
+    Route::post('student_account/upload', [StudentAccountController::class,'upload'])->name('student_account.upload');   
+    Route::get('student_account/delete/{file}', [StudentAccountController::class,'delete'])->name('student_account.delete');   
+
 
     // 運動會報名 (SportMeeting)
     Route::get('sport_meeting/admin', [SportMeetingController::class, 'admin'])->name('sport_meeting.admin');
