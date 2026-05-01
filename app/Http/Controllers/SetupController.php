@@ -49,24 +49,21 @@ class SetupController extends Controller
             $photo_desc[$desc->image_name]['title'] = $desc->title;
             $photo_desc[$desc->image_name]['desc'] = $desc->desc;
             $photo_desc[$desc->image_name]['disable'] = $desc->disable;
-        }
-
+        }        
         foreach($photos as $k=>$v){
             if(!isset($photo_desc[$v]['order_by'])) $photo_desc[$v]['order_by'] = 0;
             if(!isset($photo_desc[$v]['link'])) $photo_desc[$v]['link'] = null;
             if(!isset($photo_desc[$v]['title'])) $photo_desc[$v]['title'] = null;
             if(!isset($photo_desc[$v]['desc'])) $photo_desc[$v]['desc'] = null;
             if(!isset($photo_desc[$v]['disable'])) $photo_desc[$v]['disable'] = null;
-        }
+        }                
         $photo_data = [];
         foreach($photo_desc as $k=>$v){ 
             $photo_data[$v['order_by']][$k]['link'] = $v['link'];
             $photo_data[$v['order_by']][$k]['title'] = $v['title'];
             $photo_data[$v['order_by']][$k]['desc'] = $v['desc'];
             $photo_data[$v['order_by']][$k]['disable'] = $v['disable'];
-        }
-
-        krsort($photo_data);
+        }          
 
         $data = [
             'school_code' => $school_code,
@@ -111,8 +108,8 @@ class SetupController extends Controller
         $school_code = school_code();
         $new_path = 'public/' . $school_code . '/title_image';
 
-        //處理檔案上傳
-        if ($request->hasFile('logo')) {
+        //處理檔案上傳        
+        if ($request->hasFile('logo')) {            
             $logo = $request->file('logo');
 
             $info = [
@@ -123,7 +120,7 @@ class SetupController extends Controller
             if ($info['extension'] != "png" and $info['extension'] != "ico") {
                 return back()->withErrors(['errors' => '只接受 png 或 ico 檔']);
             }
-            $logo->storeAs($new_path, 'logo.ico');
+            $logo->storeAs($new_path, 'logo.ico');            
         }
         return redirect()->route('setups.photo');
     }
@@ -181,7 +178,7 @@ class SetupController extends Controller
     public function nav_default()
     {
         $setup = Setup::first();
-        $att['nav_color'] = null;
+        $att['nav_color'] = '#DD0F20,#F18A31,#F8EB48,#16813D';
         $att['homepage_name'] = null;
         $att['post_name'] = null;
         $att['openfile_name'] = null;
@@ -241,7 +238,22 @@ class SetupController extends Controller
         $att['num'] = $request->input('num');
         $att['order_by'] = $request->input('order_by');
         SetupCol::create($att);
-        echo "<body onload='opener.location.reload();window.close();'>";
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
     public function edit_col(SetupCol $setup_col)
@@ -263,7 +275,22 @@ class SetupController extends Controller
         $att['title'] = $request->input('title');
         $att['num'] = $request->input('num');
         $setup_col->update($att);
-        echo "<body onload='opener.location.reload();window.close();'>";
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
     public function edit_footer()
@@ -280,7 +307,22 @@ class SetupController extends Controller
         $att['footer'] = $request->input('footer');
         $setup = Setup::first();
         $setup->update($att);
-        echo "<body onload='opener.location.reload();window.close();'>";
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
     public function delete_col(SetupCol $setup_col)
@@ -288,7 +330,22 @@ class SetupController extends Controller
         $att['setup_col_id'] = null;
         Block::where('setup_col_id', $setup_col->id)->update($att);
         $setup_col->delete();
-        echo "<body onload='opener.location.reload();window.close();'>";
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
     public function block()
@@ -354,7 +411,22 @@ class SetupController extends Controller
         ]);
         $att = $request->all();
         Block::create($att);
-        echo "<body onload='opener.location.reload();window.close();'>";
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
     public function edit_block(Block $block)
@@ -383,13 +455,43 @@ class SetupController extends Controller
         ]);
         $att = $request->all();
         $block->update($att);
-        echo "<body onload='opener.location.reload();window.close();'>";
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
     public function delete_block(Block $block)
     {
         $block->delete();
-        echo "<body onload='opener.location.reload();window.close();'>";
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
     public function block_color()
@@ -455,6 +557,10 @@ class SetupController extends Controller
         //ckeditor public/code/files
         $files = storage_path('app/public/' . $school_code . '/files');
         $quota['public']['ckeditor檔案'] = get_dir_size($files);
+
+        //tinymce public/code/tinymce_photos
+        $files = storage_path('app/public/' . $school_code . '/tinymce_photos');
+        $quota['public']['tinymce_photos檔案'] = get_dir_size($files);
 
         //標題圖片  public/code/title_image
         $title_image = storage_path('app/public/' . $school_code . '/title_image');
@@ -523,7 +629,22 @@ class SetupController extends Controller
             }
         }
 
-        echo "<body onload='opener.location.reload();window.close();'>";
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
     public function all_post(Request $request)
@@ -531,7 +652,22 @@ class SetupController extends Controller
         $setup = Setup::first();
         $att['all_post'] = ($request->input('all_post'))?1:null;
         $setup->update($att);
-        echo "<body onload='opener.location.reload();window.close();'>";
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
     public function post_show_number(Request $request)
@@ -540,7 +676,22 @@ class SetupController extends Controller
         $att['post_show_number'] = $request->input('post_show_number');
         
         $setup->update($att);
-        echo "<body onload='opener.location.reload();window.close();'>";
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
     public function post_line_token(Request $request)
@@ -550,12 +701,31 @@ class SetupController extends Controller
         $att['post_line_bot_token'] = $request->input('post_line_bot_token');
         $att['post_line_group_id'] = $request->input('post_line_group_id');        
         $setup->update($att);
-        echo "<body onload='opener.location.reload();window.close();'>";
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
     public function close()
     {
-        $setup = Setup::first();
+        $setup = Setup::first();        
+        //檢查有無關閉網站
+        if (empty($setup->close_website)) {
+            return redirect()->route('index');
+        }
         $data = [
             'setup' => $setup,
         ];

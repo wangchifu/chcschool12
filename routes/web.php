@@ -175,6 +175,8 @@ Route::post('student_account/do_check', [StudentAccountController::class, 'do_ch
 
 // 登入的使用者可用
 Route::group(['middleware' => 'auth'], function () {
+    //tinymce上傳圖片用
+    Route::post('tinymce_upload_image', [HomeController::class,'tinymce_upload_image'])->name('tinymce_upload_image');
 
     Route::get('edit_title', [HomeController::class, 'edit_title'])->name('edit_title');
     Route::patch('update_title/{user}', [HomeController::class, 'update_title'])->name('update_title');

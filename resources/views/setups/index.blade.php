@@ -4,25 +4,21 @@
 
 @section('title', '網站設定 | ')
 
-@section('content')
-    <link rel="stylesheet" type="text/css" href="{{ asset('colorpicker/css/htmleaf-demo.css') }}">
-    <link href="{{ asset('colorpicker/dist/css/bootstrap-colorpicker.css') }}" rel="stylesheet">
-    <style type="text/css">
-        .colorpicker-component{margin-top: 10px;}
-    </style>
-    
+@section('my_meta')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+@endsection
+
+@section('in_head')
+    <script src=" https://cdn.jsdelivr.net/npm/tinymce@7.9.1/tinymce.min.js "></script>
+@endsection
+
+@section('content')    
     <div class="row justify-content-center">
         <div class="col-md-11">
-            <h1>
-                網站設定
-            </h1>
+            <h1 class="mb-4">網站設定</h1>
             <?php
             $active[1] = "active";
-            $active[2] = "";
-            $active[3] = "";
-            $active[4] = "";
-            $active[5] = "";
-            $active[6] = "";
+            $active[2] = ""; $active[3] = ""; $active[4] = ""; $active[5] = ""; $active[6] = "";
             $nav_color = explode(',',$setup->nav_color);
             $c1 = (empty($nav_color[0]))?"#DD0F20":$nav_color[0];
             $c2 = (empty($nav_color[1]))?"#F18A31":$nav_color[1];
@@ -31,237 +27,334 @@
             $c5 = (empty($setup->bg_color))?"#f0f1f6":$setup->bg_color;            
             ?>
             @include('setups.nav',$active)
-            <div class="card my-4">
-                <h3 class="card-header">基本設定</h3>
+
+            <div class="card border-success border-2 border-opacity-100 my-4 shadow-sm">
+                <h3 class="card-header border-success border-2 border-opacity-100 bg-light">設定一、基本設定</h3>
                 <div class="card-body">
                     @include('layouts.errors')    
-                    <form action="{{ route('setups.text', $setup->id) }}" method="POST" id="this_form1">
+                    <form action="{{ route('setups.text', $setup->id) }}" method="POST" id="this_form1" onsubmit="return false">
                         @csrf
                         @method('PATCH')
-                    <div class="form-group">
-                        <label for="site_name">網站名稱</label>                        
-                        <input type="text" name="site_name" value="{{ $setup->site_name }}" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="views">學校真實IP範圍</label><br>
-                        <small>[<a href="{{ asset('ipv4.xlsx') }}"  target="_blank">ipv4參考文件</a>]</small> <small>[<a href="{{ asset('ipv6.xlsx') }}" target="_blank">ipv6參考文件</a>]</small>
-                        <table>
-                            <tr>
-                                <td>
-                                    IPv4 從
-                                </td>
-                                <td>                                    
-                                    <input type="text" name="ip1" value="{{ old('ip1', $setup->ip1) }}" class="form-control">
-                                </td>
-                                <td>
-                                    到
-                                </td>
-                                <td>                                    
-                                    <input type="text" name="ip2" value="{{ old('ip2', $setup->ip2) }}" class="form-control">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    IPv6
-                                </td>
-                                <td colspan="3">                                    
-                                    <input type="text" name="ipv6" value="{{ old('ipv6', $setup->ipv6) }}" class="form-control" placeholder="如：2001:288:5637::/48">
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                    <div class="form-group">
-                        <label for="views">瀏覽人數</label>                        
-                        <input type="text" name="views" value="{{ old('views', $setup->views) }}" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="basic-addon5">網頁背景色</label>[<a href="https://www.toolskk.com/color" target="_blank">色碼表</a>]
-                        <div id="cp5" class="input-group mb-3 colorpicker-component">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon5">網頁背景色</span>
-                            </div>
-                            <input type="text" class="form-control input-lg" value="{{ $c5 }}" id="nav_color4" name="bg_color">
-                            <div class="input-group-append">
-                                <span class="input-group-addon btn btn-outline-secondary"><i></i></span>
-                            </div>
+
+                        <div class="mb-3">
+                            <label for="site_name" class="form-label fw-bold">網站名稱</label>                        
+                            <input type="text" name="site_name" id="site_name" value="{{ $setup->site_name }}" class="form-control" required>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="footer">置底 (id="footer")</label>
-                        <textarea name="footer" id="footer" class="form-control">{{ old('footer', $setup->footer) }}</textarea>
-                    </div>
-                    <script src="{{ asset('mycke/ckeditor.js') }}"></script>
-                    <script>
-                        CKEDITOR.replace('footer'
-                            ,{
-                                filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
-                                filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images',
-                                filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
-                                filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files',
-                            });
-                    </script>
-                    <?php 
-                        $disable_right = ($setup->disable_right)?"checked":"";
-                        $r1 = (empty($setup->close_website))?"checked":"";
-                        $r2 = (empty($setup->close_website))?"":"checked";
-                    ?>
-                    <div class="form-group form-check">
-                        <input type="checkbox" class="form-check-input" id="disable_right" name="disable_right" {{ $disable_right }} value="1">
-                        <label class="form-check-label" for="disable_right">隱藏版權列 (id="footer_bottom")</label>
-                        <div class="footer-copyright text-center text-black-50 py-3" id="footer_bottom" style="background-color: #CCCCCC;">
-                            {{ date('Y') }} Copyright ©　<a href="{{ route('index','index') }}">{{ $setup->site_name }}</a>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">學校真實IP範圍</label><br>
+                            <div class="d-inline-flex gap-2 mb-2">
+                                <a href="{{ asset('ipv4.xlsx') }}" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill px-3 shadow-sm">
+                                    <i class="fas fa-file-excel me-1"></i> IPv4 參考文件
+                                </a>
+                                <a href="{{ asset('ipv6.xlsx') }}" target="_blank" class="btn btn-sm btn-outline-info rounded-pill px-3 shadow-sm">
+                                    <i class="fas fa-file-excel me-1"></i> IPv6 參考文件
+                                </a>
+                            </div>
+                            <table class="table table-sm table-borderless w-auto mt-2">
+                                <tr>
+                                    <td class="align-middle">IPv4 從</td>
+                                    <td><input type="text" name="ip1" value="{{ old('ip1', $setup->ip1) }}" class="form-control"></td>
+                                    <td class="align-middle">到</td>
+                                    <td><input type="text" name="ip2" value="{{ old('ip2', $setup->ip2) }}" class="form-control"></td>
+                                </tr>
+                                <tr>
+                                    <td class="align-middle">IPv6</td>
+                                    <td colspan="3">                                    
+                                        <input type="text" name="ipv6" value="{{ old('ipv6', $setup->ipv6) }}" class="form-control" placeholder="如：2001:288:5637::/48">
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
-                      </div>
-                    <div class="form-group">
-                        <label for="footer">關閉網站</label>
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="form-group">
-                                    <div class="form-check">
-                                        <label class="form-check-label">
-                                          <input type="radio" class="form-check-input" name="set_close_website" value="on" {{ $r1 }}>設定為「網站開放」
-                                        </label>
+
+                        <div class="mb-3">
+                            <label for="views" class="form-label fw-bold">瀏覽人數</label>                        
+                            <input type="text" name="views" id="views" value="{{ old('views', $setup->views) }}" class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <p class="mb-2 fw-bold d-flex align-items-center">
+                            網頁背景色
+                            <a href="https://www.toolskk.com/color" target="_blank" 
+                            class="link-secondary link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover text-decoration-none small border border-secondary-subtle px-2 py-1 rounded">
+                                <i class="fas fa-palette me-1 text-primary"></i> 線上色碼表
+                            </a>                            
+                        </p>
+
+                            <div class="input-group shadow-sm">
+                                <span class="input-group-text bg-white text-secondary">#</span>
+                                
+                                <input type="text" class="form-control color-input" 
+                                    value="{{ $c5 }}" name="bg_color" 
+                                    placeholder="例如: FFFFFF">
+                                
+                                <span class="input-group-text p-0 border-start-0 bg-white">
+                                    <input type="color" class="form-control form-control-color border-0" 
+                                        value="{{ $c5 }}" 
+                                        style="min-width: 50px; height: 100%; cursor: pointer;">
+                                </span>
+                            </div>
+                            
+                            <div class="form-text mt-1">
+                                請輸入 6 位十六進位色碼或點擊右側方塊選色。
+                            </div>
+                        </div>                                                               
+
+                        <div class="mb-3">
+                            <label for="footer" class="form-label fw-bold">置底  <span class="badge bg-secondary-subtle text-secondary fw-bold ms-1 fs-6 border border-secondary-subtle">id="footer"</span></label>
+                            <textarea name="footer" id="my_editor" class="form-control">{{ old('footer', $setup->footer) }}</textarea>
+                        </div>                        
+
+                        <?php 
+                            $disable_right = ($setup->disable_right)?"checked":"";
+                            $r1 = (empty($setup->close_website))?"checked":"";
+                            $r2 = (empty($setup->close_website))?"":"checked";
+                        ?>
+                        
+                        <div class="form-check mb-4 border p-3 rounded bg-light">
+                            <div class="form-check form-switch mb-3">
+                                <input type="checkbox" class="form-check-input" id="disable_right" name="disable_right" {{ $disable_right }} value="1" role="switch" style="cursor: pointer;">
+                                <label class="form-check-label fw-bold" for="disable_right" style="cursor: pointer;">
+                                    隱藏版權列 <span class="badge bg-secondary-subtle text-secondary fw-bold ms-1 fs-6 border border-secondary-subtle">id="footer_bottom"</span>
+                                </label>
+                            </div>
+
+                            <div class="mt-2 border rounded overflow-hidden shadow-sm bg-white" style="max-width: 1000px;">
+                                <div class="p-2 bg-light border-bottom small text-muted fw-bold">
+                                    <i class="fas fa-eye me-1"></i> 目前版權列樣式預覽：
+                                </div>
+                                
+                                <div class="footer-copyright text-center py-3 bg-body-secondary" id="preview_footer_bottom">
+                                    <div class="container-fluid">
+                                        <div class="d-flex flex-wrap justify-content-center align-items-center gap-2 text-secondary" style="font-size: 0.85rem;">
+                                            
+                                            <div class="fw-medium">
+                                                &copy; {{ date('Y') }} 
+                                                <span class="text-dark">{{ $setup->site_name }}</span> 
+                                                <span class="mx-1">All Rights Reserved.</span>
+                                            </div>
+
+                                            <span class="opacity-25 d-none d-md-inline">•</span>
+
+                                            <div class="d-flex align-items-center bg-white px-2 py-1 rounded-pill border">
+                                                <i class="fas fa-chart-line text-primary me-1"></i>
+                                                <span>訪客人次：</span>
+                                                <span class="fw-bold text-dark">{{ number_format($setup->views) }}</span>
+                                            </div>
+
+                                            <div class="d-flex align-items-center bg-white px-2 py-1 rounded-pill border">
+                                                <i class="fas fa-network-wired text-info me-1"></i>
+                                                <span>您的 IP：</span>
+                                                <span class="fw-bold text-dark">{{ GetIP() }}</span>
+                                            </div>
+
+                                        </div>
                                     </div>
-                                    <div class="form-check">
-                                        <label class="form-check-label text-danger">
-                                          <input type="radio" class="form-check-input" name="set_close_website" value="off" {{ $r2 }}>設定為「網站關閉」
-                                        </label>
-                                    </div>
-                                    <label for="close_website">原因</label>
-                                    <input type="text" name="close_website" value="{{ old('close_website', $setup->close_website) }}" class="form-control">
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary btn-sm" onclick="return confirm('確定儲存？')">
-                            <i class="fas fa-save"></i> 儲存設定
+                        </div>                        
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                網站運行狀態 <span class="text-danger small">(請注意！關閉後訪客將無法進入網站！)</span>
+                            </label>
+
+                            <div class="card border-danger border-3 shadow-sm">
+                                <div class="card-body">
+                                    
+                                    <div class="form-check form-switch mb-3">
+                                        <input type="checkbox" class="form-check-input" name="set_close_website" id="site_status_switch" 
+                                            value="off" {{ $r2 }} role="switch" style="cursor: pointer; width: 3em; height: 1.5em;">
+                                        
+                                        <label class="form-check-label fw-bold ms-2 mt-1" for="site_status_switch" style="cursor: pointer;">
+                                            設定為「網站關閉」
+                                            <span class="badge bg-danger-subtle text-danger fw-normal ms-1">緊急停機</span>
+                                        </label>
+                                    </div>
+
+                                    <div class="mt-3 p-3 bg-light rounded border border-danger-subtle">
+                                        <label for="close_website" class="form-label small fw-bold text-danger">
+                                            <i class="fas fa-exclamation-triangle me-1"></i> 網站關閉時顯示的原因
+                                        </label>
+                                        <input type="text" name="close_website" id="close_website" 
+                                            value="{{ old('close_website', $setup->close_website) }}" 
+                                            class="form-control" 
+                                            placeholder="例如：系統維護中，預計下午兩點開放">
+                                        <div class="form-text mt-1 text-muted">
+                                            ※ 此文字將會顯示在關站後的公告畫面上。
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>                        
+
+                        <button type="submit" class="btn btn-success btn-sm" onclick="sw_confirm2('確定儲存？','this_form1')">
+                            <i class="fas fa-save"></i> 儲存設定一
                         </button>
-                    </div>
                     </form>
                 </div>
             </div>
-            <form action="{{ route('setups.nav_color', $setup->id) }}" method="POST" id="this_form2">
+
+            <form action="{{ route('setups.nav_color', $setup->id) }}" method="POST" id="this_form2" onsubmit="return false">
                 @csrf
                 @method('PATCH')
-            <div class="card my-4">
-                <h3 class="card-header">導覽列設定</h3>
-                <div class="card-body">                    
-                    <?php 
-                        $checked = ($setup->fixed_nav)?"checked":null;
-                    ?>
-                    <div class="custom-control custom-checkbox">
-                        <input type="checkbox" name="fixed_nav" class="custom-control-input" id="customCheck1" {{ $checked }}>
-                        <label class="custom-control-label" for="customCheck1">固定導覽列？</label>                        
-                      </div>
-                      [<a href="https://www.toolskk.com/color" target="_blank">色碼表</a>]
-                    <div id="cp1" class="input-group mb-3 colorpicker-component">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1">導覽列顏色</span>
+                <div class="card border-primary border-2 border-opacity-100 my-4 shadow-sm">
+                    <h3 class="card-header border-primary border-2 border-opacity-100 bg-light">設定二、導覽列設定</h3>
+                    <div class="card-body">                    
+                        <?php $checked = ($setup->fixed_nav)?"checked":null; ?>
+                        
+                        <div class="form-check form-switch mb-3">
+                            <input type="checkbox" name="fixed_nav" class="form-check-input" id="customCheck1" {{ $checked }}>
+                            <label class="form-check-label" for="customCheck1">固定導覽列？</label>                        
                         </div>
-                        <input type="text" class="form-control input-lg" value="{{ $c1 }}" id="nav_color1" name="color[]">
-                        <div class="input-group-append">
-                            <span class="input-group-addon btn btn-outline-secondary"><i></i></span>
+
+                        <p class="mb-2 fw-bold d-flex align-items-center">
+                            顏色設定 
+                            <a href="https://www.toolskk.com/color" target="_blank" 
+                            class="link-secondary link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover text-decoration-none small border border-secondary-subtle px-2 py-1 rounded">
+                                <i class="fas fa-palette me-1 text-primary"></i> 線上色碼表
+                            </a>                            
+                        </p>
+                        
+                        @foreach([['c1', '導覽列顏色', 'cp1'], ['c2', '網站名稱文字顏色', 'cp2'], ['c3', '連結文字顏色', 'cp3'], ['c4', '連結文字移上時顏色', 'cp4']] as $item)
+                            <div id="{{ $item[2] }}" class="input-group mb-3">
+                                <span class="input-group-text">{{ $item[1] }}</span>
+                                
+                                <input type="text" class="form-control color-input" value="{{ ${$item[0]} }}" name="color[]">
+                                
+                                <span class="input-group-text p-0">
+                                    <input type="color" class="form-control form-control-color border-0 color-picker" 
+                                        value="{{ ${$item[0]} }}" 
+                                        style="min-width: 50px; cursor: pointer;">
+                                </span>
+                            </div>
+                        @endforeach
+
+                        <div class="mb-3 mt-4">
+                            <label class="form-label fw-bold">系統功能按鈕改名</label>
+                            <div class="table-responsive">
+                                <table class="table table-bordered align-middle">
+                                    <thead class="table-light">
+                                        <tr class="small text-center">
+                                            <th>首頁</th><th>公告系統</th><th>檔案庫</th><th>學校介紹</th><th>校務行政</th><th>系統設定</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><input type="text" name="homepage_name" value="{{ old('homepage_name', $setup->homepage_name) }}" class="form-control form-control-sm"></td>
+                                            <td><input type="text" name="post_name" value="{{ old('post_name', $setup->post_name) }}" class="form-control form-control-sm"></td>
+                                            <td><input type="text" name="openfile_name" value="{{ old('openfile_name', $setup->openfile_name) }}" class="form-control form-control-sm"></td>
+                                            <td><input type="text" name="department_name" value="{{ old('department_name', $setup->department_name) }}" class="form-control form-control-sm"></td>
+                                            <td><input type="text" name="schoolexec_name" value="{{ old('schoolexec_name', $setup->schoolexec_name) }}" class="form-control form-control-sm"></td>
+                                            <td><input type="text" name="setup_name" value="{{ old('setup_name', $setup->setup_name) }}" class="form-control form-control-sm"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
-                    <div id="cp2" class="input-group mb-3 colorpicker-component">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon2">網站名稱文字顏色</span>
-                        </div>
-                        <input type="text" class="form-control input-lg" value="{{ $c2 }}" id="nav_color2" name="color[]">
-                        <div class="input-group-append">
-                            <span class="input-group-addon btn btn-outline-secondary"><i></i></span>
-                        </div>
-                    </div>
-                    <div id="cp3" class="input-group mb-3 colorpicker-component">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon3">連結文字顏色</span>
-                        </div>
-                        <input type="text" class="form-control input-lg" value="{{ $c3 }}" id="nav_color3" name="color[]">
-                        <div class="input-group-append">
-                            <span class="input-group-addon btn btn-outline-secondary"><i></i></span>
-                        </div>
-                    </div>
-                    <div id="cp4" class="input-group mb-3 colorpicker-component">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon4">連結文字移上時顏色</span>
-                        </div>
-                        <input type="text" class="form-control input-lg" value="{{ $c4 }}" id="nav_color4" name="color[]">
-                        <div class="input-group-append">
-                            <span class="input-group-addon btn btn-outline-secondary"><i></i></span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        系統功能按鈕改名
-                        <table class="col-lg-6 col-sm-12">
-                            <tr>
-                                <td>
-                                    首頁
-                                </td>
-                                <td>
-                                    公告系統
-                                </td>
-                                <td>
-                                    檔案庫
-                                </td>
-                                <td>
-                                    學校介紹
-                                </td>
-                                <td>
-                                    校務行政
-                                </td>
-                                <td>
-                                    系統設定
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <input type="text" name="homepage_name" value="{{ old('homepage_name', $setup->homepage_name) }}" class="form-control" placeholder="首頁">
-                                </td>
-                                <td>                                    
-                                    <input type="text" name="post_name" value="{{ old('post_name', $setup->post_name) }}" class="form-control" placeholder="公告系統">
-                                </td>
-                                <td>
-                                    <input type="text" name="openfile_name" value="{{ old('openfile_name', $setup->openfile_name) }}" class="form-control" placeholder="檔案庫">
-                                </td>
-                                <td>                                    
-                                    <input type="text" name="department_name" value="{{ old('department_name', $setup->department_name) }}" class="form-control" placeholder="學校介紹">
-                                </td>
-                                <td>                                    
-                                    <input type="text" name="schoolexec_name" value="{{ old('schoolexec_name', $setup->schoolexec_name) }}" class="form-control" placeholder="校務行政">
-                                </td>
-                                <td>
-                                    <input type="text" name="setup_name" value="{{ old('setup_name', $setup->setup_name) }}" class="form-control" placeholder="系統設定">
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary btn-sm" onclick="return confirm('確定儲存？')">
-                            <i class="fas fa-save"></i> 儲存設定
+
+                        <button type="submit" class="btn btn-primary btn-sm" onclick="sw_confirm2('確定儲存？','this_form2')">
+                            <i class="fas fa-save"></i> 儲存設定二
                         </button>
-                        @if(!empty($setup->nav_color))
-                            <a href="{{ route('setups.nav_default') }}" class="btn btn-danger btn-sm" id="default_color" onclick="return confirm('確定還原嗎')">
-                                <i class="fas fa-trash"></i> 還原預設
+                        @if($setup->nav_color != "#DD0F20,#F18A31,#F8EB48,#16813D")
+                            <a href="#!" class="btn btn-danger btn-sm" id="default_color" onclick="sw_confirm1('確定還原嗎','{{ route('setups.nav_default') }}')">
+                                <i class="fas fa-trash"></i> 還原「設定二」回預設
                             </a>
                         @endif
                     </div>
                 </div>
-            </div>
             </form>
         </div>
-    </div>
-    <script src="{{ asset('colorpicker/dist/js/bootstrap-colorpicker.js') }}"></script>
+    </div>    
     <script type="text/javascript">
-        $(function () {
-            $('#mycp').colorpicker();
-        });
-        $(function () {
-            $('#cp1,#cp2,#cp3,#cp4,#cp5').colorpicker();
-        });
+        var validator1 = $("#this_form1").validate();
+        var validator2 = $("#this_form2").validate();
 
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. 當色彩挑選器改變時，更新左邊的文字框
+            document.querySelectorAll('.color-picker').forEach(function(picker) {
+                picker.addEventListener('input', function() {
+                    // 找到同一個 input-group 裡面的文字框
+                    const textInput = this.closest('.input-group').querySelector('.color-input');
+                    if (textInput) {
+                        textInput.value = this.value.toUpperCase();
+                    }
+                });
+            });
 
-        var validator1 = $("#this_form1").validate();
-        var validator2 = $("#this_form2").validate();
+            // 2. 當文字框手動輸入時，更新右邊的色彩挑選器
+            document.querySelectorAll('.color-input').forEach(function(input) {
+                input.addEventListener('change', function() {
+                    // 找到同一個 input-group 裡面的挑選器
+                    const picker = this.closest('.input-group').querySelector('.color-picker');
+                    const color = this.value;
+                    // 檢查是否為有效的 Hex 格式才更新，避免報錯
+                    if (picker && /^#[0-9A-F]{6}$/i.test(color)) {
+                        picker.value = color;
+                    }
+                });
+            });
+        });      
+    </script>
+    <script>
+    tinymce.init({
+        selector: 'textarea#my_editor',
+        language: 'zh_TW', // 設置語言為繁體中文
+        language_url: '{{ asset('js/zh_TW.js') }}', // 加這行
+        // 1. 確保 plugins 包含 'link' (有些版本文字顏色功能綁在核心或特定套件)
+        plugins: 'fullscreen code table image link lists paste', 
+        // 2. 在 toolbar 加入 forecolor (文字顏色) 和 backcolor (背景顏色)
+        toolbar: 'fullscreen code undo redo | bold italic underline forecolor backcolor | alignleft aligncenter alignright alignjustify | table image link unlink openlink | bullist numlist outdent indent | removeformat',
+        //plugins: 'fullscreen code table,image link lists image paste', // 啟用表格功能
+        //toolbar: 'fullscreen code undo redo | bold italic underline | alignleft aligncenter alignright alignjustify | table image link unlink openlink | bullist numlist outdent indent | removeformat',                
+        //paste_data_images: true,//拖過去上傳
+        //images_upload_url: '/contents/upload_image', // Laravel API
+        automatic_uploads: true,
+        // 不自動清理或修改 HTML
+        valid_elements: '*[*]', 
+        extended_valid_elements: '*[*]',
+        verify_html: false,
+        forced_root_block: false,  // 避免自動包裹 `<p>` 標籤
+        remove_trailing_brs: false, // 不刪除尾部 <br>
+        convert_urls: false, // 禁止 TinyMCE 轉換圖片 URL
+        relative_urls: false, // 確保使用絕對 URL
+        remove_script_host: false, // 保留完整的 URL，包括 http:// 或 https://
+
+        // 改為使用 Promise 來處理圖片上傳
+        images_upload_handler: function (blobInfo) {
+            let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            let formData = new FormData();
+            formData.append('file', blobInfo.blob(), blobInfo.filename());
+
+            return fetch('/tinymce_upload_image', {//laravel API
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return Promise.reject('伺服器回應錯誤，狀態碼：' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data && data.location) {
+                    // 返回圖片 URL，讓 TinyMCE 插入圖片
+                    return data.location;
+                } else {
+                    return Promise.reject('伺服器回傳的 JSON 不包含 `location` 欄位');
+                }
+            })
+            .catch(error => {
+                console.error('圖片上傳錯誤:', error);
+                return Promise.reject('圖片上傳失敗');
+            });
+        }
+    });
     </script>
 @endsection

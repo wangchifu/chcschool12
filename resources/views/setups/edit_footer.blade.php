@@ -4,25 +4,19 @@
 
 @section('content')
     @include('layouts.errors')
-    {{ Form::open(['route' => ['setups.update_footer'], 'method' => 'patch']) }}
-    <div class="form-group">
-        <label for="footer">置底</label>
-        {{ Form::textarea('footer',$setup->footer,['id'=>'footer','class'=>'form-control']) }}
-    </div>
-    <script src="{{ asset('mycke/ckeditor.js') }}"></script>
-    <script>
-        CKEDITOR.replace('footer'
-            ,{
-                filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
-                filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images',
-                filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
-                filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files',
-            });
-    </script>
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary btn-sm" onclick="return confirm('確定儲存？')">
-            <i class="fas fa-save"></i> 儲存置底
-        </button>
-    </div>
-    {{ Form::close() }}
+    <form action="{{ route('setups.update_footer') }}" method="POST" id="this_form" onsubmit="return false">
+        @csrf
+        @method('PATCH')
+
+        <div class="mb-3">
+            <label for="footer" class="form-label fw-bold">置底內容</label>
+            <textarea name="footer" id="footer" class="form-control" rows="5">{{ $setup->footer }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary btn-sm" onclick="sw_confirm2('確定儲存？','this_form')">
+                <i class="fas fa-save me-1"></i> 儲存置底
+            </button>
+        </div>
+    </form>
 @endsection

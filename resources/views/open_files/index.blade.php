@@ -252,8 +252,8 @@
         </div>
     </div>
     <script>
-        var validator = $("#this_form").validate();
-        var validator2 = $("#this_form2").validate();
+        var validator = $("#this_form").validate();
+        var validator2 = $("#this_form2").validate();
 
         var submitcount=0;
         function submitOnce (form){

@@ -28,33 +28,43 @@
     <meta name="author" content="">
     <meta http-equiv="Content-Security-Policy" content="script-src * 'unsafe-inline' 'unsafe-eval';">
     <title>@yield('title'){{ $setup->site_name }}</title>
-    <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
-        <script src="{{ asset('js/jquery.validate.js') }}"></script>
-        <script src="{{ asset('js/additional-methods.min.js') }}"></script>
-        <script src="{{ asset('js/messages_zh_TW.min.js') }}"></script>
-        <!-- icons -->
+    <script src=" https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js "></script>             
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>        
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/additional-methods.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/localization/messages_zh_TW.min.js"></script>  
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>   
+    <script src=" https://cdn.jsdelivr.net/npm/venobox@2.1.8/dist/venobox.min.js "></script>       
+    <!-- icons -->    
+    <link href=" https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css " rel="stylesheet">       
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/all.min.css" rel="stylesheet" />
+    <link href=" https://cdn.jsdelivr.net/npm/venobox@2.1.8/dist/venobox.min.css " rel="stylesheet">
     <link href="{{ asset('css/my_css.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('bootstrap/css/bootstrap.min.css') }}">
-    <link href="{{ asset('fontawesome-5.1.0/css/all.css') }}" rel="stylesheet">
+    @yield('in_head')    
 </head>
 
 <body id="page-top" style="background-color:{{ $bg_color }};font-family:'Arial','Microsoft YaHei','黑體','宋體',sans-serif;">
 <style>
+    /** 客製化 navbar */
     .navbar-custom {
         background-color: {{ $navbar_custom[0] }};
     }
-    /* change the brand and text color */
+    
+    /* 修改品牌(Brand)與文字顏色 */
     .navbar-custom .navbar-brand,
     .navbar-custom .navbar-text {
         color: {{ $navbar_custom[1] }};
     }
-    /* change the link color */
+    
+    /* 修改連結顏色 */
     .navbar-custom .navbar-nav .nav-link {
         color: {{ $navbar_custom[2] }};
     }
-    /* change the color of active or hovered links */
-    .navbar-custom .nav-item.active .nav-link,
-    .navbar-custom .nav-item:hover .nav-link {
+    
+    /* 修改「啟用中(active)」或「滑過(hover)」的連結顏色 */
+    /* BS5 修正：.active 類別現在多數直接在 .nav-link 上 */
+    .navbar-custom .navbar-nav .nav-link.active, 
+    .navbar-custom .navbar-nav .nav-link:hover {
         color: {{ $navbar_custom[3] }};
     }
 </style>
@@ -65,7 +75,8 @@
     <br>
     <br>
 </div>
-<script src="{{ asset('bootstrap/js/bootstrap.min.js') }}"></script>
-<script src="{{ asset('js/popper.min.js') }}"></script>
+@include('layouts.sweet_alert')
+@include('layouts.venobox')
+<script src="{{ asset('js/my_js.js') }}"></script>
 </body>
 </html>

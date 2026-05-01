@@ -10,30 +10,32 @@
                 系統管理員登入
             </div>
             <div class="card-body">
-                  <div class="tab-content" id="myTabContent">
+                <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">                        
                         @if(session('login_error') < 3)
                         <form id="this_form" method="POST" action="{{ route('sys_auth') }}" onsubmit="change_button()">
                             @csrf
-                            <div class="form-group row">
-                                <label for="username" class="col-md-4 col-form-label text-md-right">帳號</label>
-                                <div class="input-group col-md-6">
-                                    <input tabindex="1" id="username" type="text" class="form-control" name="username" required autofocus aria-label="Recipient's username" aria-describedby="basic-addon2" placeholder="帳號">                                    
+                            
+                            <div class="row mb-3">
+                                <label for="username" class="col-md-4 col-form-label text-md-end">帳號</label>
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <input tabindex="1" id="username" type="text" class="form-control" name="username" required autofocus placeholder="帳號">                                    
+                                    </div>
                                 </div>
                             </div>
         
-                            <div class="form-group row">
-                                <label for="password" class="col-md-4 col-form-label text-md-right">密碼</label>
-        
+                            <div class="row mb-3">
+                                <label for="password" class="col-md-4 col-form-label text-md-end">密碼</label>
                                 <div class="col-md-6">
                                     <input tabindex="2" id="password" type="password" class="form-control" name="password" required placeholder="密碼">
                                 </div>
                             </div>
         
-                            <div class="form-group row">
-                                <div class="col-md-4 text-md-left">
+                            <div class="row mb-3">
+                                <div class="col-md-4 text-md-start">
                                 </div>
-                                <div class="col-md-6 text-md-left">
+                                <div class="col-md-6 text-md-start">
                                     <img src="{{ route('pic') }}" class="img-fluid" alt="驗證碼圖片">
                                     <a href="#!" id="loadAudio"><i class="fas fa-volume-up"></i> [語音播放]</a>
                                     <audio id="myAudio">
@@ -41,14 +43,15 @@
                                     </audio>   
                                 </div>
                             </div>
-                            <div class="form-group row">
-                                <label for="chaptcha" class="col-md-4 col-form-label text-md-right">驗證碼{{ session('login_error') }}</label>                        
+
+                            <div class="row mb-3">
+                                <label for="chaptcha" class="col-md-4 col-form-label text-md-end">驗證碼</label>                        
                                 <div class="col-md-6">
                                     <input tabindex="3" id="chaptcha" type="text" class="form-control" name="chaptcha" required placeholder="上圖國字轉阿拉伯數字" maxlength="5" title="請輸入驗證碼">                            
                                 </div>
                             </div>
         
-                            <div class="form-group row mb-0">
+                            <div class="row mb-0">
                                 <div class="col-md-8 offset-md-4">
                                     <button tabindex="4" type="submit" class="btn btn-primary btn-sm" id="submit_button">
                                         <i class="fas fa-sign-in-alt"></i> 登入
@@ -62,18 +65,15 @@
                             session(['check_bot'=>$k]);
                             ?>
                             <span class="text-danger">登入錯誤超過三次，請輸入三碼數字後送出： </span>
-                            <form action="{{ route('not_bot') }}" method="post">
+                            <form action="{{ route('not_bot') }}" method="post" class="mt-2">
                                 @csrf
-                                <input type="text" name="check_bot" placeholder="請輸入：{{ session('check_bot') }}">
+                                <input type="text" name="check_bot" class="form-control d-inline-block w-auto" placeholder="請輸入：{{ session('check_bot') }}">
                                 <button class="btn btn-primary btn-sm">我不是機器人</button>
                             </form>
                         @endif
                         @include('layouts.errors')
                     </div>                                   
-                  </div>
-
-                  
-                
+                </div>
             </div>
         </div>
     </div>

@@ -637,4 +637,16 @@ class HomeController extends Controller
         $content = preg_replace($invalid_characters, '', $content);
         return Response::make($content, '200')->header('Content-Type', 'text/xml');
     }
+
+    public function tinymce_upload_image(Request $request){
+        if ($request->hasFile('file')) {
+            $school_code = school_code();
+            $folder = $school_code . '/tinymce_photos';
+            $filename = date('YmdHis') . '.' . $request->file('file')->getClientOriginalExtension();
+            $path = $request->file('file')->storeAs($folder,$filename,'public');
+            return response()->json(['location' => asset('storage/'.$path)]);        
+        }
+        
+        return response()->json(['error' => '上傳失敗'], 400);        
+    }
 }

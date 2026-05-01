@@ -5,10 +5,11 @@
 @if($setup->title_image_style==2)
     @section('in_head')
         <style>
+            /* 使用 BS5 的命名規範：start/end 代替 left/right */
             .carousel-fade .carousel-inner .carousel-item {
                 opacity: 0;
                 transition-property: opacity;
-                transition-duration: 1s;
+                transition-duration: 1s; /* 你可以自定義時間 */
                 transition-timing-function: ease;
             }
 
@@ -16,16 +17,15 @@
                 opacity: 1;
             }
 
+            /* 修正 BS5 的位置變換類別 */
             .carousel-fade .carousel-inner .carousel-item-next,
             .carousel-fade .carousel-inner .carousel-item-prev,
             .carousel-fade .carousel-inner .carousel-item.active,
-            .carousel-fade .carousel-inner .active.carousel-item-left,
-            .carousel-fade .carousel-inner .active.carousel-item-right {
+            .carousel-fade .carousel-inner .active.carousel-item-start, /* 改這裡 */
+            .carousel-fade .carousel-inner .active.carousel-item-end {   /* 改這裡 */
                 transform: translateX(0);
-                -webkit-transform: translateX(0);
-                -ms-transform: translateX(0);
             }
-        </style>
+        </style>        
     @endsection
 @endif
 
@@ -33,17 +33,19 @@
     @if($setup->title_image)
         @if(!empty($photo_data))
             <?php $carousel_fade =($setup->title_image_style ==2 )?"carousel-fade":""; ?>
-            <div id="carouselExampleIndicators" class="carousel slide {{ $carousel_fade  }}" data-ride="carousel">
-                <ol class="carousel-indicators">
+            <div id="carouselExampleIndicators" class="carousel slide {{ $carousel_fade }}" data-bs-ride="carousel">
+                <div class="carousel-indicators">
                     <?php $n=0; ?>
                     @foreach($photo_data as $k1=>$v1)
                         @foreach($v1 as $k2=>$v2)
-                        <?php $active = ($n==0)?"active":""; ?>
-                        <li data-target="#carouselExampleIndicators" data-slide-to="{{ $n }}" class="{{ $active }}"></li>
-                        <?php $n++; ?>
+                            <?php $active = ($n==0)?"active":""; ?>
+                            <?php $aria_current = ($n==0)?"true":"false"; ?>
+                            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ $n }}" class="{{ $active }}" aria-current="{{ $aria_current }}" aria-label="Slide {{ $n + 1 }}"></button>
+                            <?php $n++; ?>
                         @endforeach
                     @endforeach
-                </ol>
+                </div>
+
                 <div class="carousel-inner">
                     <?php $n=0; ?>
                     @foreach($photo_data as $k1=>$v1)
@@ -57,12 +59,13 @@
                                 @else
                                     <img class="d-block w-100" src="{{ asset('storage/'.$school_code.'/title_image/random/'.$k2) }}" alt="橫幅{{ $k1 }}">
                                 @endif
+                                
                                 <div class="carousel-caption d-none d-md-block">
                                     @if($v2['title'] != null)
-                                        <h1>{{ $v2['title'] }}</h1>
+                                        <h1 class="display-4">{{ $v2['title'] }}</h1>
                                     @endif
                                     @if($v2['desc'] != null)
-                                        <p><strong>{{ $v2['desc'] }}</strong></p>
+                                        <p class="fs-5"><strong>{{ $v2['desc'] }}</strong></p>
                                     @endif
                                 </div>
                             </div>
@@ -70,14 +73,14 @@
                         @endforeach
                     @endforeach
                 </div>
-                <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Previous</span>
-                </a>
-                <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                    <span class="visually-hidden">Previous</span> </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Next</span>
-                </a>
+                    <span class="visually-hidden">Next</span>
+                </button>
             </div>
         @endif
     @endif
@@ -137,79 +140,87 @@
                             </div>
                         </div>
                     @else
-                    @if($block->disable_block_line != 1)
-                    <div class="shadow rounded {{ $block_color[0] }}">
-                    @endif
-                        @if($block->block_position != "disable")
-                        <div class="{{ $block_color[1] }} {{ $rounded }}">
-                            <?php
-                                $title = (empty($block->new_title))?$block->title:$block->new_title;
-                                $title=str_replace('(系統區塊)','',$title); 
-                                $title = str_replace("_圖文版","",$title);
-                                
-                                $block_position = ($block->block_position==null)?"text-left":$block->block_position;
-                                if($block->block_position=="disable") $block_position = null;
-                            ?>
-                            <h5 class="{{ $block_position }}">
-                                @if($block_position) 
-                                    {{ $title }}
-                                @endif
-                                @auth
-                                    @if(auth()->user()->admin==1)
-                                        <div style="float: right;padding-right:10px">
-                                            <a href="javascript:open_window('{{ route('setups.edit_block',$block->id) }}','新視窗')">📝</a>
-                                        </div>
-                                    @endif
-                                @endauth
-                            </h5>
-                        </div>
+                        @if($block->disable_block_line != 1)
+                            <div class="shadow rounded {{ $block_color[0] }}">
                         @endif
-                        <div class="content2" id="block{{ $block->id }}" style="margin-bottom: 5px;">
+
+                        @if($block->block_position != "disable")
+                            <div class="{{ $block_color[1] }} {{ $rounded }}">
+                                <?php
+                                    $title = (empty($block->new_title))?$block->title:$block->new_title;
+                                    $title=str_replace('(系統區塊)','',$title); 
+                                    $title = str_replace("_圖文版","",$title);
+                                    
+                                    // BS5 改動: text-left 改為 text-start
+                                    $block_position = ($block->block_position==null)?"text-start":$block->block_position;
+                                    if($block->block_position=="text-left") $block_position = "text-start";
+                                    if($block->block_position=="text-right") $block_position = "text-end";
+                                    
+                                    if($block->block_position=="disable") $block_position = null;
+                                ?>
+                                <h5 class="{{ $block_position }} py-2 px-3 mb-0">
+                                    @if($block_position) 
+                                        {{ $title }}
+                                    @endif
+                                    
+                                    @auth
+                                        @if(auth()->user()->admin==1)
+                                            <div class="float-end pe-2">
+                                                <a href="javascript:open_window('{{ route('setups.edit_block',$block->id) }}','新視窗')" class="text-decoration-none">📝</a>
+                                            </div>
+                                        @endif
+                                    @endauth
+                                </h5>
+                            </div>
+                        @endif
+
+                        <div class="content2 mb-2 px-3 pb-2" id="block{{ $block->id }}">
                             <div class="table-responsive">
-                            @if($block->title == "最新公告(系統區塊)")
-                                @include('layouts.news')
-                            @elseif($block->title == "彰化空汙旗(系統區塊)")
-                                @include('layouts.chc_air')
-                            @elseif($block->title == "樹狀目錄(系統區塊)")
-                                @include('layouts.dtree')
-                            @elseif($block->title == "圖片連結(系統區塊)")
-                                @include('layouts.photo_link')
-                            @elseif($block->title == "分類公告(系統區塊)")
-                                @include('layouts.post_type')
-                            @elseif($block->title == "分類公告_圖文版(系統區塊)")
-                                @include('layouts.post_type2')
-                            @elseif($block->title == "校園部落格(系統區塊)")
-                                @include('layouts.blog')
-                            @elseif($block->title == "今日餐點1(系統區塊)")
-                                @include('layouts.lunch_today1')
-                            @elseif($block->title == "今日餐點2(系統區塊)")
-                                @include('layouts.lunch_today2')
-                            @elseif($block->title == "今日餐點3(系統區塊)")
-                                @include('layouts.lunch_today3')
-                            @elseif($block->title == "今日餐點4(系統區塊)")
-                                @include('layouts.lunch_today4')
-                            @elseif($block->title == "校務月曆(系統區塊)")
-                                @include('layouts.monthly_calendar')
-                            @elseif($block->title == "教室預約(系統區塊)")
-                                @include('layouts.classroom_order')
-                            @elseif($block->title == "RSS訊息(系統區塊)")
-                                @include('layouts.rss_feed')                           
-                            @elseif($block->title == "借用狀態(系統區塊)")
-                                @include('layouts.lend_list')
-                            @elseif($block->title == "常駐公告(系統區塊)")
-                                @include('layouts.inbox_posts')
-                            @elseif($block->title == "待修通報(系統區塊)")
-                                @include('layouts.fix')
-                            @elseif($block->title == "搜尋本站(系統區塊)")
-                                @include('layouts.search_site')
-                            @else
-                                {!! $block->content !!}
-                            @endif
+                                @if($block->title == "最新公告(系統區塊)")
+                                    @include('layouts.news')
+                                @elseif($block->title == "彰化空汙旗(系統區塊)")
+                                    @include('layouts.chc_air')
+                                @elseif($block->title == "樹狀目錄(系統區塊)")
+                                    @include('layouts.dtree')
+                                @elseif($block->title == "圖片連結(系統區塊)")
+                                    @include('layouts.photo_link')
+                                @elseif($block->title == "分類公告(系統區塊)")
+                                    @include('layouts.post_type')
+                                @elseif($block->title == "分類公告_圖文版(系統區塊)")
+                                    @include('layouts.post_type2')
+                                @elseif($block->title == "校園部落格(系統區塊)")
+                                    @include('layouts.blog')
+                                @elseif($block->title == "今日餐點1(系統區塊)")
+                                    @include('layouts.lunch_today1')
+                                @elseif($block->title == "今日餐點2(系統區塊)")
+                                    @include('layouts.lunch_today2')
+                                @elseif($block->title == "今日餐點3(系統區塊)")
+                                    @include('layouts.lunch_today3')
+                                @elseif($block->title == "今日餐點4(系統區塊)")
+                                    @include('layouts.lunch_today4')
+                                @elseif($block->title == "校務月曆(系統區塊)")
+                                    @include('layouts.monthly_calendar')
+                                @elseif($block->title == "教室預約(系統區塊)")
+                                    @include('layouts.classroom_order')
+                                @elseif($block->title == "RSS訊息(系統區塊)")
+                                    @include('layouts.rss_feed')                           
+                                @elseif($block->title == "借用狀態(系統區塊)")
+                                    @include('layouts.lend_list')
+                                @elseif($block->title == "常駐公告(系統區塊)")
+                                    @include('layouts.inbox_posts')
+                                @elseif($block->title == "待修通報(系統區塊)")
+                                    @include('layouts.fix')
+                                @elseif($block->title == "搜尋本站(系統區塊)")
+                                    @include('layouts.search_site')
+                                @else
+                                    {!! $block->content !!}
+                                @endif
+                            </div>
                         </div>
-                        </div>
-                    @if($block->disable_block_line != 1)
-                    </div>
-                    @endif
+
+                        @if($block->disable_block_line != 1)
+                            </div>
+                        @endif
                     @endif
                 @endforeach
             </div>
@@ -231,26 +242,66 @@
             #footer_bottom{background-color: #CCCCCC;}
         </style>
         <footer class="font-small py-4" id="footer">
-            <div class="container-fluid text-center text-md-left">
-                    <div class="row justify-content-center">
-                        <div class="col-md-11">                            
-                            @auth
-                                @if(auth()->user()->admin==1)  
-                                    <div style="float: right;">
-                                        <a href="javascript:open_window('{{ route('setups.edit_footer') }}','新視窗')">📝</a>
-                                    </div>
-                                @endif
-                            @endauth
-                            {!! $setup->footer !!}                            
-                        </div>
+            <div class="container-fluid text-center text-md-start">
+                <div class="row justify-content-center">
+                    <div class="col-md-11">                            
+                        @auth
+                            @if(auth()->user()->admin==1)  
+                                <div class="float-end">
+                                    <a href="javascript:open_window('{{ route('setups.edit_footer') }}','新視窗')" class="text-decoration-none">📝</a>
+                                </div>
+                            @endif
+                        @endauth
+                        
+                        <div class="footer-content">
+                            {!! $setup->footer !!}
+                        </div>                            
                     </div>
+                </div>
             </div>
-        </footer>
+        </footer>        
     @endif
     @if($setup->disable_right==null)
-        <div class="footer-copyright text-center text-black-50 py-3" id="footer_bottom">
-            {{ date('Y') }} Copyright ©　<a href="{{ route('index','index') }}">{{ $setup->site_name }}</a>　訪客人次:{{ $setup->views }} 訪客IP：{{ GetIP() }}
+        <div class="footer-copyright text-center py-4 bg-body-secondary border-top" id="footer_bottom">
+            <div class="container">
+                <div class="d-flex flex-wrap justify-content-center align-items-center gap-3 text-secondary">
+                    
+                    <div class="fw-medium">
+                        &copy; {{ date('Y') }} 
+                        <a href="{{ route('index','index') }}" class="text-dark text-decoration-none hover-link">
+                            {{ $setup->site_name }}
+                        </a> 
+                        <span class="mx-1">All Rights Reserved.</span>
+                    </div>
+
+                    <span class="d-none d-md-inline opacity-25">|</span>
+
+                    <div class="d-flex align-items-center bg-white px-3 py-1 rounded-pill shadow-sm">
+                        <i class="fas fa-chart-line text-primary me-2"></i>
+                        <span class="small">訪客人次：</span>
+                        <span class="fw-bold text-dark">{{ number_format($setup->views) }}</span>
+                    </div>
+
+                    <div class="d-flex align-items-center bg-white px-3 py-1 rounded-pill shadow-sm">
+                        <i class="fas fa-network-wired text-info me-2"></i>
+                        <span class="small">您的 IP：</span>
+                        <span class="fw-bold text-dark">{{ GetIP() }}</span>
+                    </div>
+
+                </div>
+            </div>
         </div>
+
+        <style>
+            /* 增加一點點滑過連結的效果 */
+            .hover-link {
+                transition: color 0.2s;
+            }
+            .hover-link:hover {
+                color: #dd0f20 !important; /* 或是你學校的主題紅 */
+                text-decoration: underline !important;
+            }
+        </style>                
     @endif
 
     <!-- 

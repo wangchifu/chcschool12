@@ -13,8 +13,8 @@
                 <form method="POST" action="{{ route('auth') }}" id="this_form">
                     @csrf
 
-                    <div class="form-group row">
-                        <label for="username" class="col-sm-4 col-form-label text-md-right">本機帳號</label>
+                    <div class="row mb-3">
+                        <label for="username" class="col-sm-4 col-form-label text-md-end">本機帳號</label>
 
                         <div class="col-md-6">
                             <input tabindex="1" id="username" type="text" class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}" name="username" value="{{ old('username') }}" required autofocus>
@@ -27,8 +27,8 @@
                         </div>
                     </div>
 
-                    <div class="form-group row">
-                        <label for="password" class="col-md-4 col-form-label text-md-right">密碼</label>
+                    <div class="row mb-3">
+                        <label for="password" class="col-md-4 col-form-label text-md-end">密碼</label>
 
                         <div class="col-md-6">
                             <input id="password" type="password" tabindex="2" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" required>
@@ -41,10 +41,10 @@
                         </div>
                     </div>
 
-                    <div class="form-group row">
-                        <div class="col-md-4 text-md-left">
+                    <div class="row mb-3">
+                        <div class="col-md-4 text-md-start">
                         </div>
-                        <div class="col-md-6 text-md-left">
+                        <div class="col-md-6 text-md-start">
                             <a href="{{ route('admin_login') }}"><img src="{{ route('pic') }}" class="img-fluid" alt="驗證碼圖片"></a>                       
                             <a href="#!" id="loadAudio"><i class="fas fa-volume-up"></i> [語音播放]</a>
                             <audio id="myAudio">
@@ -52,15 +52,16 @@
                             </audio>                            
                         </div>
                     </div>
-                    <div class="form-group row">
-                        <label for="chaptcha" class="col-md-4 col-form-label text-md-right">驗證碼</label>
+                    
+                    <div class="row mb-3">
+                        <label for="chaptcha" class="col-md-4 col-form-label text-md-end">驗證碼</label>
 
                         <div class="col-md-6">
                             <input type="text" id="chaptcha" tabindex="3" class="form-control" name="chaptcha" required placeholder="上圖國字轉阿拉伯數字" maxlength="5" title="請輸入驗證碼">
                         </div>
                     </div>
 
-                    <div class="form-group row mb-0">
+                    <div class="row mb-0">
                         <div class="col-md-8 offset-md-4">
                             <button type="submit" class="btn btn-primary btn-sm" tabindex="4">
                                 <i class="fas fa-sign-in-alt"></i> 登入
@@ -74,14 +75,15 @@
                         session(['check_bot'=>$k]);
                     ?>
                     <span class="text-danger">登入錯誤超過三次，請輸入三碼數字後送出： </span>
-                        <form action="{{ route('not_bot') }}" method="post">
+                        <form action="{{ route('not_bot') }}" method="post" class="mt-2">
                         @csrf
-                        <input type="text" name="check_bot" placeholder="請輸入：{{ session('check_bot') }}">
+                        <input type="text" name="check_bot" placeholder="請輸入：{{ session('check_bot') }}" class="form-control d-inline-block w-auto">
                             <button class="btn btn-primary btn-sm">我不是機器人</button>
                         </form>
                 @endif
                 @include('layouts.errors')
-                <div class="text-right">
+                
+                <div class="text-end">
                     <a href="{{ route('sso') }}" class="image-button"><img src="{{ asset('images/chc.jpg') }}" alt="彰化chc的logo" width="80"></a><br>OpenID登入
                 </div>
             </div>

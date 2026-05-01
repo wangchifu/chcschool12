@@ -24,6 +24,8 @@ $first_w = get_date_w($this_month_date[1]);
     <script src="{{ asset('gijgo/js/gijgo.min.js') }}" type="text/javascript"></script>
     <link href="{{ asset('gijgo/css/gijgo.min.css') }}" rel="stylesheet" type="text/css">
     {{ Form::open(['route' => 'monthly_calendars.block_store', 'method' => 'POST','id'=>'create_calendar_form','onsubmit'=>'return false']) }}
+    <form action="{{ route('monthly_calendars.block_store') }}" method="POST" id="create_calendar_form" onsubmit="return false">
+    @csrf
     <table>
         <tr>
             <td>
@@ -48,7 +50,7 @@ $first_w = get_date_w($this_month_date[1]);
         });
     </script>
     <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
-    {{ Form::close() }}
+    </form>
 @endcan
 <script>
     function add_item(){
@@ -189,9 +191,10 @@ $first_w = get_date_w($this_month_date[1]);
     };
 
 </script>
-{{ Form::open(['route' => 'monthly_calendars.return_month', 'method' => 'POST','id'=>'calendar_month','onsubmit'=>'return false']) }}
+<form action="{{ route('monthly_calendars.return_month') }}" method="POST" id="calendar_month" onsubmit="return false">
+    @csrf
 <input type="hidden" name="item_month" id="item_month">
-{{ Form::close() }}
+</form>
 <div id="calendar_content">    
     <a href="#!" style="text-decoration:none;font-size: 24px;" onclick="go_submit('{{ $last_month }}')"><i class="fas fa-arrow-alt-circle-left text-primary"></i></a> {{ $this_month }} <a href="#!" style="text-decoration:none;font-size: 24px" onclick="go_submit('{{ $next_month }}')"><i class="fas fa-arrow-alt-circle-right text-primary"></i></a>    
     <div class="table-responsive">
@@ -235,7 +238,7 @@ $first_w = get_date_w($this_month_date[1]);
                         ?>
                         @if($v1['item_date'] == $v)
                             <div class="bg-{{ $bg_array[$q] }}" style="font-size:16px;width: 100%;border-radius: 3px;margin: 2px;color: #FFFFFF;padding: 2px;" data-toggle="tooltip" data-placement="top" title="{{ $v1['item'] }}" onclick="alert('{{ $v }}\r\n{{ $v1['item'] }}')">
-                                {{ str_limit($v1['item'],20) }}
+                                {{ str($v1['item'])->limit(20) }}
                             </div>
                             @auth
                                 @if($v1['user_id'] == auth()->user()->id or auth()->user()->admin ==1)

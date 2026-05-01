@@ -53,7 +53,7 @@ $inbox_posts = \App\Models\Post::where('inbox',1)
                     $can_see = 1;
                 };
                 $school_code = school_code();
-                $title = str_limit($post->title,80);
+                $title = $post->title;
                 //有無附件
                 $files = get_files(storage_path('app/public/'.$school_code.'/posts/'.$post->id.'/files'));
                 $photos = get_files(storage_path('app/public/'.$school_code.'/posts/'.$post->id.'/photos'));

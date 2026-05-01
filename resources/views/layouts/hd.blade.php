@@ -1,9 +1,28 @@
-<a data-toggle="collapse" href="#collapse_hd" role="button" aria-expanded="false" aria-controls="collapse_hd" style="color:black;">
-    容量使用率：{{ $per }} %
-</a>
-<div class="collapse" id="collapse_hd">
-    <div class="progress">
-        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: {{ $per }}%">已使用容量( {{ $size }}MB / 5GB )</div>
+<div class="mb-3">
+    <div class="d-flex justify-content-between align-items-end mb-2">
+        <span class="fw-bold text-dark">
+            <i class="fas fa-hdd me-1"></i> 儲存空間使用率
+        </span>
+        <span class="badge bg-secondary">
+            {{ $size }} MB / 5,120 MB (5GB)
+        </span>
     </div>
-    <hr>
+
+    <div class="progress" style="height: 20px; border-radius: 10px;">
+        <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" 
+             role="progressbar" 
+             aria-valuenow="{{ $per }}" 
+             aria-valuemin="0" 
+             aria-valuemax="100" 
+             style="width: {{ $per }}%">
+             @if($per > 5) {{ $per }}% @endif
+        </div>
+    </div>
+    
+    @if($per <= 5)
+        <div class="text-end mt-1">
+            <small class="text-muted">{{ $per }}%</small>
+        </div>
+    @endif
 </div>
+<hr>

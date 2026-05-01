@@ -1,3 +1,8 @@
+/** bootstrap-navbar */
+.dropdown-toggle.active-dropdown::after {
+    transform: rotate(-90deg);
+}
+
 .footer {
     position: fixed;
     left: 0;

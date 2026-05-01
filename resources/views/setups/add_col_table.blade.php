@@ -4,37 +4,38 @@
 
 @section('content')
     @include('layouts.errors')
-    {{ Form::open(['route' => 'setups.add_col', 'method' => 'post','id'=>'this_form']) }}
-    <table class="table">
-        <tr>
-            <td>
-                <div class="form-group">
-                    <label for="order_by">1.排序</label>
-                    {{ Form::text('order_by',null,['id'=>'order_by','class' => 'form-control', 'placeholder' => '數字']) }}
-                </div>
-            </td>
-            <td>
-                <div class="form-group">
-                    <label for="site_name">2.名稱</label>
-                    {{ Form::text('title',null,['class' => 'form-control','required'=>'required']) }}
-                </div>
-            </td>
-            <td>
-                <div class="form-group">
-                    <label for="site_name">3.欄位寬度比例 ( 1-12 整數 )</label>
-                    {{ Form::text('num',null,['class' => 'form-control','required'=>'required','maxlength'=>'2']) }}
-                </div>
-            </td>
-
-        </tr>
-    </table>
-    <div class="form-group">
-        <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('確定新增？')">
-            <i class="fas fa-plus"></i> 新增欄位
-        </button>
-    </div>
-    {{ Form::close() }}
+    <form action="{{ route('setups.add_col') }}" method="POST" id="this_form" onsubmit="return false">
+        @csrf
+        <table class="table">
+            <tr>
+                <td>
+                    <div class="mb-3">
+                        <label for="order_by" class="form-label">1.排序</label>
+                        <input type="number" name="order_by" id="order_by" class="form-control" placeholder="數字">
+                    </div>
+                </td>
+                <td>
+                    <div class="mb-3">
+                        <label for="title" class="form-label">2.名稱</label>
+                        <input type="text" name="title" id="title" class="form-control" required>
+                    </div>
+                </td>
+                <td>
+                    <div class="mb-3">
+                        <label for="num" class="form-label">3.欄位寬度比例 ( 1-12 整數 )</label>
+                        <input type="text" name="num" id="num" class="form-control" required maxlength="2">
+                    </div>
+                </td>
+            </tr>
+        </table>
+        
+        <div class="mb-3">
+            <button type="submit" class="btn btn-success btn-sm" onclick="sw_confirm2('確定新增？','this_form')">
+                <i class="fas fa-plus me-1"></i> 新增欄位
+            </button>
+        </div>
+    </form>    
     <script>
-        var validator = $("#this_form").validate();
+        var validator = $("#this_form").validate();
     </script>
 @endsection
