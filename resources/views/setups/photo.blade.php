@@ -24,21 +24,21 @@
                     @if(file_exists(storage_path('app/public/'.$school_code.'/title_image/logo.ico')))
                         <div class="clearfix" style="padding: 10px;">
                             <img src="{{ asset('storage/'.$school_code.'/title_image/logo.ico') }}" width="50" class="img-thumbnail">
-                            <a href="#!" id="del_logo" onclick="sw_confirm1('確定移除小圖示嗎？','{{ route('setups.del_img',['folder'=>'title_image','filename'=>'logo.ico']) }}')" class="ms-2">
+                            <a href="#!" id="delete_logo" class="text-danger delete-btn1" data-msg="確定要刪除 logo？" data-url="{{ route('setups.del_img',['folder'=>'title_image','filename'=>'logo.ico']) }}">
                                 <i class="fas fa-times-circle text-danger"></i>
-                            </a>
+                            </a>                            
                         </div>
                     @else
-                        <form action="{{ route('setups.add_logo') }}" method="POST" id="this_form1" enctype="multipart/form-data" onsubmit="return false">
+                        <form action="{{ route('setups.add_logo') }}" method="POST" enctype="multipart/form-data" id="this_form1">
                             @csrf
                             <div class="mb-3">
                                 <label for="logo" class="form-label fw-bold">圖檔( .ico .png )</label>
                                 <input type="file" name="logo" id="logo" class="form-control" required>
                             </div>
                             <div class="mb-3">
-                                <button type="submit" class="btn btn-primary btn-sm" onclick="sw_confirm2('確定上傳？','this_form1')">
+                                <span class="btn btn-primary btn-sm save-btn" data-form="this_form1">
                                     <i class="fas fa-save"></i> 儲存設定
-                                </button>
+                                </span>                                
                             </div>
                             @include('layouts.errors')
                         </form>
@@ -49,7 +49,7 @@
             <div class="card my-4 shadow-sm">
                 <h3 class="card-header">輪播照片</h3>
                 <div class="card-body">
-                    <form action="{{ route('setups.update_title_image', $setup->id) }}" method="POST" id="this_form2" onsubmit="return false">
+                    <form action="{{ route('setups.update_title_image', $setup->id) }}" method="POST" id="this_form2">
                         @csrf
                         @method('PATCH')
                         <div class="mb-3">
@@ -88,30 +88,30 @@
                             </div>                            
                         </div>
                         <div class="mb-3">
-                            <button type="submit" class="btn btn-primary btn-sm" onclick="sw_confirm2('確定儲存嗎？','this_form2')">
+                            <span class="btn btn-primary btn-sm save-btn" data-form="this_form2">
                                 <i class="fas fa-save"></i> 儲存設定
-                            </button>
+                            </span>                            
                         </div>
                     </form>
 
                     <hr class="my-4">
 
-                    <form action="{{ route('setups.add_imgs') }}" method="POST" id="this_form3" enctype="multipart/form-data" onsubmit="return false">
+                    <form action="{{ route('setups.add_imgs') }}" method="POST" enctype="multipart/form-data" id="this_form3">
                         @csrf
                         <div class="mb-3">
                             <label for="files" class="form-label fw-bold">圖檔( 2000 x 400 )</label>
                             <input type="file" name="files[]" id="files" class="form-control" multiple required>
                         </div>
                         <div class="mb-3">
-                            <button type="submit" class="btn btn-primary btn-sm" onclick="sw_confirm2('確定儲存嗎？','this_form3')">
+                            <span class="btn btn-primary btn-sm save-btn" data-form="this_form3">
                                 <i class="fas fa-save"></i> 儲存設定
-                            </button>
+                            </span>                                                        
                         </div>
                     </form>
 
                     <hr class="my-4">
 
-                    <form method="post" action="{{ route('setups.photo_desc') }}" onsubmit="return false" id="this_form4" onsubmit="return false">
+                    <form method="post" action="{{ route('setups.photo_desc') }}" id="this_form4">
                         @csrf
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped align-middle">
@@ -126,6 +126,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <?php $i=1; ?>
                                     @foreach($photo_data as $k1=>$v1)
                                         @foreach($v1 as $k2=>$v2)
                                             <tr>
@@ -133,7 +134,7 @@
                                                     <input type="number" class="form-control form-control-sm" name="order_by[{{ $k2 }}]" value="{{ $k1 }}">
                                                 </td>
                                                 <td>
-                                                    <?php
+                                                    <?php                                                    
                                                     $checked1 = ($v2['disable']==null)?"checked":null;
                                                     $checked2 = ($v2['disable'])?"checked":null;
                                                     ?>
@@ -148,7 +149,7 @@
                                                 <td class="text-center">
                                                     <img src="{{ asset('storage/'.$school_code.'/title_image/random/'.$k2) }}" width="150" class="img-thumbnail mb-1">
                                                     <div class="small text-muted">{{ $k2 }}</div>
-                                                    <a href="#!" class="btn btn-link btn-sm text-danger text-decoration-none" onclick="sw_confirm1('確定移除輪播圖片嗎','{{ route('setups.del_img',['folder'=>'title_image&random','filename'=>$k2]) }}')">
+                                                    <a href="#!" id="delete_photo{{ $i }}" class="btn btn-link btn-sm text-danger text-decoration-none delete-btn1" data-msg="確定要刪除此輪播照片？" data-url="{{ route('setups.del_img',['folder'=>'title_image&random','filename'=>$k2]) }}">
                                                         <i class="fas fa-trash-alt"></i> 移除
                                                     </a>
                                                 </td>
@@ -157,23 +158,18 @@
                                                 <td><input type="text" class="form-control form-control-sm" name="desc[{{ $k2 }}]" value="{{ $v2['desc'] }}"></td>
                                             </tr>
                                             <input type="hidden" name="image_name[{{ $k2 }}]" value="{{ $k2 }}">
+                                            <?php $i++; ?>
                                         @endforeach
                                     @endforeach
                                 </tbody>
                             </table> 
                         </div>
-                        <button type="submit" class="btn btn-primary btn-sm shadow" onclick="sw_confirm2('確定？','this_form4')">
-                            <i class="fas fa-save me-1"></i> 全部儲存
-                        </button>
+                        <span class="btn btn-primary btn-sm save-btn" data-form="this_form4">
+                            <i class="fas fa-save"></i> 全部儲存
+                        </span>                                                
                     </form>
                 </div>
             </div>
         </div>
-    </div>
-    <script>
-        var validator1 = $("#this_form1").validate();
-        var validator2 = $("#this_form2").validate();
-        var validator3 = $("#this_form3").validate();
-        var validator4 = $("#this_form4").validate();
-    </script>
+    </div>    
 @endsection

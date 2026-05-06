@@ -9,7 +9,7 @@
         </h3>
     </div>
 
-    <form action="{{ route('setups.batch_delete') }}" method="POST" id="delete_form" onsubmit="return false">
+    <form action="{{ route('setups.batch_delete') }}" method="POST" id="delete_form">
         @csrf
         @method('DELETE')
 
@@ -31,12 +31,9 @@
         </div>
 
         <div class="mt-5 pt-3">
-            <button class="btn btn-danger btn-lg w-100 shadow" type="submit" onclick="sw_confirm2('真的確定嗎？太大量的話，請等一下，不要再亂按了','delete_form')">
+            <span class="btn btn-danger btn-lg w-100 shadow delete-btn2" data-form="delete_form">
                 <i class="fas fa-trash-alt me-1"></i> 確定不能挽回的刪除大量公告
-            </button>
-            <p class="text-muted text-center mt-2 small">
-                <i class="fas fa-info-circle me-1"></i> 刪除過程可能較久，請按一次後耐心等待，切勿重複點擊。
-            </p>
+            </span>            
         </div>
     </form>    
 @endsection

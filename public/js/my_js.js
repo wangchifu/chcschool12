@@ -1,4 +1,9 @@
 // bootstrap-navbar
+var validator1 = $("#this_form1").validate();
+var validator2 = $("#this_form2").validate();
+var validator3 = $("#this_form3").validate();
+var validator4 = $("#this_form4").validate(); 
+        
 $( document ).ready( function () {
     $( '.dropdown-menu a.dropdown-toggle' ).on( 'click', function ( e ) {
         var $el = $( this );

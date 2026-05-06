@@ -4,7 +4,7 @@
 
 @section('content')
     @include('layouts.errors')
-    <form action="{{ route('setups.add_col') }}" method="POST" id="this_form" onsubmit="return false">
+    <form action="{{ route('setups.add_col') }}" method="POST" id="this_form1">
         @csrf
         <table class="table">
             <tr>
@@ -28,14 +28,10 @@
                 </td>
             </tr>
         </table>
-        
         <div class="mb-3">
-            <button type="submit" class="btn btn-success btn-sm" onclick="sw_confirm2('確定新增？','this_form')">
-                <i class="fas fa-plus me-1"></i> 新增欄位
-            </button>
-        </div>
-    </form>    
-    <script>
-        var validator = $("#this_form").validate();
-    </script>
+            <span class="btn btn-primary btn-sm save-btn" data-form="this_form1">
+                <i class="fas fa-save"></i> 儲存設定
+            </span>                                                        
+        </div>        
+    </form>        
 @endsection

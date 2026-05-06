@@ -2,9 +2,15 @@
 
 @section('title', '編輯欄位 | ')
 
+@section('in_head')    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>   
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">    
+    <script src="{{ asset('js/sweet_alert.js') }}"></script>
+@endsection
+
 @section('content')
     @include('layouts.errors')
-    <form action="{{ route('setups.update_col', $setup_col->id) }}" method="POST" id="this_form" onsubmit="return false">
+    <form action="{{ route('setups.update_col', $setup_col->id) }}" method="POST" id="this_form1">
         @csrf
         @method('PATCH')
         
@@ -38,21 +44,20 @@
                             <input type="text" name="num" value="{{ $setup_col->num }}" class="form-control" required maxlength="2">
                         </td>
                         <td>
-                            <button type="submit" class="btn btn-primary btn-sm" onclick="sw_confirm2('確定修改？','this_form')">
-                                <i class="fas fa-save me-1"></i> 儲存變更
-                            </button>
+                            <span class="btn btn-primary btn-sm save-btn" data-form="this_form1">
+                                <i class="fas fa-save"></i> 儲存變更
+                            </span>                            
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </form>
-    <form action="{{ route('setups.delete_col',$setup_col->id) }}" method="post" onsubmit="return false" id='delete_form'>
+    <form action="{{ route('setups.delete_col',$setup_col->id) }}" method="post" id='delete_form'>
         @csrf
         @method('delete')
-        <button class="btn btn-danger btn-sm" onclick="sw_confirm2('確定刪除？若有區塊放置在此欄位，記得去變更！','delete_form')"><i class="fas fa-trash"></i> 刪除</button>
+        <span class="btn btn-danger btn-sm delete-btn2" data-form="delete_form">
+            <i class="fas fa-save"></i> 刪除
+        </span>        
     </form>
-    <script>
-        var validator = $("#this_form").validate();
-    </script>
 @endsection

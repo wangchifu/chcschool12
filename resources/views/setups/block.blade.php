@@ -114,8 +114,5 @@
                 </div>
             </div>
         </div>
-    </div>    
-    <script>
-        var validator = $("#this_form").validate();
-    </script>
+    </div>        
 @endsection

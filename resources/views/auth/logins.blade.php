@@ -3,7 +3,7 @@
 @section('title','教職員登入 | ')
 
 @section('content')
-<div class="row justify-content-center">
+<div class="row justify-content-center mt-5">
     <div class="col-md-4">
         <div class="card">            
             <div class="card-header d-flex align-items-center">
@@ -28,7 +28,7 @@
                             </a>              
                         </div>
                         <div class="text-end">
-                            <a href="{{ route('admin_login') }}"><i class="fas fa-cog"></i> 使用本機帳號</a>
+                            <a href="{{ route('admin_login') }}" class="text-decoration-none"><i class="fas fa-cog"></i> 使用本機帳號</a>
                         </div>                                                                      
                     </div>                               
                   </div>                                  

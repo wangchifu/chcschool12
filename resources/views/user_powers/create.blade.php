@@ -2,14 +2,14 @@
 
 @section('title', '新增使用者權限 | ')
 
-@section('content')
-<!-- Chosen v1.8.2 -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.2/chosen.min.css" rel="stylesheet" />
-<link href="{{ asset('css/component-chosen.min.css') }}" rel="stylesheet" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.2/chosen.jquery.min.js"></script>
+@section('in_head')    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chosen-js@1.8.7/chosen.min.css">
+    <link href="{{ asset('css/component-chosen.min.css') }}" rel="stylesheet" />    
+@endsection
 
+@section('content')
 <div class="p-2">
-    <form action="{{ route('user_powers.store') }}" method="POST" id="this_form" onsubmit="return false">
+    <form action="{{ route('user_powers.store') }}" method="POST" id="this_form1">
         @csrf
         
         <table class="table table-striped align-middle border">
@@ -44,20 +44,23 @@
         <input type="hidden" name="type" value="{{ $type }}">
 
         <div class="mt-3 text-center">
-            <button type="submit" class="btn btn-success px-4 shadow-sm" onclick="sw_confirm2('確定指定此權限嗎？','this_form')">
-                <i class="fas fa-user-plus me-1"></i> 新增權限指定
-            </button>
+            <span class="btn btn-primary btn-sm save-btn" data-form="this_form1">
+                <i class="fas fa-save"></i> 新增權限指定
+            </span>            
         </div>
     </form>
 </div>
+@endsection
 
-<script>
-    $(document).ready(function() {
-        $(".search_select").chosen({
-            search_contains: true,
-            width: '100%', // 確保在 Bootstrap 欄位中寬度正確
-            no_results_text: "找不到匹配的使用者:"
+@section('down_body')
+    <script src="https://cdn.jsdelivr.net/npm/chosen-js@1.8.7/chosen.jquery.min.js"></script>
+    <script nonce="<?php echo $csp_nonce; ?>">
+        $(document).ready(function() {
+            $(".search_select").chosen({
+                search_contains: true,
+                width: '100%', // 確保在 Bootstrap 欄位中寬度正確
+                no_results_text: "找不到匹配的使用者:"
+            });
         });
-    });
-</script>
+    </script>
 @endsection

@@ -1,5 +1,28 @@
 <?php $module_setup = get_module_setup(); ?>
-<style>
+<style nonce="<?php echo $csp_nonce; ?>">
+    /** 客製化 navbar */
+    .navbar-custom {
+        background-color: {{ $navbar_custom[0] }};
+    }
+    
+    /* 修改品牌(Brand)與文字顏色 */
+    .navbar-custom .navbar-brand,
+    .navbar-custom .navbar-text {
+        color: {{ $navbar_custom[1] }};
+    }
+    
+    /* 修改連結顏色 */
+    .navbar-custom .navbar-nav .nav-link {
+        color: {{ $navbar_custom[2] }};
+    }
+    
+    /* 修改「啟用中(active)」或「滑過(hover)」的連結顏色 */
+    /* BS5 修正：.active 類別現在多數直接在 .nav-link 上 */
+    .navbar-custom .navbar-nav .nav-link.active, 
+    .navbar-custom .navbar-nav .nav-link:hover {
+        color: {{ $navbar_custom[3] }};
+    }
+
     /* 1. 自定義選單按鈕邊框 */
     .custom-toggler.navbar-toggler {
         /* 使用 BS5 變數或直接指定 */

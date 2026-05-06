@@ -6,13 +6,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 @endsection
 
-@section('in_head')
-    <script src=" https://cdn.jsdelivr.net/npm/tinymce@7.9.1/tinymce.min.js "></script>
-@endsection
-
 @section('content')
     @include('layouts.errors')
-    <form action="{{ route('setups.update_block', $block->id) }}" method="POST" id="this_form" onsubmit="return false">
+    <form action="{{ route('setups.update_block', $block->id) }}" method="POST" id="this_form1">
         @csrf
         @method('PATCH')
         
@@ -34,7 +30,7 @@
                 <td>
                     <div class="mb-3">
                         <label for="order_by" class="form-label">2.排序</label>
-                        <input type="text" name="order_by" id="order_by" value="{{ $block->order_by }}" class="form-control" placeholder="數字">
+                        <input type="number" name="order_by" id="order_by" value="{{ $block->order_by }}" class="form-control" placeholder="數字">
                     </div>
                 </td>
                 <td>
@@ -116,21 +112,21 @@
         </table>    
         
         <div class="mt-3">
-            <button type="submit" class="btn btn-primary btn-sm px-3" onclick="sw_confirm2('確定儲存？','this_form')">
-                <i class="fas fa-save me-1"></i> 儲存區塊
-            </button>
+            <span class="btn btn-primary btn-sm save-btn" data-form="this_form1">
+                <i class="fas fa-save"></i> 儲存區塊
+            </span>            
         </div>
     </form>
     @if(strpos($block->title,"跑馬燈"))
         
     @elseif(!strpos($block->title,'系統區塊'))
         <div class="text-end">
-            <form action="{{ route('setups.delete_block', $block->id) }}" method="post" id="delete_form" onsubmit="return false">
+            <form action="{{ route('setups.delete_block', $block->id) }}" method="post" id="delete_form">
                 @csrf
                 @method('delete')
-                <button type="submit" class="btn btn-danger btn-sm" onclick="sw_confirm2('確定刪除？若有區塊放置在此欄位，記得去變更！','delete_form')">
-                    <i class="fas fa-trash me-1"></i> 刪除
-                </button>
+                <span class="btn btn-danger btn-sm delete-btn2" data-form="delete_form">
+                    <i class="fas fa-save"></i> 刪除
+                </span>                
             </form>
         </div>
     @endif

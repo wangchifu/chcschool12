@@ -4,10 +4,7 @@
 <head>
     <?php
         $school_code = school_code();
-        $setup = \App\Models\Setup::find(1);
-        $nav_color = (empty($setup->nav_color))?"navbar-dark bg-dark":"navbar-custom";
-        $bg_color = (empty($setup->bg_color))?"#f0f1f6":$setup->bg_color;
-        $navbar_custom = (empty($setup->nav_color))?['0'=>'','1'=>'','2'=>'','3'=>'']:explode(",",$setup->nav_color);
+        $setup = \App\Models\Setup::find(1);                        
     ?>
     @if(file_exists(storage_path('app/public/'.$school_code.'/title_image/logo.ico')))
         <link rel="Shortcut Icon" type="image/x-icon" href="{{ asset('storage/'.$school_code.'/title_image/logo.ico') }}" />
@@ -18,30 +15,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="此網站包含一個專屬的網站標誌（Favicon）。">
     <meta name="author" content="">
-    <meta http-equiv="Content-Security-Policy" content="script-src * 'unsafe-inline' 'unsafe-eval';">
+    
+    {{-- CSP 政策 --}}
+    <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'nonce-{{ $csp_nonce }}' https://cdn.jsdelivr.net;
+    style-src 'self' 'nonce-{{ $csp_nonce }}' https://cdn.jsdelivr.net;
+    font-src 'self' https://cdn.jsdelivr.net;
+    img-src 'self' data:;
+    connect-src 'self';">
+
     @yield('my_meta')
     <title>@yield('title') | {{ $setup->site_name }}</title>
-    <script src=" https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js "></script>             
-    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>        
-    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/additional-methods.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/localization/messages_zh_TW.min.js"></script>   
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>      
-    <script src=" https://cdn.jsdelivr.net/npm/venobox@2.1.8/dist/venobox.min.js "></script>   
-    <!-- icons -->    
-    <link href=" https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css " rel="stylesheet">       
-    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/all.min.css" rel="stylesheet" />
-    <link href=" https://cdn.jsdelivr.net/npm/venobox@2.1.8/dist/venobox.min.css " rel="stylesheet">
-    <link href="{{ asset('css/my_css.css') }}" rel="stylesheet">
+    @include('layouts.js_css')    
     @yield('in_head')    
+    <link href="{{ asset('css/my_css.css') }}" rel="stylesheet">
+
+    <style nonce="{{ $csp_nonce }}">
+        body#page-top {        
+            font-family: 'Arial', 'Microsoft YaHei', sans-serif;
+            background-color: white !important; {{-- 列印頁通常強制白色背景 --}}
+        }
+
+        /* 列印專屬設定 */
+        @media print {
+            .no-print { display: none !important; } {{-- 標記為 no-print 的元素不會被印出來 --}}
+            @page { margin: 1cm; } {{-- 設定邊界 --}}
+        }
+    </style>
 </head>
 
-<body id="page-top" onload='window.print();'>
-<div class="container-fluid">
-    @yield('content')
-</div>
-@include('layouts.sweet_alert')
-@include('layouts.venobox')
-<script src="{{ asset('js/my_js.js') }}"></script>
+<body id="page-top">    
+
+    {{-- pt-3 增加一點頂部距離，避免列印時太貼邊 --}}
+    <main class="container-fluid pt-3 mb-5">
+        @yield('content')
+    </main> 
+       
+    {{-- 自動觸發列印 --}}
+    <script nonce="{{ $csp_nonce }}">
+        window.addEventListener('load', function() {
+            window.print();
+            // 如果列印後想自動關閉視窗，可以取消下面註解
+            // window.onafterprint = function() { window.close(); };
+        });
+    </script>
+
+    {{-- 加上 nonce 確保符合 script-src 規範 --}}
+    <script src="{{ asset('js/tinymce.js') }}" nonce="{{ $csp_nonce }}"></script>
+    <script src="{{ asset('js/sweet_alert.js') }}" nonce="{{ $csp_nonce }}"></script>
+    <script src="{{ asset('js/venobox.js') }}" nonce="{{ $csp_nonce }}"></script>
+    <script src="{{ asset('js/my_js.js') }}" nonce="{{ $csp_nonce }}"></script>
 </body>
 </html>

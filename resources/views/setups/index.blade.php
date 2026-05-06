@@ -9,7 +9,7 @@
 @endsection
 
 @section('in_head')
-    <script src=" https://cdn.jsdelivr.net/npm/tinymce@7.9.1/tinymce.min.js "></script>
+    
 @endsection
 
 @section('content')    
@@ -32,7 +32,7 @@
                 <h3 class="card-header border-success border-2 border-opacity-100 bg-light">設定一、基本設定</h3>
                 <div class="card-body">
                     @include('layouts.errors')    
-                    <form action="{{ route('setups.text', $setup->id) }}" method="POST" id="this_form1" onsubmit="return false">
+                    <form action="{{ route('setups.text', $setup->id) }}" method="POST" id="this_form1">
                         @csrf
                         @method('PATCH')
 
@@ -84,12 +84,10 @@
                             <div class="input-group shadow-sm">
                                 <span class="input-group-text bg-white text-secondary">#</span>
                                 
-                                <input type="text" class="form-control color-input" 
-                                    value="{{ $c5 }}" name="bg_color" 
-                                    placeholder="例如: FFFFFF">
+                                <input type="text" class="form-control color-input" value="{{ $c5 }}" name="bg_color">
                                 
                                 <span class="input-group-text p-0 border-start-0 bg-white">
-                                    <input type="color" class="form-control form-control-color border-0" 
+                                    <input type="color" class="form-control form-control-color border-0 color-picker" 
                                         value="{{ $c5 }}" 
                                         style="min-width: 50px; height: 100%; cursor: pointer;">
                                 </span>
@@ -189,9 +187,9 @@
                             </div>
                         </div>                        
 
-                        <button type="submit" class="btn btn-success btn-sm" onclick="sw_confirm2('確定儲存？','this_form1')">
+                        <span class="btn btn-success btn-sm save-btn" data-form="this_form1">
                             <i class="fas fa-save"></i> 儲存設定一
-                        </button>
+                        </span>
                     </form>
                 </div>
             </div>
@@ -254,23 +252,24 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary btn-sm" onclick="sw_confirm2('確定儲存？','this_form2')">
+                        <span class="btn btn-primary btn-sm save-btn" data-form="this_form2">
                             <i class="fas fa-save"></i> 儲存設定二
-                        </button>
+                        </span>
                         @if($setup->nav_color != "#DD0F20,#F18A31,#F8EB48,#16813D")
-                            <a href="#!" class="btn btn-danger btn-sm" id="default_color" onclick="sw_confirm1('確定還原嗎','{{ route('setups.nav_default') }}')">
-                                <i class="fas fa-trash"></i> 還原「設定二」回預設
-                            </a>
+                            <span id="saveBtn3" class="btn btn-danger btn-sm" data-url="{{ route('setups.nav_default') }}">
+                                <i class="fa-solid fa-trash"></i> 還原「設定二」回預設
+                            </span>
                         @endif
                     </div>
                 </div>
             </form>
         </div>
     </div>    
-    <script type="text/javascript">
-        var validator1 = $("#this_form1").validate();
-        var validator2 = $("#this_form2").validate();
+@endsection
 
+
+@section('down_body')
+    <script nonce="<?php echo $csp_nonce; ?>">        
         document.addEventListener('DOMContentLoaded', function() {
             // 1. 當色彩挑選器改變時，更新左邊的文字框
             document.querySelectorAll('.color-picker').forEach(function(picker) {
@@ -295,66 +294,6 @@
                     }
                 });
             });
-        });      
-    </script>
-    <script>
-    tinymce.init({
-        selector: 'textarea#my_editor',
-        language: 'zh_TW', // 設置語言為繁體中文
-        language_url: '{{ asset('js/zh_TW.js') }}', // 加這行
-        // 1. 確保 plugins 包含 'link' (有些版本文字顏色功能綁在核心或特定套件)
-        plugins: 'fullscreen code table image link lists paste', 
-        // 2. 在 toolbar 加入 forecolor (文字顏色) 和 backcolor (背景顏色)
-        toolbar: 'fullscreen code undo redo | bold italic underline forecolor backcolor | alignleft aligncenter alignright alignjustify | table image link unlink openlink | bullist numlist outdent indent | removeformat',
-        //plugins: 'fullscreen code table,image link lists image paste', // 啟用表格功能
-        //toolbar: 'fullscreen code undo redo | bold italic underline | alignleft aligncenter alignright alignjustify | table image link unlink openlink | bullist numlist outdent indent | removeformat',                
-        //paste_data_images: true,//拖過去上傳
-        //images_upload_url: '/contents/upload_image', // Laravel API
-        automatic_uploads: true,
-        // 不自動清理或修改 HTML
-        valid_elements: '*[*]', 
-        extended_valid_elements: '*[*]',
-        verify_html: false,
-        forced_root_block: false,  // 避免自動包裹 `<p>` 標籤
-        remove_trailing_brs: false, // 不刪除尾部 <br>
-        convert_urls: false, // 禁止 TinyMCE 轉換圖片 URL
-        relative_urls: false, // 確保使用絕對 URL
-        remove_script_host: false, // 保留完整的 URL，包括 http:// 或 https://
-
-        // 改為使用 Promise 來處理圖片上傳
-        images_upload_handler: function (blobInfo) {
-            let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-            let formData = new FormData();
-            formData.append('file', blobInfo.blob(), blobInfo.filename());
-
-            return fetch('/tinymce_upload_image', {//laravel API
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken,
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                credentials: 'same-origin'
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return Promise.reject('伺服器回應錯誤，狀態碼：' + response.status);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data && data.location) {
-                    // 返回圖片 URL，讓 TinyMCE 插入圖片
-                    return data.location;
-                } else {
-                    return Promise.reject('伺服器回傳的 JSON 不包含 `location` 欄位');
-                }
-            })
-            .catch(error => {
-                console.error('圖片上傳錯誤:', error);
-                return Promise.reject('圖片上傳失敗');
-            });
-        }
-    });
+        });          
     </script>
 @endsection

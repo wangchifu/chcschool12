@@ -25,7 +25,7 @@
                     <span class="badge bg-primary">總共 {{ count($modules) }} 個模組</span>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('setups.update_module') }}" method="POST" id="module_form" onsubmit="return false">
+                    <form action="{{ route('setups.update_module') }}" method="POST" id="this_form1">
                         @csrf
                         <div class="table-responsive">
                             <table class="table table-hover align-middle">
@@ -102,7 +102,7 @@
                                                         @foreach($powers as $up)
                                                             <span class="badge bg-light text-dark border ms-1 fw-normal">
                                                                 {{ $up->user->name }}
-                                                                <a href="#!" class="text-danger ms-1" onclick="sw_confirm1('確定刪除權限？','{{ route('user_powers.destroy',$up->id) }}')">
+                                                                <a href="#!" class="text-danger ms-1 delete-btn1" data-msg="確定要刪除？" data-url="{{ route('user_powers.destroy',$up->id) }}">
                                                                     <i class="fas fa-times"></i>
                                                                 </a>
                                                             </span>
@@ -120,9 +120,9 @@
                         </div>
 
                         <div class="card-footer bg-white py-3">
-                            <button type="submit" class="btn btn-primary px-5 shadow-sm" onclick="sw_confirm2('確定儲存模組設定？','module_form')">
-                                <i class="fas fa-save me-2"></i>儲存模組狀態
-                            </button>
+                            <span class="btn btn-primary btn-sm save-btn" data-form="this_form1">
+                                <i class="fas fa-save"></i> 儲存模組狀態
+                            </span>                            
                         </div>
                     </form>
                 </div>
