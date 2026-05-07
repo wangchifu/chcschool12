@@ -7,6 +7,9 @@
 @endsection
 
 @section('content')
+    <h2 class="mb-4 fw-bold text-dark">
+        <i class="fas fa-edit me-2"></i>修改區塊
+    </h2>
     @include('layouts.errors')
     <form action="{{ route('setups.update_block', $block->id) }}" method="POST" id="this_form1">
         @csrf

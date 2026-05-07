@@ -4,6 +4,9 @@
 
 @section('content')
     @include('layouts.errors')
+    <h2 class="mb-4 fw-bold text-dark">
+        <i class="fas fa-plus-circle me-2"></i>新增欄位
+    </h2>
     <form action="{{ route('setups.add_col') }}" method="POST" id="this_form1">
         @csrf
         <table class="table">

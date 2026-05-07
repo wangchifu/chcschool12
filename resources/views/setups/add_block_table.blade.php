@@ -7,6 +7,9 @@
 @endsection
 
 @section('content')
+    <h2 class="mb-4 fw-bold text-dark">
+        <i class="fas fa-plus-circle me-2"></i>新增區塊
+    </h2>
     @include('layouts.errors')
     <form action="{{ route('setups.add_block') }}" method="POST" id="this_form1">
         @csrf
