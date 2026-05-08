@@ -85,6 +85,9 @@
     <script src="{{ asset('js/sweet_alert.js') }}" nonce="{{ $csp_nonce }}"></script>
     <script src="{{ asset('js/venobox.js') }}" nonce="{{ $csp_nonce }}"></script>
     <script src="{{ asset('js/my_js.js') }}" nonce="{{ $csp_nonce }}"></script>
+    @auth
+        <script src="{{ asset('js/logout.js') }}" nonce="{{ $csp_nonce }}"></script>
+    @endauth
 @yield('down_body')
 </body>
 </html>

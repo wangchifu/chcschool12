@@ -66,6 +66,9 @@
             @endif
         </a>
         <a class="navbar-brand js-scroll-trigger" href="{{  route('index') }}" style="white-space:pre-wrap;">{{ $setup->site_name }}</a>
+        @auth
+            <div class="session-timer text-light text-center">剩餘時間: -- 後登出</div>
+        @endauth
         
         <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>

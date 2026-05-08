@@ -302,43 +302,5 @@
                 text-decoration: underline !important;
             }
         </style>                
-    @endif
-
-    <!-- 
-    警告
-    -->
-    <?php $admin = \App\Models\User::where('username','admin')->first(); ?>
-    @auth
-        @if(auth()->user()->admin==1)
-            @if(Hash::check('demo1234', $admin->password))
-            <script>
-                $(document).ready(function(){
-                  $("#myModal").modal('show');
-                });
-              </script>
-            <div class="modal" tabindex="-1" id="myModal">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title text-danger">嚴重資安危險!</h5>
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                      </button>
-                    </div>
-                    <div class="modal-body">
-                        請你立即變更本機帳號 admin 的密碼，不得使用預設密碼。若未變更而發生資安事件，貴校須負相關責任！
-                        <br>步驟為：
-                        <br>1.本機登入 admin 帳號
-                        <br>2.右上角 <i class="fas fa-user"></i> 符號按一下，選擇「更改密碼」
-                        <br>3.輸入舊密碼，與兩次新密碼，「送出」完成變更。
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-dismiss="modal">我知道了</button>
-                    </div>
-                  </div>
-                </div>
-            </div>
-            @endif
-        @endif
-    @endauth    
+    @endif      
 @endsection
