@@ -1,186 +1,128 @@
 @extends('layouts.master')
 
-@section('title', '校園跑馬燈 | ')
+@section('title', '校園跑馬燈設定 | ')
 
 @section('content')        
-    <div class="row justify-content-center">
+    <div class="row justify-content-center py-4">
         <div class="col-md-11">
-            <h1>
-                校園跑馬燈
-            </h1>
-            <ul class="nav nav-tabs">
+            <h1 class="fw-bold mb-3"><i class="fas fa-running me-2"></i>校園跑馬燈</h1>
+            
+            {{-- 分頁導覽 --}}
+            <ul class="nav nav-tabs mb-4">
                 <li class="nav-item">
-                    <a class="nav-link active" href="{{ route('school_marquee.setup') }}">管理</a>
+                    <a class="nav-link active" href="{{ route('school_marquee.setup') }}"><i class="fas fa-cog"></i> 管理設定</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('school_marquee.index') }}">列表</a>
+                    <a class="nav-link" href="{{ route('school_marquee.index') }}"><i class="fas fa-list"></i> 跑馬燈列表</a>
                 </li>
             </ul>
-            <br>
-            <div class="card">
-                <div class="card-header text-center">
-                    <h3 class="py-2">
-                        跑馬燈管理
-                    </h3>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light py-3 text-center">
+                    <h3 class="card-title mb-0 fw-bold">跑馬燈效果設定</h3>
                 </div>
-                <div class="card-body">
-                    @if($school_marquees->count()>0)                    
-                    <?php
-                    $school_marquee_width = (empty($setup->school_marquee_width))?"12":$setup->school_marquee_width;
-                    $school_marquee_color = (empty($setup->school_marquee_color))?"warning":$setup->school_marquee_color;
-                    $school_marquee_behavior = (empty($setup->school_marquee_behavior))?"scroll":$setup->school_marquee_behavior;
-                    $school_marquee_direction = (empty($setup->school_marquee_direction))?"up":$setup->school_marquee_direction;
-                    $school_marquee_scrollamount = (empty($setup->school_marquee_scrollamount))?"2":$setup->school_marquee_scrollamount;
-                    ?>
-                    @if($school_marquees->count()>0)
-                        <div class="row justify-content-center">
-                            <div class="col-lg-{{ $school_marquee_width }}">
-                                <div class="alert alert-{{ $school_marquee_color }}" style="margin-top: -15px;">
-                                    <marquee behavior="{{ $school_marquee_behavior }}" direction="{{ $school_marquee_direction }}" scrollamount="{{ $school_marquee_scrollamount }}" height="20px">
-                                        @if($school_marquee_direction=="up" or $school_marquee_direction=="down")
-                                            @foreach($school_marquees as $school_marquee)
-                                                <p>{{ $school_marquee->title }}</p>                                                
-                                            @endforeach
-                                        @endif
-                                        @if($school_marquee_direction=="left" or $school_marquee_direction=="right")
-                                            @foreach($school_marquees as $school_marquee)
-                                                <span>{{ $school_marquee->title }}</span>
-                                                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                                            @endforeach
-                                        @endif
+                <div class="card-body p-4">
+                    {{-- 預覽區域 --}}
+                    @if($school_marquees->count() > 0)                    
+                        @php
+                            $m_width = $setup->school_marquee_width ?? "12";
+                            $m_color = $setup->school_marquee_color ?? "warning";
+                            $m_behavior = $setup->school_marquee_behavior ?? "scroll";
+                            $m_direction = $setup->school_marquee_direction ?? "up";
+                            $m_speed = $setup->school_marquee_scrollamount ?? "2";
+                        @endphp
+                        
+                        <div class="row justify-content-center mb-5">
+                            <div class="col-lg-{{ $m_width }}">
+                                <div class="alert alert-{{ $m_color }} shadow-sm">
+                                    <h6 class="alert-heading small mb-2 text-muted fw-bold">效果預覽：</h6>
+                                    <marquee behavior="{{ $m_behavior }}" direction="{{ $m_direction }}" scrollamount="{{ $m_speed }}" style="height: 24px;">
+                                        @foreach($school_marquees as $marquee)
+                                            @if($m_direction == "up" || $m_direction == "down")
+                                                <p class="mb-0">{{ $marquee->title }}</p>                                                
+                                            @else
+                                                <span class="me-5"><i class="fas fa-bullhorn me-1 text-danger"></i> {{ $marquee->title }}</span>
+                                            @endif
+                                        @endforeach
                                     </marquee>
                                 </div>
                             </div>
                         </div>
                     @endif
-                    @endif
-                    {{ Form::open(['route' => 'school_marquee.setup_store', 'method' => 'POST']) }}     
-                    <div class="form-group">
-                        <label for="school_marquee_width">寬度</label>
-                        <?php
-                            $select_width[1] = "";
-                            $select_width[2] = "";
-                            $select_width[3] = "";
-                            $select_width[4] = "";
-                            $select_width[5] = "";
-                            $select_width[6] = "";
-                            $select_width[7] = "";
-                            $select_width[8] = "";
-                            $select_width[9] = "";
-                            $select_width[10] = "";
-                            $select_width[11] = "";
-                            $select_width[12] = "";
-                            if(!empty($setup->school_marquee_width)){
-                                $select_width[$setup->school_marquee_width] = "selected";
-                            }
-                        ?>
-                        <select class="form-control" style="width:250px" name="school_marquee_width" id="school_marquee_width">
-                          <option value="1" {{ $select_width[1] }}>1格</option>
-                          <option value="2" {{ $select_width[2] }}>2格</option>
-                          <option value="3" {{ $select_width[3] }}>3格</option>
-                          <option value="4" {{ $select_width[4] }}>4格</option>
-                          <option value="5" {{ $select_width[5] }}>5格</option>
-                          <option value="6" {{ $select_width[6] }}>6格</option>
-                          <option value="7" {{ $select_width[7] }}>7格</option>
-                          <option value="8" {{ $select_width[8] }}>8格</option>
-                          <option value="9" {{ $select_width[9] }}>9格</option>
-                          <option value="10" {{ $select_width[10] }}>10格</option>
-                          <option value="11" {{ $select_width[11] }}>11格</option>
-                          <option value="12" {{ $select_width[12] }}>12格</option>
-                        </select>
-                    </div>              
-                    <div class="form-group">
-                        <label for="school_marquee_color">底部顏色</label>
-                        <?php
-                            $select_color['primary'] = "";
-                            $select_color['secondary'] = "";
-                            $select_color['success'] = "";
-                            $select_color['danger'] = "";
-                            $select_color['warning'] = "";
-                            $select_color['info'] = "";
-                            $select_color['light'] = "";
-                            $select_color['dark'] = "";
-                            if(!empty($setup->school_marquee_color)){
-                                $select_color[$setup->school_marquee_color] = "selected";
-                            }
-                        ?>
-                        <select class="form-control" style="width:250px" name="school_marquee_color" id="school_marquee_color">
-                          <option value="primary" {{ $select_color['primary'] }}>藍 primary</option>
-                          <option value="secondary" {{ $select_color['secondary'] }}>灰 secondary</option>
-                          <option value="success" {{ $select_color['success'] }}>綠 success</option>
-                          <option value="danger" {{ $select_color['danger'] }}>紅 danger</option>
-                          <option value="warning" {{ $select_color['warning'] }}>黃 warning</option>
-                          <option value="info" {{ $select_color['info'] }}>青 info</option>
-                          <option value="light" {{ $select_color['light'] }}>白 light</option>
-                          <option value="dark" {{ $select_color['dark'] }}>暗 dark</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="school_marquee_behavior">移動樣式</label>
-                        <?php
-                            $select_behavior['scroll'] = ""; 
-                            $select_behavior['slide'] = "";
-                            $select_behavior['alternate'] = "";
-                            if(!empty($setup->school_marquee_behavior)){
-                                $select_behavior[$setup->school_marquee_behavior] = "selected";
-                            }
-                        ?>
-                        <select class="form-control" style="width:250px" name="school_marquee_behavior" id="school_marquee_behavior">
-                          <option value="scroll" {{ $select_behavior['scroll'] }}>滾動 scroll</option>
-                          <option value="slide" {{ $select_behavior['slide'] }}>滑動 slide</option>
-                          <option value="alternate" {{ $select_behavior['alternate'] }}>交替 alternate</option>                          
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="school_marquee_direction">移動方向</label>
-                        <?php
-                            $select_direction['left'] = ""; 
-                            $select_direction['right'] = "";
-                            $select_direction['up'] = "";
-                            $select_direction['down'] = "";
-                            if(!empty($setup->school_marquee_direction)){
-                                $select_direction[$setup->school_marquee_direction] = "selected";
-                            }
-                        ?>
-                        <select class="form-control" style="width:250px" name="school_marquee_direction" id="school_marquee_direction">
-                          <option value="left" {{ $select_direction['left'] }}>左</option>
-                          <option value="right" {{ $select_direction['right'] }}>右</option>
-                          <option value="up" {{ $select_direction['up'] }}>上</option>
-                          <option value="down" {{ $select_direction['down'] }}>下</option>                          
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="school_marquee_scrollamount">移動速度</label>
-                        <?php
-                            $select_scrollamount[2] = "";                             
-                            $select_scrollamount[4] = "";
-                            $select_scrollamount[6] = "";                            
-                            $select_scrollamount[8] = "";
-                            $select_scrollamount[10] = "";
-                            $select_scrollamount[12] = "";
-                            $select_scrollamount[14] = "";
-                            $select_scrollamount[16] = "";
-                            if(!empty($setup->school_marquee_scrollamount)){
-                                $select_scrollamount[$setup->school_marquee_scrollamount] = "selected";
-                            }
-                        ?>
-                        <select class="form-control" style="width:250px" name="school_marquee_scrollamount" id="school_marquee_scrollamount">
-                          <option {{ $select_scrollamount[2] }}>2</option>                          
-                          <option {{ $select_scrollamount[4] }}>4</option>
-                          <option {{ $select_scrollamount[6] }}>6</option>                          
-                          <option {{ $select_scrollamount[8] }}>8</option>
-                          <option {{ $select_scrollamount[10] }}>10</option>
-                          <option {{ $select_scrollamount[12] }}>12</option>
-                          <option {{ $select_scrollamount[14] }}>14</option>
-                          <option {{ $select_scrollamount[16] }}>16</option>
-                        </select>
-                    </div>
-                    <div class="form-group">                        
-                        <button type="submit" class="btn btn-primary btn-sm" onclick="return confirm('確定儲存嗎？')">
-                            <i class="fas fa-save"></i> 儲存設定
-                        </button>
-                    </div>                    
-                    {{ Form::close() }}                    
+
+                    <form action="{{ route('school_marquee.setup_store') }}" method="POST" id="setup_form1">
+                        @csrf
+                        <div class="row">
+                            {{-- 寬度設定 --}}
+                            <div class="col-md-6 mb-3">
+                                <label for="school_marquee_width" class="form-label fw-bold">顯示寬度</label>
+                                <select class="form-select" name="school_marquee_width" id="school_marquee_width">
+                                    @for ($i = 1; $i <= 12; $i++)
+                                        <option value="{{ $i }}" {{ (isset($setup->school_marquee_width) && $setup->school_marquee_width == $i) ? 'selected' : '' }}>
+                                            {{ $i }} 格 (Grid)
+                                        </option>
+                                    @endfor
+                                </select>
+                            </div>
+
+                            {{-- 顏色設定 --}}
+                            <div class="col-md-6 mb-3">
+                                <label for="school_marquee_color" class="form-label fw-bold">背景顏色樣式</label>
+                                <select class="form-select" name="school_marquee_color" id="school_marquee_color">
+                                    @foreach(['primary'=>'藍色 (Primary)', 'secondary'=>'灰色 (Secondary)', 'success'=>'綠色 (Success)', 'danger'=>'紅色 (Danger)', 'warning'=>'黃色 (Warning)', 'info'=>'青色 (Info)', 'light'=>'白色 (Light)', 'dark'=>'深色 (Dark)'] as $val => $label)
+                                        <option value="{{ $val }}" {{ (isset($setup->school_marquee_color) && $setup->school_marquee_color == $val) ? 'selected' : '' }}>
+                                            {{ $label }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            {{-- 移動樣式 --}}
+                            <div class="col-md-4 mb-3">
+                                <label for="school_marquee_behavior" class="form-label fw-bold">移動樣式</label>
+                                <select class="form-select" name="school_marquee_behavior" id="school_marquee_behavior">
+                                    @foreach(['scroll'=>'滾動 (Scroll)', 'slide'=>'滑動 (Slide)', 'alternate'=>'交替 (Alternate)'] as $val => $label)
+                                        <option value="{{ $val }}" {{ (isset($setup->school_marquee_behavior) && $setup->school_marquee_behavior == $val) ? 'selected' : '' }}>
+                                            {{ $label }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            {{-- 方向 --}}
+                            <div class="col-md-4 mb-3">
+                                <label for="school_marquee_direction" class="form-label fw-bold">移動方向</label>
+                                <select class="form-select" name="school_marquee_direction" id="school_marquee_direction">
+                                    @foreach(['left'=>'向左 ←', 'right'=>'向右 →', 'up'=>'向上 ↑', 'down'=>'向下 ↓'] as $val => $label)
+                                        <option value="{{ $val }}" {{ (isset($setup->school_marquee_direction) && $setup->school_marquee_direction == $val) ? 'selected' : '' }}>
+                                            {{ $label }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            {{-- 速度 --}}
+                            <div class="col-md-4 mb-3">
+                                <label for="school_marquee_scrollamount" class="form-label fw-bold">移動速度</label>
+                                <select class="form-select" name="school_marquee_scrollamount" id="school_marquee_scrollamount">
+                                    @foreach([2, 4, 6, 8, 10, 12, 14, 16] as $speed)
+                                        <option value="{{ $speed }}" {{ (isset($setup->school_marquee_scrollamount) && $setup->school_marquee_scrollamount == $speed) ? 'selected' : '' }}>
+                                            {{ $speed }} {{ $speed <= 4 ? '(慢)' : ($speed >= 12 ? '(快)' : '') }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="text-center">
+                            {{-- 使用 save-btn 類別對接全域 SweetAlert 邏輯 --}}
+                            <span class="btn btn-primary px-5 save-btn" data-form="setup_form1">
+                                <i class="fas fa-save me-1"></i> 儲存設定
+                            </span>
+                        </div>
+                    </form>                    
                 </div>
             </div>
         </div>

@@ -4,7 +4,7 @@
 
 @if($setup->title_image_style==2)
     @section('in_head')
-        <style>
+        <style nonce="<?php echo $csp_nonce; ?>">
             /* 使用 BS5 的命名規範：start/end 代替 left/right */
             .carousel-fade .carousel-inner .carousel-item {
                 opacity: 0;
@@ -109,7 +109,7 @@
                             @endif
                             @if($school_marquee_direction=="left" or $school_marquee_direction=="right")
                                 @foreach($school_marquees as $school_marquee)
-                                    <span>{{ $school_marquee->title }}</span>
+                                    <span><i class="fas fa-bullhorn me-1 text-danger"></i> {{ $school_marquee->title }}</span>
                                     <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                                 @endforeach
                             @endif
@@ -287,20 +287,8 @@
                         <span class="small">您的 IP：</span>
                         <span class="fw-bold text-dark">{{ GetIP() }}</span>
                     </div>
-
                 </div>
             </div>
-        </div>
-
-        <style>
-            /* 增加一點點滑過連結的效果 */
-            .hover-link {
-                transition: color 0.2s;
-            }
-            .hover-link:hover {
-                color: #dd0f20 !important; /* 或是你學校的主題紅 */
-                text-decoration: underline !important;
-            }
-        </style>                
+        </div>             
     @endif      
 @endsection

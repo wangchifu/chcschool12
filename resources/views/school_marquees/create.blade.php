@@ -1,60 +1,68 @@
-@extends('layouts.master')
+@extends('layouts.master_clean')
 
-@section('title', '校園跑馬燈 | ')
+@section('title', '新增跑馬燈 | ')
 
 @section('content')        
-    <div class="row justify-content-center">
+    <div class="row justify-content-center py-4">
         <div class="col-md-11">
-            <h1>
-                校園跑馬燈
-            </h1>
-            <ul class="nav nav-tabs">
-                @if(auth()->user()->admin)
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('school_marquee.setup') }}">管理</a>
-                </li>
-                @endif
-                <li class="nav-item">
-                    <a class="nav-link active" href="{{ route('school_marquee.index') }}">列表</a>
-                </li>
-            </ul>
-            <br>
-            <div class="card">
-                <div class="card-header text-center">
-                    <h3 class="py-2">
-                        新增跑馬燈
-                    </h3>
+            <h1 class="fw-bold mb-3">
+                <i class="fas fa-running me-2"></i>校園跑馬燈
+            </h1>                        
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light py-3 text-center">
+                    <h3 class="card-title mb-0 fw-bold">新增跑馬燈內容</h3>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-4">
                     @include('layouts.errors')
-                    {{ Form::open(['route' => 'school_marquee.store', 'method' => 'POST']) }}                   
-                    <div class="form-group">
-                        <label for="name">標題*</label>
-                        <input type="text" name="title" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="url">開始日期*</label>
-                        <input id="start_date" name="start_date" type="date" required maxlength="10" class="form-control" style="width:250px">                        
-                        <script>
-                            $('#start_date').datepicker({
-                                uiLibrary: 'bootstrap4',
-                                format: 'yyyy-mm-dd',
-                                locale: 'zh-TW',
-                            });
-                        </script>
-                    </div>
-                    <div class="form-group">
-                        <label for="url">結束日期*</label>
-                        <input id="stop_date" name="stop_date" type="date" required maxlength="10" class="form-control" style="width:250px">
-                        <script src="{{ asset('gijgo/js/messages/messages.zh-TW.js') }}"></script>
-                    </div>
-                    <div class="form-group">
-                        <a href="{{ route('school_marquee.index') }}" class="btn btn-secondary btn-sm">返回</a>
-                        <button type="submit" class="btn btn-primary btn-sm" onclick="return confirm('確定儲存嗎？')">
-                            <i class="fas fa-save"></i> 儲存設定
-                        </button>
-                    </div>                    
-                    {{ Form::close() }}
+
+                    <form action="{{ route('school_marquee.store') }}" method="POST" id="marquee_form1">
+                        @csrf
+                        
+                        {{-- 標題 --}}
+                        <div class="mb-4">
+                            <label for="title" class="form-label fw-bold">標題 <span class="text-danger">*</span></label>
+                            <input type="text" name="title" id="title" class="form-control" required placeholder="請輸入跑馬燈文字內容">
+                        </div>
+
+                        <div class="row">
+                            {{-- 開始日期 --}}
+                            <div class="col-md-6 mb-4">
+                                <label for="start_date" class="form-label fw-bold">開始日期 <span class="text-danger">*</span></label>
+                                <input id="start_date" name="start_date" type="date" required maxlength="10" class="form-control bg-white" placeholder="YYYY-MM-DD">
+                                <script>
+                                    $('#start_date').datepicker({
+                                        uiLibrary: 'bootstrap4', // Gijgo 目前對 BS4 支援較佳，建議保留此設定或視情況更新
+                                        format: 'yyyy-mm-dd',
+                                        locale: 'zh-TW',
+                                    });
+                                </script>
+                            </div>
+
+                            {{-- 結束日期 --}}
+                            <div class="col-md-6 mb-4">
+                                <label for="stop_date" class="form-label fw-bold">結束日期 <span class="text-danger">*</span></label>
+                                <input id="stop_date" name="stop_date" type="date" required maxlength="10" class="form-control bg-white" placeholder="YYYY-MM-DD">
+                                <script src="{{ asset('gijgo/js/messages/messages.zh-TW.js') }}"></script>
+                                <script>
+                                    $('#stop_date').datepicker({
+                                        uiLibrary: 'bootstrap4',
+                                        format: 'yyyy-mm-dd',
+                                        locale: 'zh-TW',
+                                    });
+                                </script>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-center border-top pt-4">                           
+                            {{-- 使用 save-btn 類別對接全域 SweetAlert 邏輯 --}}
+                            <span class="btn btn-primary px-5 save-btn" data-form="marquee_form1">
+                                <i class="fas fa-save me-1"></i> 儲存設定
+                            </span>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

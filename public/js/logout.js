@@ -34,7 +34,7 @@ function updateTimer() {
 	} else {
 		const timeString = formatTime(diff);
 		timerEls.forEach(function (el) {
-			el.textContent = `剩餘時間: ${timeString} 後登出`;
+			el.textContent = `${timeString} 後登出`;
 		});
 	}
 }

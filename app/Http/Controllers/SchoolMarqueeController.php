@@ -69,7 +69,22 @@ class SchoolMarqueeController extends Controller
         $att['stop_date'] = $request->input('stop_date');
         $att['user_id'] = auth()->user()->id;
         SchoolMarquee::create($att);
-        return redirect()->route('school_marquee.index');
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
     public function edit(SchoolMarquee $school_marquee){
@@ -97,7 +112,22 @@ class SchoolMarqueeController extends Controller
         $att['stop_date'] = $request->input('stop_date');
 
         $school_marquee->update($att);
-        echo "<body onload='opener.location.reload();window.close();'>";
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
     public function destroy(SchoolMarquee $school_marquee)
