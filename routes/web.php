@@ -627,7 +627,7 @@ Route::group(['middleware' => 'admin'], function () {
     Route::get('departments', [DepartmentController::class, 'index'])->name('departments.index');
     Route::get('departments/create', [DepartmentController::class, 'create'])->name('departments.create');
     Route::get('departments/show_log/{id}', [DepartmentController::class, 'show_log'])->name('departments.show_log');
-    Route::get('departments/delete_log/{log}', [DepartmentController::class, 'delete_log'])->name('departments.delete_log');
+    Route::delete('departments/delete_log/{log}', [DepartmentController::class, 'delete_log'])->name('departments.delete_log');
     Route::post('departments', [DepartmentController::class, 'store'])->name('departments.store');
     Route::delete('departments/{department}', [DepartmentController::class, 'destroy'])->name('departments.destroy');
     Route::get('departments/{department}/edit', [DepartmentController::class, 'edit'])->name('departments.edit');

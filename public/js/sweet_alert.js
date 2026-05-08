@@ -8,16 +8,8 @@ document.addEventListener('DOMContentLoaded', function() {
 				sw_confirm2('確定儲存嗎？',form,btn);                             				
 			});
 		});     
-	    // 抓取畫面上所有 class 含有 save-btn 的元素
-		const deleteBtn2s = document.querySelectorAll('.delete-btn2');
-		deleteBtn2s.forEach(function(btn) {
-			btn.addEventListener('click', function() {                    				    			
-				btn.style.display = 'none';              				    			
-				const form = this.getAttribute('data-form');
-				sw_confirm2('確定刪除嗎？',form,btn);                             				
-			});
-		});
-        // 抓取畫面上所有 class 含有 delete-btn 的元素
+
+        // 抓取畫面上所有 class 含有 delete-btn 的元素 a 連結
 		const deleteBtn1s = document.querySelectorAll('.delete-btn1');
 		deleteBtn1s.forEach(function(btn) {
 			btn.addEventListener('click', function(e) {                    
@@ -28,6 +20,16 @@ document.addEventListener('DOMContentLoaded', function() {
 				if (typeof sw_confirm1 === 'function') {
 					sw_confirm1(message,targetUrl,btn);
 				}
+			});
+		});
+		
+		// 抓取畫面上所有 class 含有 save-btn 的元素 送 form
+		const deleteBtn2s = document.querySelectorAll('.delete-btn2');
+		deleteBtn2s.forEach(function(btn) {
+			btn.addEventListener('click', function() {                    				    			
+				btn.style.display = 'none';              				    			
+				const form = this.getAttribute('data-form');
+				sw_confirm2('確定刪除嗎？',form,btn);                             				
 			});
 		});
 });

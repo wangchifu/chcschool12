@@ -1,62 +1,70 @@
-@extends('layouts.master')
+@extends('layouts.master_clean')
 
 @section('nav_setup_active', 'active')
 
 @section('title', '新增介紹 | ')
 
+@section('my_meta')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+@endsection
+
 @section('content')
-    <div class="row justify-content-center">
+    {{-- 統一使用 py-4 增加上下間距 --}}
+    <div class="row justify-content-center py-4">
         <div class="col-md-11">
-            <h1>新增介紹</h1>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('index') }}">首頁</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('departments.index') }}">介紹列表</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">新增介紹</li>
-                </ol>
-            </nav>
-            {{ Form::open(['route' => 'departments.store', 'method' => 'POST','id'=>'this_form']) }}
-            <div class="card my-4">
-                <h3 class="card-header">介紹資料</h3>
-                <div class="card-body">
-                    @include('layouts.errors')
-                    <div class="form-group">
-                        <label for="order_by">排序</label>
-                        {{ Form::text('order_by',$new_order_by,['id'=>'order_by','class' => 'form-control','maxlength'=>'3']) }}
-                    </div>
-                    <div class="form-group">
-                        <label for="title">共編群組*</label>
-                        {{ Form::select('group_id', $group_array,null, ['id' => 'group_id', 'class' => 'form-control','required'=>'required']) }}
-                    </div>
-                    <div class="form-group">
-                        <label for="title">標題*</label>
-                        {{ Form::text('title',null,['id'=>'title','class' => 'form-control','required'=>'required', 'placeholder' => '標題']) }}
-                    </div>        
-                    <div class="form-group">
-                        <label for="content">內文*</label>
-                        {{ Form::textarea('content',null,['id'=>'my-editor','class'=>'form-control','required'=>'required']) }}
-                    </div>
-                    <script src="{{ asset('mycke/ckeditor.js') }}"></script>
-                    <script>
-                        CKEDITOR.replace('my-editor'
-                            ,{
-                                filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
-                                filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images',
-                                filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
-                                filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files',
-                            });
-                    </script>
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary btn-sm" onclick="return confirm('確定儲存嗎？')">
-                            <i class="fas fa-save"></i> 儲存設定
-                        </button>
+            <h1 class="fw-bold mb-3">新增介紹</h1>                        
+
+            <form action="{{ route('departments.store') }}" method="POST" id="this_form1">
+                @csrf
+                <div class="card shadow-sm border-0 mb-4">
+                    <h3 class="card-header bg-light py-3 fw-bold">
+                        <i class="fas fa-edit me-2 text-primary"></i>介紹資料
+                    </h3>
+                    <div class="card-body p-4">
+                        @include('layouts.errors')
+
+                        <div class="row">
+                            {{-- 排序 --}}
+                            <div class="col-md-4 mb-3">
+                                <label for="order_by" class="form-label fw-bold">排序</label>
+                                <input type="number" name="order_by" id="order_by" value="{{ $new_order_by }}" class="form-control" maxlength="3">
+                            </div>
+
+                            {{-- 共編群組 --}}
+                            <div class="col-md-8 mb-3">
+                                <label for="group_id" class="form-label fw-bold">共編群組 <span class="text-danger">*</span></label>
+                                <select name="group_id" id="group_id" class="form-select" required>
+                                    @foreach($group_array as $id => $name)
+                                        <option value="{{ $id }}">{{ $name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        {{-- 標題 --}}
+                        <div class="mb-3">
+                            <label for="title" class="form-label fw-bold">標題 <span class="text-danger">*</span></label>
+                            <input type="text" name="title" id="title" class="form-control" placeholder="請輸入標題" required>
+                        </div>        
+
+                        {{-- 內文 (CKEditor) --}}
+                        <div class="mb-4">
+                            <label for="my_editor" class="form-label fw-bold">內文 <span class="text-danger">*</span></label>
+                            <textarea name="content" id="my_editor" class="form-control" required></textarea>
+                        </div>                        
+
+                        <hr class="my-4">
+
+                        {{-- 操作按鈕 --}}
+                        <div class="text-center">
+                            {{-- 套用 save-btn 邏輯：自動隱藏、SweetAlert、檢查 --}}
+                            <span class="btn btn-primary px-5 save-btn" data-form="this_form1">
+                                <i class="fas fa-save me-1"></i> 儲存設定
+                            </span>                                                    
+                        </div>
                     </div>
                 </div>
-            </div>
-            {{ Form::close() }}
+            </form>
         </div>
-    </div>
-    <script>
-        var validator = $("#this_form").validate();
-    </script>
+    </div>    
 @endsection

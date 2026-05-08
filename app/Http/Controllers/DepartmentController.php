@@ -87,7 +87,23 @@ class DepartmentController extends Controller
         ]);
         $att = $request->all();
         Department::create($att);
-        return redirect()->route('departments.index');
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
+        
     }
 
     /**
@@ -129,7 +145,7 @@ class DepartmentController extends Controller
     }
 
     public function delete_log(Log $log)
-    {        
+    {              
         $log->delete();        
         return back();
     }
@@ -209,7 +225,23 @@ class DepartmentController extends Controller
         $att['content'] = $request->input('content');
         $att['user_id'] = auth()->user()->id;
         Log::create($att);
-        return redirect()->route('departments.index');
+        
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
     public function together_update(Request $request, Department $department)
@@ -226,7 +258,22 @@ class DepartmentController extends Controller
         $att['content'] = $request->input('content');
         $att['user_id'] = auth()->user()->id;
         Log::create($att);
-        return redirect()->route('departments.show',$department->id);
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
     /**
@@ -255,7 +302,7 @@ class DepartmentController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy(Department $department)
-    {
+    {        
         $logs = Log::where('module','department')
             ->where('this_id',$department->id)
             ->delete();

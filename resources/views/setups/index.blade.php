@@ -8,10 +8,6 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 @endsection
 
-@section('in_head')
-    
-@endsection
-
 @section('content')    
     <div class="row justify-content-center">
         <div class="col-md-11">
