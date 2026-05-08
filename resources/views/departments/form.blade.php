@@ -47,11 +47,7 @@
             {{-- 套用 save-btn 邏輯，自動執行 SweetAlert 與隱藏按鈕 --}}
             <span class="btn btn-primary px-5 save-btn" data-form="this_form1">
                 <i class="fas fa-save me-1"></i> 儲存設定
-            </span>
-            
-            <a href="{{ route('departments.index') }}" class="btn btn-outline-secondary px-4 ms-2">
-                取消返回
-            </a>
+            </span>                        
         </div>
     </div>
 </div>

@@ -16,7 +16,7 @@
                 <div class="card-body p-4">
                     @include('layouts.errors')
 
-                    <form action="{{ route('school_marquee.store') }}" method="POST" id="marquee_form1">
+                    <form action="{{ route('school_marquee.store') }}" method="POST" id="this_form1">
                         @csrf
                         
                         {{-- 標題 --}}
@@ -58,7 +58,7 @@
 
                         <div class="d-flex justify-content-center border-top pt-4">                           
                             {{-- 使用 save-btn 類別對接全域 SweetAlert 邏輯 --}}
-                            <span class="btn btn-primary px-5 save-btn" data-form="marquee_form1">
+                            <span class="btn btn-primary px-5 save-btn" data-form="this_form1">
                                 <i class="fas fa-save me-1"></i> 儲存設定
                             </span>
                         </div>

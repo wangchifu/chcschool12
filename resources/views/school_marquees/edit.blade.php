@@ -14,7 +14,7 @@
                 <div class="card-body p-4">
                     @include('layouts.errors')
 
-                    <form action="{{ route('school_marquee.update', $school_marquee->id) }}" method="POST" id="edit_marquee_form">
+                    <form action="{{ route('school_marquee.update', $school_marquee->id) }}" method="POST" id="this_form1">
                         @csrf
                         {{-- 如果您的路由是用 PATCH 或 PUT，請取消下面這行的註解 --}}
                         {{-- @method('PATCH') --}}
@@ -58,7 +58,7 @@
 
                         <div class="text-center">
                             {{-- 使用 save-btn 類別對接全域 SweetAlert 邏輯 --}}
-                            <span class="btn btn-primary px-5 save-btn" data-form="edit_marquee_form">
+                            <span class="btn btn-primary px-5 save-btn" data-form="this_form1">
                                 <i class="fas fa-save me-1"></i> 儲存設定
                             </span>                                                        
                         </div>                    
