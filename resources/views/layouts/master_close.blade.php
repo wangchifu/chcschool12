@@ -34,7 +34,7 @@
     img-src 'self' data:;
     connect-src 'self';">
     <title>@yield('title'){{ $setup->site_name }}</title>    
-    @include('layouts.js_css')    
+    @include('layouts.css')    
     @yield('in_head')        
     <link href="{{ asset('css/my_css.css') }}" rel="stylesheet">
 
@@ -75,8 +75,7 @@
     <div class="table-responsive">
         @yield('footer')
     </div>
-@yield('down_body')
-
+    @include('layouts.js')
 {{-- 加上 nonce 確保符合 script-src 政策 --}}
     <script src="{{ asset('js/tinymce.js') }}" nonce="{{ $csp_nonce }}"></script>
     <script src="{{ asset('js/sweet_alert.js') }}" nonce="{{ $csp_nonce }}"></script>
@@ -85,5 +84,6 @@
     @auth
         <script src="{{ asset('js/logout.js') }}" nonce="{{ $csp_nonce }}"></script>
     @endauth
+    @yield('down_body')
 </body>
 </html>

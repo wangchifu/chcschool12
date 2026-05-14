@@ -35,7 +35,7 @@
     connect-src 'self';">
     @yield('my_meta')
     <title>@yield('title'){{ $setup->site_name }}</title>
-    @include('layouts.js_css')    
+    @include('layouts.css')    
     @yield('in_head')
     <link href="{{ asset('css/my_css.css') }}" rel="stylesheet">
 
@@ -79,7 +79,7 @@
     <div class="table-responsive">
         @yield('footer')
     </div>
-
+    @include('layouts.js')
 {{-- 修正：外部 JS 加上 nonce --}}
     <script src="{{ asset('js/tinymce.js') }}" nonce="{{ $csp_nonce }}"></script>
     <script src="{{ asset('js/sweet_alert.js') }}" nonce="{{ $csp_nonce }}"></script>
@@ -88,6 +88,6 @@
     @auth
         <script src="{{ asset('js/logout.js') }}" nonce="{{ $csp_nonce }}"></script>
     @endauth
-@yield('down_body')
+    @yield('down_body')
 </body>
 </html>

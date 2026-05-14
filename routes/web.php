@@ -646,6 +646,8 @@ Route::group(['middleware' => 'admin'], function () {
     // 連結、類別與樹狀目錄
     Route::post('types', [LinksController::class, 'store_type'])->name('links.store_type');
     Route::delete('types/{type}', [LinksController::class, 'destroy_type'])->name('links.destroy_type');
+    Route::get('edit_types/{type}', [LinksController::class, 'edit_type'])->name('links.edit_type');
+    Route::get('edit_types2/{type}', [LinksController::class, 'edit_type2'])->name('links.edit_type2');
     Route::patch('types/{type}', [LinksController::class, 'update_type'])->name('links.update_type');
     Route::get('links/index/{type_id?}', [LinksController::class, 'index'])->name('links.index');
     Route::get('links/create/{type_id?}', [LinksController::class, 'create'])->name('links.create');

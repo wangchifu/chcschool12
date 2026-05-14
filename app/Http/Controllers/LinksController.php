@@ -114,7 +114,22 @@ class LinksController extends Controller
             'order_by'=>['nullable','numeric'],
         ]);
         $link = Link::create($request->all());
-        return redirect()->route('links.index',$link->type_id);
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
     /**
@@ -166,7 +181,45 @@ class LinksController extends Controller
             'order_by'=>['nullable','numeric'],
         ]);
         $link->update($request->all());
-        return redirect()->route('links.index',$link->type_id);
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
+    }
+
+    public function edit_type(Type $type)
+    {        
+        $data = [
+            'type'=>$type,
+        ];
+        return view('links.edit_type',$data);
+    }
+
+    public function edit_type2(Type $type)
+    {        
+        $types= Type::where('type_id',null)->orderBy('order_by')
+            ->get();
+        $type_array = [];
+        foreach($types as $t){
+            $type_array[$t->id] = $t->name;
+        }
+        $data = [
+            'type'=>$type,
+            'type_array'=>$type_array,
+        ];
+        return view('links.edit_type2',$data);
     }
 
     public function update_type(Request $request, Type $type)
@@ -175,7 +228,22 @@ class LinksController extends Controller
             'name'=>'required',
         ]);
         $type->update($request->all());
-        return redirect()->route('links.index');
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
     /**

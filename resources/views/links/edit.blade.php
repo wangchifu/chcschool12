@@ -1,98 +1,207 @@
-@extends('layouts.master')
+@extends('layouts.master_clean')
 
-@section('nav_setup_active', 'active')
+@section('title', '修改選單連結 | ')
 
-@section('title', '修改連結 | ')
-
-@section('in_head')
-    <script src="{{ asset('js/jquery.slim.min.js') }}"></script>
-    <link href="{{ asset('fontawesome-icon-browser-picker/fontawesome-browser.css') }}" rel='stylesheet' type='text/css' />
-    <script src="{{ asset('fontawesome-icon-browser-picker/fontawesome-browser.js') }}" type='text/javascript'></script> 
+@section('in_head')        
+    <style nonce="{{ $csp_nonce }}">
+        /* 預覽區塊樣式 */
+        .icon-display {
+            font-size: 2rem;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #198754; /* 修改頁面預設顯示綠色代表已有值 */
+            border-radius: 0.5rem;
+            background-color: #fff;
+            margin-right: 15px;
+            color: #198754;
+        }
+        /* Modal 內圖示清單樣式 */
+        #icon-list-container {
+            max-height: 450px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 15px;
+            background-color: #f1f3f5;
+            border-radius: 8px;
+        }
+        .select-icon-btn {
+            padding: 10px 0 !important;
+            margin-bottom: 5px;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        .select-icon-btn:hover {
+            background-color: #0d6efd !important;
+            color: white !important;
+            transform: scale(1.1);
+            z-index: 10;
+        }
+        .icon-name-label {
+            font-size: 0.65rem;
+            display: block;
+            margin-top: 5px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+    </style>
 @endsection
 
-@section('content')
+@section('content')    
     <div class="row justify-content-center">
         <div class="col-md-11">
-            <h1>修改連結</h1>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('index') }}">首頁</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('links.index') }}">選單連結</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">修改連結</li>
-                </ol>
-            </nav>
+            <h1 class="mb-3">修改選單連結</h1>            
+
             @include('layouts.errors')
-            {{ Form::model($link,['route' => ['links.update',$link->id], 'method' => 'PATCH','id'=>'this_form']) }}
-            <link href="{{ asset('IconPicker/dist/iconpicker-1.5.0.css') }}" rel="stylesheet">
-            <script src="{{ asset('IconPicker/dist/iconpicker-1.5.0.js') }}"></script>
-            <div class="card my-4">
-                <h3 class="card-header">連結資料</h3>
-                <div class="card-body">
-                    <div class="form-group">
-                        <label for="name">類別*</label>
-                        {{ Form::select('type_id', $type_array,null, ['id' => 'type_id', 'class' => 'form-control','required'=>'required']) }}
-                    </div>
-                    <div class="form-group">
-                        <label for="order_by">排序</label>
-                        {{ Form::text('order_by',null,['id'=>'order_by','class' => 'form-control', 'placeholder' => '數字']) }}
-                    </div>
-                    <div class="form-group">
-                        <label for="name">圖示*</label> <i class="" id="show_icon"></i>
-                        <input type="text" class="form-control" name="icon" placeholder="請選圖示" data-fa-browser id="this_input" value="{{ $link->icon }}">
-                        <script>
-                            $(function($) {
-                              $.fabrowser();
-                          });
-                          function show_icon(){
-                            $("#show_icon").attr('class', '');
-                            $('#show_icon').addClass($('#this_input').val()); 
-                          }
-                          $('#show_icon').addClass($('#this_input').val());           
-                          </script>
-                    </div>        
-                    <div class="form-group">
-                        <label for="name">名稱*</label>
-                        {{ Form::text('name',null,['id'=>'name','class' => 'form-control','required'=>'required', 'placeholder' => '名稱']) }}
-                    </div>
-                    <div class="form-group">
-                        <label for="url">網址*</label>
-                        {{ Form::text('url',null,['id'=>'url','class' => 'form-control','required'=>'required', 'placeholder' => 'https://']) }}
-                    </div>                    
-                    <hr>
-                    <?php
-                        if($link->target==null){
-                            $checked1 = "checked";
-                            $checked2 = null;
-                        }
-                        if($link->target=="_self"){
-                            $checked1 = null;
-                            $checked2 = "checked";
-                        }
-                    ?>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="target" id="flexRadioDefault1" {{ $checked1 }} value="">
-                        <label class="form-check-label" for="flexRadioDefault1">
-                            開啟新視窗
-                        </label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="radio" name="target" id="flexRadioDefault2" {{ $checked2 }} value="_self">
-                        <label class="form-check-label" for="flexRadioDefault2">
-                            本視窗開啟
-                        </label>
-                      </div>
-                      <hr>
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary btn-sm" onclick="return confirm('確定儲存嗎？')">
-                            <i class="fas fa-save"></i> 儲存設定
-                        </button>
+
+            <form action="{{ route('links.update', $link->id) }}" method="POST" id="this_form1">
+                @csrf
+                @method('PATCH')
+                
+                <div class="card shadow-sm my-4">
+                    <h3 class="card-header bg-primary text-white">連結資料 (ID: {{ $link->id }})</h3>
+                    <div class="card-body">
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">類別*</label>
+                                <select name="type_id" id="type_id" class="form-select" required>
+                                    @foreach($type_array as $k => $v)
+                                        <option value="{{ $k }}" {{ $link->type_id == $k ? 'selected' : '' }}>{{ $v }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">排序</label>
+                                {{-- 修正處：直接使用 $link->order_by，不再使用 reset() --}}
+                                <input type="number" name="order_by" id="order_by" class="form-control" value="{{ $link->order_by }}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">選擇圖示*</label>
+                            <div class="d-flex align-items-center p-3 border rounded bg-light">
+                                <div class="icon-display shadow-sm">
+                                    <i id="show_icon" class="{{ $link->icon }}"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <input type="text" class="form-control bg-white" name="icon" id="this_input" value="{{ $link->icon }}" placeholder="請點擊右側按鈕選擇" readonly required>
+                                </div>
+                                <button type="button" class="btn btn-secondary ms-3 px-4" data-bs-toggle="modal" data-bs-target="#iconModal">
+                                    <i class="fas fa-search me-1"></i> 更換圖示
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">名稱*</label>
+                            <input type="text" name="name" class="form-control" required value="{{ $link->name }}" placeholder="例如: 官方網站">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">網址*</label>
+                            <input type="text" name="url" class="form-control" required value="{{ $link->url }}" placeholder="https://">
+                        </div>
+
+                        <hr>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold d-block">開啟方式</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="target" id="target1" value="" {{ empty($link->target) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="target1">開啟新視窗</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="target" id="target2" value="_self" {{ $link->target == '_self' ? 'checked' : '' }}>
+                                <label class="form-check-label" for="target2">本視窗開啟</label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button type="button" class="btn btn-success btn-lg save-btn" data-form="this_form1">
+                                <i class="fas fa-save me-2"></i> 儲存修改
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            {{ Form::close() }}
+            </form>
         </div>
     </div>
-    <script>
-        var validator = $("#this_form").validate();
+
+    <div class="modal fade" id="iconModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title fw-bold"><i class="fas fa-shapes me-2"></i>選擇常用圖示 (Font Awesome 6)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="icon-list-container">
+                        <div class="row g-2 text-center">
+                        @php
+                            $icons = [
+                                'fas fa-house', 'fas fa-user', 'fas fa-users', 'fas fa-gear', 'fas fa-magnifying-glass', 'fas fa-bell', 'fas fa-info', 'fas fa-question', 'fas fa-check', 'fas fa-xmark', 'fas fa-plus', 'fas fa-minus',
+                                'fas fa-bars', 'fas fa-ellipsis', 'fas fa-link', 'fas fa-paperclip', 'fas fa-share-nodes', 'fas fa-location-dot', 'fas fa-globe', 'fas fa-house-user', 'fas fa-user-tie', 'fas fa-user-group', 'fas fa-user-gear', 'fas fa-user-shield',
+                                'fas fa-circle-user', 'fas fa-id-card', 'fas fa-sliders', 'fas fa-filter', 'fas fa-eye', 'fas fa-eye-slash', 'fas fa-trash', 'fas fa-trash-arrow-up', 'fas fa-bookmark', 'fas fa-flag', 'fas fa-circle-check', 'fas fa-circle-xmark',
+                                'fas fa-envelope', 'fas fa-phone', 'fas fa-comment', 'fas fa-comments', 'fas fa-paper-plane', 'fas fa-at', 'fas fa-wifi', 'fas fa-rss', 'fas fa-address-book', 'fas fa-user-plus', 'fas fa-envelope-open', 'fas fa-headset',
+                                'fab fa-facebook', 'fab fa-facebook-messenger', 'fab fa-line', 'fab fa-youtube', 'fab fa-instagram', 'fab fa-google', 'fab fa-github', 'fab fa-apple', 'fab fa-android', 'fab fa-windows', 'fab fa-twitter', 'fab fa-linkedin',
+                                'fab fa-whatsapp', 'fab fa-skype', 'fab fa-telegram', 'fab fa-weixin', 'fab fa-tiktok', 'fab fa-discord', 'fab fa-slack', 'fab fa-wordpress', 'fab fa-pushed', 'fab fa-chromecast', 'fab fa-vimeo-v', 'fab fa-reddit',
+                                'fas fa-file', 'fas fa-file-lines', 'fas fa-file-pdf', 'fas fa-file-excel', 'fas fa-file-word', 'fas fa-file-powerpoint', 'fas fa-file-csv', 'fas fa-file-zipper', 'fas fa-file-image', 'fas fa-file-video', 'fas fa-file-audio', 'fas fa-file-code',
+                                'fas fa-folder', 'fas fa-folder-open', 'fas fa-box-archive', 'fas fa-clipboard', 'fas fa-database', 'fas fa-table-list', 'fas fa-pen-to-square', 'fas fa-trash-can', 'fas fa-floppy-disk', 'fas fa-print', 'fas fa-copy', 'fas fa-paste',
+                                'fas fa-scissors', 'fas fa-eraser', 'fas fa-highlighter', 'fas fa-font', 'fas fa-paragraph', 'fas fa-list', 'fas fa-list-ol', 'fas fa-indent', 'fas fa-outdent', 'fas fa-align-left', 'fas fa-align-center', 'fas fa-align-right',
+                                'fas fa-cart-shopping', 'fas fa-bag-shopping', 'fas fa-credit-card', 'fas fa-money-bill', 'fas fa-coins', 'fas fa-wallet', 'fas fa-store', 'fas fa-briefcase', 'fas fa-chart-line', 'fas fa-chart-pie', 'fas fa-bullhorn', 'fas fa-award',
+                                'fas fa-certificate', 'fas fa-tag', 'fas fa-tags', 'fas fa-truck', 'fas fa-barcode', 'fas fa-calculator', 'fas fa-scale-balanced', 'fas fa-gem', 'fas fa-handshake', 'fas fa-building-columns', 'fas fa-shop', 'fas fa-vault',
+                                'fas fa-piggy-bank', 'fas fa-receipt', 'fas fa-file-invoice', 'fas fa-file-invoice-dollar', 'fas fa-landmark', 'fas fa-sign-hanging', 'fas fa-percent', 'fas fa-gift', 'fas fa-boxes-stacked', 'fas fa-truck-fast', 'fas fa-industry', 'fas fa-city',
+                                'fas fa-image', 'fas fa-images', 'fas fa-camera', 'fas fa-video', 'fas fa-film', 'fas fa-music', 'fas fa-headphones', 'fas fa-microphone', 'fas fa-play', 'fas fa-pause', 'fas fa-stop', 'fas fa-volume-high',
+                                'fas fa-volume-xmark', 'fas fa-gamepad', 'fas fa-tv', 'fas fa-ticket', 'fas fa-compact-disc', 'fas fa-radio', 'fas fa-podcast', 'fas fa-clapperboard', 'fas fa-backward', 'fas fa-forward', 'fas fa-step-backward', 'fas fa-step-forward',
+                                'fas fa-shuffle', 'fas fa-repeat', 'fas fa-expand', 'fas fa-compress', 'fas fa-closed-captioning', 'fas fa-photo-film', 'fas fa-video-slash', 'fas fa-microphone-slash', 'fas fa-camera-rotate', 'fas fa-circle-play', 'fas fa-circle-stop', 'fas fa-sliders-h',
+                                'fas fa-heart', 'fas fa-star', 'fas fa-thumbs-up', 'fas fa-thumbs-down', 'fas fa-sun', 'fas fa-moon', 'fas fa-cloud', 'fas fa-bolt', 'fas fa-snowflake', 'fas fa-fire', 'fas fa-droplet', 'fas fa-utensils',
+                                'fas fa-mug-hot', 'fas fa-hospital', 'fas fa-stethoscope', 'fas fa-book', 'fas fa-graduation-cap', 'fas fa-tree', 'fas fa-bicycle', 'fas fa-car', 'fas fa-plane', 'fas fa-ship', 'fas fa-bus', 'fas fa-train',
+                                'fas fa-kit-medical', 'fas fa-pills', 'fas fa-briefcase-medical', 'fas fa-dna', 'fas fa-virus', 'fas fa-face-smile', 'fas fa-face-meh', 'fas fa-face-frown', 'fas fa-glass-water', 'fas fa-ice-cream', 'fas fa-pizza-slice', 'fas fa-burger',
+                                'fas fa-desktop', 'fas fa-laptop', 'fas fa-mobile-screen', 'fas fa-tablet-screen-button', 'fas fa-keyboard', 'fas fa-mouse', 'fas fa-key', 'fas fa-lock', 'fas fa-unlock-keyhole', 'fas fa-shield-halved', 'fas fa-server', 'fas fa-cloud-arrow-up',
+                                'fas fa-cloud-arrow-down', 'fas fa-hard-drive', 'fas fa-fingerprint', 'fas fa-microchip', 'fas fa-usb', 'fas fa-battery-full', 'fas fa-plug', 'fas fa-power-off', 'fas fa-screwdriver-wrench', 'fas fa-hammer', 'fas fa-wrench', 'fas fa-calendar',
+                            ];
+                        @endphp                                                       
+                            @foreach($icons as $icon)
+                                <div class="col-lg-1 col-md-2 col-3">
+                                    <button type="button" class="btn btn-light w-100 select-icon-btn shadow-sm" data-icon="{{ $icon }}">
+                                        <i class="{{ $icon }} fa-xl"></i>
+                                        <span class="icon-name-label">{{ str_replace(['fas fa-', 'fab fa-'], '', $icon) }}</span>
+                                    </button>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@section('down_body')                
+    <script nonce="{{ $csp_nonce }}">
+        $(document).ready(function() {
+            // 圖示選擇邏輯
+            $('.select-icon-btn').on('click', function() {
+                const iconClass = $(this).data('icon');
+                
+                // 更新輸入框與預覽
+                $('#this_input').val(iconClass);
+                $('#show_icon').attr('class', iconClass);
+                
+                // 視覺回饋：選中後變色
+                $('#show_icon').parent().css('border-color', '#198754');
+                $('#show_icon').css('color', '#198754');
+
+                // 關閉視窗
+                $('#iconModal').modal('hide');
+            });
+        });
     </script>
 @endsection

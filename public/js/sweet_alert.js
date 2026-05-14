@@ -1,13 +1,24 @@
 document.addEventListener('DOMContentLoaded', function() {        
-        // 抓取畫面上所有 class 含有 save-btn 的元素
-		const saveBtns = document.querySelectorAll('.save-btn');
+        // 抓取畫面上所有 class 含有 save-btn 的元素		
+		
+		const saveBtns = document.querySelectorAll('.save-btn');    
 		saveBtns.forEach(function(btn) {
-			btn.addEventListener('click', function() {      
-				btn.style.display = 'none';              				    			
-				const form = this.getAttribute('data-form');
-				sw_confirm2('確定儲存嗎？',form,btn);                             				
+			btn.addEventListener('click', function() {  
+				const formId = this.getAttribute('data-form');
+				const $form = $("#" + formId); // 取得 jQuery 物件
+
+				// 1. 手動觸發 jquery-validate 驗證
+				if ($form.valid()) {
+					// 驗證成功：才隱藏按鈕並執行後續
+					btn.style.display = 'none';
+					sw_confirm2('確定儲存嗎？', formId, btn);
+				} else {
+					// 驗證失敗：按鈕保持顯示，提示訊息會由 jquery-validate 自動顯示在欄位旁
+					console.log('表單驗證失敗，請檢查必填欄位');
+				}
 			});
-		});     
+		});
+    
 
         // 抓取畫面上所有 class 含有 delete-btn 的元素 a 連結
 		const deleteBtn1s = document.querySelectorAll('.delete-btn1');
@@ -28,8 +39,9 @@ document.addEventListener('DOMContentLoaded', function() {
 		deleteBtn2s.forEach(function(btn) {
 			btn.addEventListener('click', function() {                    				    			
 				btn.style.display = 'none';              				    			
+				const message = this.getAttribute('data-msg') || '確定要刪除嗎？';
 				const form = this.getAttribute('data-form');
-				sw_confirm2('確定刪除嗎？',form,btn);                             				
+				sw_confirm2(message,form,btn);                             				
 			});
 		});
 });
