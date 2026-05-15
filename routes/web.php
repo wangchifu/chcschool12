@@ -691,6 +691,8 @@ Route::group(['middleware' => 'admin'], function () {
     Route::get('lunch_today/{lunch_today}/delete', [LunchTodayController::class, 'delete'])->name('lunch_todays.delete');
 
     Route::get('rss_feed/index', [RssFeedController::class, 'index'])->name('rss_feeds.index');
+    Route::get('rss_feed/{rss_feed}/edit', [RssFeedController::class, 'edit'])->name('rss_feeds.edit');
+    Route::post('rss_feed/{rss_feed}/update', [RssFeedController::class, 'update'])->name('rss_feeds.update');
     Route::post('rss_feed/store', [RssFeedController::class, 'store'])->name('rss_feeds.store');
     Route::get('rss_feed/{rss_feed}/destory', [RssFeedController::class, 'destory'])->name('rss_feeds.destory');
 

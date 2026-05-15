@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			btn.addEventListener('click', function(e) {                    
 				e.preventDefault();                    				
 				btn.style.display = 'none';              				    			
-				const message = this.getAttribute('data-msg');
+				const message = this.getAttribute('data-msg') || '確定要刪除嗎？';
 				const targetUrl = this.getAttribute('data-url');                                        
 				if (typeof sw_confirm1 === 'function') {
 					sw_confirm1(message,targetUrl,btn);
