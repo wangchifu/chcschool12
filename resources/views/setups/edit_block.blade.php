@@ -91,19 +91,12 @@
                 <td colspan="3">
                     @if(str_contains($block->title,'榮譽榜跑馬燈'))
                         <div class="mb-3">
-                            <label for="marquee-editor" class="form-label">6.跑馬燈設定*</label>
-                            <textarea name="content" id="marquee-editor" class="form-control" required rows="5">{{ $block->content }}</textarea>
-                        </div>
-                        <div class="alert alert-secondary shadow-sm" role="alert">
-                            <h6 class="fw-bold"><i class="fas fa-info-circle me-1"></i> 方向設定說明：</h6>
-                            <small>
-                                方向設定：<code>direction="up/down/left/right"</code><br>
-                                速度設定：<code>scrollamount="1~10"</code> (數字越大跑得越快)<br>
-                                長/寬度：<code>height="數字"</code>、<code>width="數字"</code><br>
-                                行為設定：<code>behavior="alternate"</code> (來回跑)、<code>slide</code> (跑入後停止)<br>
-                                背景顏色：<code>bgcolor="色碼"</code>
-                            </small>
-                        </div>
+                            <div class="table-responsive">
+                                <div>                                
+                                    @include('layouts.marquee')
+                                </div>
+                            </div>
+                        </div>                         
                     @elseif(!str_contains($block->title,'系統區塊'))
                         <div class="mb-3">
                             <label for="my_editor" class="form-label">6.內文*</label>

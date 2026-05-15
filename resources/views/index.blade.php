@@ -135,7 +135,7 @@
 
                     @if($block->title == "榮譽榜跑馬燈")
                         <div class="table-responsive">
-                            <div>
+                            <div>                                
                                 @include('layouts.marquee')
                             </div>
                         </div>

@@ -41,94 +41,7 @@ class HomeController extends Controller
      * @return \Illuminate\Http\Response
      */
     /**
-    public function index(Request $request,$insite=null)
-    {
-        if(is_null($insite)) $insite="index";
-
-        $school_code = school_code();
-        $files = get_files(storage_path('app/public/'.$school_code.'/title_image/random'));
-        if($files) {
-            foreach ($files as $k=>$v) {
-                $photos[$k] = asset('storage/'.$school_code.'/title_image/random/'.$v);
-            }
-        }else{
-            $photos = [
-                '0'=>asset('images/top0.svg'),
-                '1'=>asset('images/top1.svg'),
-                '2'=>asset('images/top2.svg'),
-            ];
-        }
-
-        $setup = Setup::find(1);
-        $setup_cols = SetupCol::orderBy('order_by')->get();
-        foreach($setup_cols as $setup_col){
-            $bs = Block::where('setup_col_id',$setup_col->id)
-                ->orderBy('order_by')
-                ->get();
-
-            $blocks[$setup_col->id] = $bs;
-
-            //跑馬燈css設定
-            if($setup_col->title == "榮譽榜跑馬燈") {
-                $marquee_css = $bs[0]->content;
-            }
-        }
-        //跑馬燈css預設設定
-        if(empty($marquee_css)) {
-            $marquee_css = "direction='left' height='30' scrollamount='5' align='midden'";
-        }
-        if($insite=="insite"){
-            $posts = Post::where('insite','1')
-                ->orderBy('top','DESC')
-                ->orderBy('created_at','DESC')
-                ->paginate(10);
-        }elseif($insite=="honor"){
-            $posts = Post::where('insite','2')
-                ->orderBy('top','DESC')
-                ->orderBy('created_at','DESC')
-                ->paginate(10);
-        }elseif($insite=="index"){
-            $posts = Post::where('insite',null)
-                ->orderBy('top','DESC')
-                ->orderBy('created_at','DESC')
-                ->paginate(10);
-        }
-        //榮譽榜資料庫資料
-        $honors = Post::where('insite','2')
-            ->orderBy('top','DESC')
-            ->orderBy('created_at','DESC')
-            ->paginate(10);
-        //跑馬燈取得榮譽榜資料庫資料
-        $marquee = "";
-        foreach($honors as $honor) {
-            $href = "../posts/".$honor->id;
-            $marquee .= "<a href=".$href.">"
-                .$honor->title."   ".
-                "</a>";
-        }
-
-
-        //分類公告
-        $post_types = PostType::orderBy('order_by')->get();
-
-        $photo_links = PhotoLink::orderBy('order_by')->paginate(24);
-
-        $data = [
-            'school_code'=>$school_code,
-            'photos'=>$photos,
-            'setup'=>$setup,
-            'setup_cols'=>$setup_cols,
-            'blocks'=>$blocks,
-            'posts'=>$posts,
-            'insite'=>$insite,
-            'request'=>$request,
-            'marquee' =>$marquee,
-            'marquee_css'=>$marquee_css,
-            'photo_links'=>$photo_links,
-            'post_types'=>$post_types,
-        ];
-        return view('index',$data);
-    }
+    
      * */
 
     public $school_check_file = [
@@ -403,13 +316,6 @@ class HomeController extends Controller
                 ->get();
             $blocks[$setup_col->id] = $bs;
         }
-        //跑馬燈css預設設定
-        $marquee_block = Block::where('title', "榮譽榜跑馬燈")
-            ->first();
-        $marquee_css = $marquee_block->content;
-        if (empty($marquee_css)) {
-            $marquee_css = "direction='left' height='30' scrollamount='5' align='midden'";
-        }
 
         $post_show_number = ($setup->post_show_number)?$setup->post_show_number:10;
         $posts = Post::where(function ($query) {
@@ -436,23 +342,6 @@ class HomeController extends Controller
         ->orderBy('id','DESC')
         ->get();
 
-        //榮譽榜資料庫資料
-        $honors = Post::where('insite', '2')
-                ->where(function ($query) {
-                    $query->where('die_date',null)->orWhere('die_date','>=',date('Y-m-d'));
-                })->orderBy('top', 'DESC')
-                ->orderBy('created_at', 'DESC')
-                ->paginate(10);
-        //跑馬燈取得榮譽榜資料庫資料
-        $marquee = "";
-        foreach ($honors as $honor) {
-            $href = "../posts/" . $honor->id;
-            $marquee .= "<i class=\"fas fa-crown text-warning\"></i> <a href=" . $href . ">"
-                . $honor->title . "   " .
-                "</a>　　";
-        }
-
-
         //分類公告
         $post_types = PostType::where('disable',null)->orderBy('order_by')->get();
 
@@ -470,9 +359,7 @@ class HomeController extends Controller
             'setup_cols' => $setup_cols,
             'blocks' => $blocks,
             'posts' => $posts,
-            'request' => $request,
-            'marquee' => $marquee,
-            'marquee_css' => $marquee_css,
+            'request' => $request,                        
             'photo_links' => $photo_links,
             'photo_types'=>$photo_types,
             'post_types' => $post_types,
