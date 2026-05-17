@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\PhotoLink;
 use App\Models\PhotoType;
 use Illuminate\Http\Request;
-use Intervention\Image\Facades\Image;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver as GdDriver; // 將 Driver 取別名，避免混淆
 
 class PhotoLinksController extends Controller
 {
@@ -131,13 +132,42 @@ class PhotoLinksController extends Controller
             $att2['image'] = $image_name;
             $photo_link->update($att2);
 
-            Image::make(storage_path('app/'.$folder.'/'.$image_name))->heighten(500)
-                ->save(storage_path('app/'.$folder.'/'.$image_name));
+            //Image::make(storage_path('app/'.$folder.'/'.$image_name))->heighten(500)
+            //    ->save(storage_path('app/'.$folder.'/'.$image_name));
+
+            // 1. 根據你印出來的方法，它是用 static::usingDriver() 來初始化
+            $manager = ImageManager::usingDriver(new GdDriver());
+
+            // 2. 你的清單裡沒有 read()，但有專門解讀路徑的 decodePath()！
+            // 4.x 的這個版本是用 decodePath 來取代傳統的 read 讀取本地檔案
+            $image = $manager->decodePath(storage_path('app/'.$folder.'/'.$image_name));
+
+            // 3. 調整高度並儲存
+            // 註：如果 $image 噴錯說沒有 heighten()，請改用 $image->scale(height: 500);
+            $image->scale(height: 500); 
+            $image->save(storage_path('app/'.$folder.'/'.$image_name));
         }
 
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
 
 
-        return redirect()->route('photo_links.index',$photo_link->photo_type_id);
+
+        
     }
 
     public function type_store(Request $request)
@@ -258,12 +288,41 @@ class PhotoLinksController extends Controller
             $att2['image'] = $image_name;
             $photo_link->update($att2);
 
-            Image::make(storage_path('app/'.$folder.'/'.$image_name))->heighten(500)
-                ->save(storage_path('app/'.$folder.'/'.$image_name));
+            //Image::make(storage_path('app/'.$folder.'/'.$image_name))->heighten(500)
+            //    ->save(storage_path('app/'.$folder.'/'.$image_name));
+
+            // 1. 根據你印出來的方法，它是用 static::usingDriver() 來初始化
+            $manager = ImageManager::usingDriver(new GdDriver());
+
+            // 2. 你的清單裡沒有 read()，但有專門解讀路徑的 decodePath()！
+            // 4.x 的這個版本是用 decodePath 來取代傳統的 read 讀取本地檔案
+            $image = $manager->decodePath(storage_path('app/'.$folder.'/'.$image_name));
+
+            // 3. 調整高度並儲存
+            // 註：如果 $image 噴錯說沒有 heighten()，請改用 $image->scale(height: 500);
+            $image->scale(height: 500); 
+            $image->save(storage_path('app/'.$folder.'/'.$image_name));       
+
+
         }
 
         $u = route('photo_links.index',$photo_link->photo_type_id);
-        echo "<body onload='opener.location.href=\"{$u}\";window.close();'>";
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
     /**
