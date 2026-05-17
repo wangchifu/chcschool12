@@ -166,7 +166,7 @@
                                     @auth
                                         @if(auth()->user()->admin==1)
                                             <div class="float-end pe-2">
-                                                <a href="javascript:open_window('{{ route('setups.edit_block',$block->id) }}','新視窗')" class="text-decoration-none">📝</a>
+                                                <a href="{{ route('setups.edit_block',$block->id) }}" class="text-decoration-none venobox" data-vbtype="iframe">📝</a>
                                             </div>
                                         @endif
                                     @endauth
@@ -227,12 +227,6 @@
         @endforeach
 
     </div>
-    <script>
-        function open_window(url,name)
-        {
-            window.open(url,name,'statusbar=no,scrollbars=yes,status=yes,resizable=yes,width=900,height=800');
-        }
-    </script>
 @endsection
 
 @section('footer')
@@ -248,7 +242,7 @@
                         @auth
                             @if(auth()->user()->admin==1)  
                                 <div class="float-end">
-                                    <a href="javascript:open_window('{{ route('setups.edit_footer') }}','新視窗')" class="text-decoration-none">📝</a>
+                                    <a href="{{ route('setups.edit_footer') }}" class="text-decoration-none venobox" data-vbtype="iframe">📝</a>
                                 </div>
                             @endif
                         @endauth
