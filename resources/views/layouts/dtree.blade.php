@@ -6,6 +6,12 @@ $links_list   = \App\Models\Tree::where('type', 2)->orderBy('order_by')->orderBy
 
 {{-- 基礎安全 CSS，控制資料夾展開時的箭頭旋轉效果與間距 --}}
 <style nonce="{{ $csp_nonce }}">
+    /* 🎯 讓整個可以點擊的目錄列在滑鼠移上去時，鼠標一律變成手型 */
+    .tree-toggle-btn {
+        cursor: pointer;
+        user-select: none; /* 防止使用者頻繁點擊時意外選取到文字藍底 */
+    }
+    
     .tree-toggle-btn[aria-expanded="true"] .fa-chevron-right {
         transform: rotate(90deg);
     }
@@ -26,16 +32,15 @@ $links_list   = \App\Models\Tree::where('type', 2)->orderBy('order_by')->orderBy
         </button>
     </div>
 
-    {{-- 2. 樹狀內容主體 (已移除原本的「連結收集」標題列) --}}
+    {{-- 2. 樹狀內容主體 --}}
     <div class="ps-1">
         <ul class="list-group list-group-flush bg-transparent">
             
             {{-- 先渲染所有「子目錄」 --}}
             @foreach($folders_list as $folder)
                 <li class="list-group-item border-0 px-0 bg-transparent py-1">
-                    {{-- 點擊整條列，控制下方對應的 id 展開或收合 --}}
+                    {{-- 點擊整條列，控制下方對應的 id 展開或收合（已透過 CSS 強制設定手型鼠標） --}}
                     <div class="tree-toggle-btn d-flex align-items-center text-dark fw-bold" 
-                         style="cursor: pointer;"
                          data-bs-toggle="collapse" 
                          data-bs-target="#folder-content-{{ $folder->id }}" 
                          aria-expanded="false">
