@@ -282,7 +282,7 @@
                             @impersonating
                             <a class="dropdown-item" href="{{ route('sims.impersonate_leave') }}" onclick="return confirm('確定返回原本帳琥？')"><i class="fas fa-user-ninja"></i> 結束模擬</a>
                             @endImpersonating
-                            <a class="dropdown-item" href="#" onclick="sw_confirm2('你確定要登出嗎？','logout-form')">
+                            <a class="dropdown-item delete-btn2" href="#!" data-form="logout-form" data-msg="確定要登出嗎？">
                                 <i class="fas fa-sign-out-alt"></i> 登出
                             </a>
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
