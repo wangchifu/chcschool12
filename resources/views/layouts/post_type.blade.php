@@ -166,7 +166,8 @@
                                         $can_see = 1;
                                     };
                                     $school_code = school_code();
-                                    $title = \Illuminate\Support\Str::limit($post->title, 80);
+                                    //$title = \Illuminate\Support\Str::limit($post->title, 80);
+                                    $title = $post->title;
                                     
                                     $files = get_files(storage_path('app/public/'.$school_code.'/posts/'.$post->id.'/files'));
                                     $photos = get_files(storage_path('app/public/'.$school_code.'/posts/'.$post->id.'/photos'));
