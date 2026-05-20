@@ -22,7 +22,7 @@
                 </ol>
             </nav>
             @include('posts.list',['type_name',$type_name])
-            {{ $posts->links() }}
+            {{ $posts->links('layouts.pagination') }}
         </div>
     </div>
 @endsection

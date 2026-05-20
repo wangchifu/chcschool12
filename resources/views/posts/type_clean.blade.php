@@ -108,7 +108,7 @@
     });
 </script>
 
-            {{ $posts->links() }}
+            {{ $posts->links('layouts.pagination') }}
         </div>
     </div>
 @endsection

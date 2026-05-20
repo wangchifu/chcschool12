@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use Ap\Modelsp\User;
+use App\Models\User;
 use App\Models\Post;
 use App\Models\UserGroup;
 use Illuminate\Auth\Access\HandlesAuthorization;

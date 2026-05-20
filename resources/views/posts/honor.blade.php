@@ -7,20 +7,32 @@
 @section('content')
     <div class="row justify-content-center">
         <div class="col-md-11">
-            <h1>公告系統：榮譽榜</h1>
-            <ul class="nav nav-tabs">
+            {{-- 🎯 修正：優化標題間距 --}}
+            <h1 class="mb-4">公告系統：榮譽榜</h1>
+            
+            {{-- 🎯 修正：升級為 Bootstrap 5 的導覽頁籤結構 --}}
+            <ul class="nav nav-tabs mb-3">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('posts.index') }}">一般公告</a>
+                    <a class="nav-link text-decoration-none" href="{{ route('posts.index') }}">一般公告</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="{{ route('posts.honor') }}"><img src="{{ asset('images/gold-medal.svg') }}" width="16">榮譽榜</a>
+                    {{-- 🎯 修正：active 狀態加上 aria-current="page"，並在圖片加上 me-1 的內建間距類別 --}}
+                    <a class="nav-link active" aria-current="page" href="{{ route('posts.honor') }}">
+                        <img src="{{ asset('images/gold-medal.svg') }}" width="16" class="me-1" alt="金牌">榮譽榜
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('posts.insite') }}">內部公告</a>
+                    <a class="nav-link text-decoration-none" href="{{ route('posts.insite') }}">內部公告</a>
                 </li>
             </ul>
+            
+            {{-- 引入公告清單 --}}
             @include('posts.list')
-            {{ $posts->links() }}
+            
+            {{-- 分頁導覽 --}}
+            <div class="mt-4">
+                {{ $posts->links('layouts.pagination') }}
+            </div>
         </div>
     </div>
 @endsection

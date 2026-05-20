@@ -9,7 +9,8 @@ use App\Models\Setup;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
-use Intervention\Image\Facades\Image;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver as GdDriver; // 將 Driver 取別名，避免混淆
 
 
 class PostsController extends Controller
@@ -240,16 +241,27 @@ class PostsController extends Controller
                     'mime-type' => $photo->getMimeType(),
                     'original_filename' => $photo->getClientOriginalName(),
                     'extension' => $photo->getClientOriginalExtension(),
-                    'size' => $photo->getClientSize(),
+                    //'size' => $photo->getClientSize(),
                 ];
 
                 $photo->storeAs($folder.'/photos', $info2['original_filename']);
 
                 //縮圖
-                $img = Image::make($photo->getRealPath());
-                $img->resize(1024, null, function ($constraint) {
-                    $constraint->aspectRatio();
-                })->save(storage_path('app/public/'. $school_code.'/posts/'.$post->id.'/photos/'.$info2['original_filename']));
+                //$img = Image::make($photo->getRealPath());
+                //$img->resize(1024, null, function ($constraint) {
+                //    $constraint->aspectRatio();
+                //})->save(storage_path('app/public/'. $school_code.'/posts/'.$post->id.'/photos/'.$info2['original_filename']));
+                // 1. 根據你印出來的方法，它是用 static::usingDriver() 來初始化
+                $manager = ImageManager::usingDriver(new GdDriver());
+
+                // 2. 你的清單裡沒有 read()，但有專門解讀路徑的 decodePath()！
+                // 4.x 的這個版本是用 decodePath 來取代傳統的 read 讀取本地檔案
+                $image = $manager->decodePath(storage_path('app/public/'. $school_code.'/posts/'.$post->id.'/photos/'.$info2['original_filename']));
+
+                // 3. 調整高度並儲存
+                // 註：如果 $image 噴錯說沒有 heighten()，請改用 $image->scale(height: 500);
+                $image->scale(height: 500); 
+                $image->save(storage_path('app/'.$folder.'/'.$info2['original_filename']));
             }
         }
 
@@ -510,16 +522,27 @@ class PostsController extends Controller
                     'mime-type' => $photo->getMimeType(),
                     'original_filename' => $photo->getClientOriginalName(),
                     'extension' => $photo->getClientOriginalExtension(),
-                    'size' => $photo->getClientSize(),
+                    //'size' => $photo->getClientSize(),
                 ];
 
                 $photo->storeAs($folder.'/photos', $info2['original_filename']);
 
                 //縮圖
-                $img = Image::make($photo->getRealPath());
-                $img->resize(1024, null, function ($constraint) {
-                    $constraint->aspectRatio();
-                })->save(storage_path('app/public/'. $school_code.'/posts/'.$post->id.'/photos/'.$info2['original_filename']));
+                //$img = Image::make($photo->getRealPath());
+                //$img->resize(1024, null, function ($constraint) {
+                //    $constraint->aspectRatio();
+                //})->save(storage_path('app/public/'. $school_code.'/posts/'.$post->id.'/photos/'.$info2['original_filename']));
+                // 1. 根據你印出來的方法，它是用 static::usingDriver() 來初始化
+                $manager = ImageManager::usingDriver(new GdDriver());
+
+                // 2. 你的清單裡沒有 read()，但有專門解讀路徑的 decodePath()！
+                // 4.x 的這個版本是用 decodePath 來取代傳統的 read 讀取本地檔案
+                $image = $manager->decodePath(storage_path('app/public/'. $school_code.'/posts/'.$post->id.'/photos/'.$info2['original_filename']));
+
+                // 3. 調整高度並儲存
+                // 註：如果 $image 噴錯說沒有 heighten()，請改用 $image->scale(height: 500);
+                $image->scale(height: 500); 
+                $image->save(storage_path('app/'.$folder.'/'.$info2['original_filename']));
             }
         }
 
@@ -735,7 +758,7 @@ class PostsController extends Controller
         $att['name'] = $request->input('name');
 
         PostType::create($att);
-        echo "<body onload='opener.location.reload();window.close();'>";
+        return back();
     }
 
     public function update_type(Request $request, PostType $post_type)
@@ -748,7 +771,22 @@ class PostsController extends Controller
         $att['name'] = $request->input('name');
 
         $post_type->update($att);
-        echo "<body onload='opener.location.reload();window.close();'>";
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
     public function delete_type(PostType $post_type)
@@ -759,14 +797,14 @@ class PostsController extends Controller
             $post->update($att);
         }
         $post_type->delete();
-        echo "<body onload='opener.location.reload();window.close();'>";
+        return back();
     }
 
     public function disable_type(PostType $post_type)
     {
         $att['disable'] = ($post_type->disable==1)?null:1;              
         $d = $post_type->update($att);        
-        echo "<body onload='opener.location.reload();window.close();'>";
+        return back();
     }
 
     public function inbox(Post $post)

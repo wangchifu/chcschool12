@@ -56,3 +56,32 @@ tinymce.init({
 		});
 	}
 });
+
+tinymce.init({
+    selector: 'textarea#my_editor2',
+    language: 'zh_TW', // 設置語言為繁體中文
+    language_url: '/js/zh_TW.js',
+    
+    // 🛡️ 安全優化 1：只啟用最基礎且安全的套件，徹底移除 code (檢視原始碼)、table 與 image 功能
+    plugins: 'fullscreen link lists paste', 
+    
+    // 🛡️ 安全優化 2：精簡工具列，提供基礎的文字樣式調整
+    // fontsize (文字大小)、forecolor (文字顏色)、bold (粗體)、italic (斜體)
+    toolbar: 'undo redo | fontsize | bold italic underline forecolor | alignleft aligncenter alignright | link unlink | bullist numlist | removeformat fullscreen',
+    
+    // 🛡️ 安全優化 3：防範 XSS 攻擊的安全設定
+    // 徹底移除 valid_elements: '*[*]' 與 verify_html: false！
+    // 讓 TinyMCE 自動幫你過濾掉不安全的 <script>、<iframe> 或 javascript: 偽協議。
+    verify_html: true, 
+    
+    // 限制只能輸入基本的 HTML 標籤，進一步防止惡意攻擊者繞過檢查
+    allowed_elements: 'p,span,br,strong,em,u,ul,ol,li,a',
+    extended_valid_elements: 'a[href|target=_blank|title],span[style],p[style]',
+
+    // 基礎排版設定保持一致
+    forced_root_block: false,      // 避免自動包裹 `<p>` 標籤
+    remove_trailing_brs: false,    // 不刪除尾部 <br>
+    convert_urls: false,           // 禁止 TinyMCE 轉換圖片 URL
+    relative_urls: false,          // 確保使用絕對 URL
+    remove_script_host: false      // 保留完整的 URL
+});
