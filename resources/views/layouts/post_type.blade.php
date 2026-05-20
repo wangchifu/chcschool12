@@ -74,7 +74,7 @@
                                         <span class="text-danger fw-bold">[ 內部公告 ]</span>
                                     @endif
                                     @if($can_see)
-                                        <a href="{{ route('posts.show',$post->id) }}" class="text-decoration-none text-dark fw-md">{{ $title }}</a>
+                                        <a href="{{ route('posts.show_clean',$post->id) }}" class="text-decoration-none text-dark fw-md venobox" data-vbtype="iframe">{{ $title }}</a>
                                     @else                    
                                         <span class="text-muted text-decoration-line-through">{{ $title }}</span>
                                     @endif
@@ -176,7 +176,7 @@
                                         <span class="text-danger fw-bold">[ 內部公告 ]</span>
                                     @endif
                                     @if($can_see)
-                                        <a href="{{ route('posts.show',$post->id) }}" class="text-decoration-none text-dark fw-md">{{ $title }}</a>
+                                        <a href="{{ route('posts.show_clean',$post->id) }}" class="text-decoration-none text-dark fw-md venobox" data-vbtype="iframe">{{ $title }}</a>
                                     @else
                                         <span class="text-muted text-decoration-line-through">{{ $title }}</span>
                                     @endif

@@ -86,14 +86,23 @@
 
             {{-- 🎯 資訊與管理列：移除生硬的線條，改用柔和區塊底色區隔 --}}
             <div class="p-3 bg-light rounded-3 mb-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
-                <div class="text-muted small">
+                <div class="fs-6 text-secondary"> {{-- 🎯 改用標準 fs-6，顏色改用略深的 text-secondary --}}
                     <?php $insite = ($post->insite != null)?$post->insite:0; ?>
-                    <span class="me-2"><i class="fas fa-tag me-1"></i><a href="{{ route('posts.type',$insite) }}" class="text-decoration-none text-secondary fw-semibold">{{ $post_type_array[$insite] }}</a></span>
-                    <span class="me-2">| 張貼者：<a href="{{ route('posts.job_title',$post->job_title) }}" class="text-decoration-none text-secondary fw-semibold">{{ $post->job_title }}</a></span>
+                    <span class="me-2">
+                        <i class="fas fa-tag text-primary me-1"></i> {{-- 圖標上色 --}}
+                        <a href="{{ route('posts.type',$insite) }}" class="text-decoration-none text-dark fw-bold">{{ $post_type_array[$insite] }}</a>
+                    </span>
+                    <span class="me-2 text-muted">|</span>
+                    <span class="me-2">
+                        張貼者：<a href="{{ route('posts.job_title',$post->job_title) }}" class="text-decoration-none text-dark fw-bold">{{ $post->job_title }}</a>
+                    </span>
                     @if($post->die_date)
-                        <span>| <i class="far fa-calendar-times me-1"></i>期限：{{ $post->die_date }} 止</span>
+                        <span class="text-muted">|</span>
+                        <span class="ms-1 text-danger fw-semibold"> {{-- 讓期限稍微顯眼一點 --}}
+                            <i class="far fa-calendar-times me-1"></i>期限：{{ $post->die_date }} 止
+                        </span>
                     @endif
-                </div>
+                </div>                
 
                 {{-- 後台管理按鈕組 --}}
                 @auth
@@ -134,7 +143,7 @@
             </div>
 
             {{-- 🎯 第二層資訊列：整合日期與點閱數，視覺上更乾淨 --}}
-            <div class="d-flex justify-content-between text-secondary small px-1 mb-4">
+            <div class="d-flex justify-content-between text-secondary px-1 mb-4">
                 <span><i class="far fa-clock me-1"></i>張貼日期：{{ $post->created_at }}</span>
                 <span><i class="far fa-eye me-1"></i>點閱：<a href="{{ asset('storage/'.$school_code.'/posts/'.$post->id.'/'.$post->id.'.txt') }}" target="_blank" class="text-decoration-none text-secondary fw-bold">{{ $post->views }}</a></span>
             </div>

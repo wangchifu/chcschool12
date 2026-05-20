@@ -33,7 +33,7 @@
             @if($can_see)
                 @if($post->title_image)
                     <td style="width: 20%;">
-                        <a href="{{ route('posts.show',$post->id) }}">
+                        <a href="{{ route('posts.show_clean',$post->id) }}" class="venobox" data-vbtype="iframe">
                             <img src="{{ asset('storage/'.$school_code.'/posts/'.$post->id.'/title_image.png') }}" class="img-fluid rounded border shadow-sm" alt="{{ $post->id }}公告的示意圖片">
                         </a>
                     </td>
@@ -56,7 +56,7 @@
                             <span class="badge bg-danger me-1">內部公告</span>
                         @endif
                         <span class="fs-5 fw-bold">
-                            <a href="{{ route('posts.show',$post->id) }}" class="text-decoration-none text-dark">{{ $post->title }}</a>
+                            <a href="{{ route('posts.show_clean',$post->id) }}" class="text-decoration-none text-dark venobox" data-vbtype="iframe">{{ $post->title }}</a>
                         </span>
                     </div>
                     

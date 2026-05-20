@@ -73,7 +73,7 @@
                                     @if($post->insite == 1)
                                         <span class="text-danger">[ 內部公告 ]</span>
                                     @endif
-                                    <a href="{{ route('posts.show',$post->id) }}" class="text-decoration-none text-dark">{{ $title }}</a>
+                                    <a href="{{ route('posts.show_clean',$post->id) }}" class="text-decoration-none text-dark venobox" data-vbtype="iframe">{{ $title }}</a>
                                 @else
                                     <span class='text-danger'>[ 內部公告 ]</span>
                                     <span class="text-muted text-decoration-line-through">{{ $title }}</span>
@@ -85,7 +85,7 @@
                         <div class="d-flex align-items-start gap-3">
                             @if($can_see && $post->title_image)
                                 <div class="flex-shrink-0">
-                                    <a href="{{ route('posts.show',$post->id) }}">
+                                    <a href="{{ route('posts.show_clean',$post->id) }}" class="venobox" data-vbtype="iframe">
                                         <img src="{{ asset('storage/'.$school_code.'/posts/'.$post->id.'/title_image.png') }}" class="img-fluid rounded border shadow-sm" style="width: 100px; object-fit: cover;" alt="{{ $post->id }}公告的示意圖片">
                                     </a>
                                 </div>
@@ -193,7 +193,7 @@
                                         @if($post->insite == 1)
                                             <span class="text-danger">[ 內部公告 ]</span>
                                         @endif
-                                        <a href="{{ route('posts.show',$post->id) }}" class="text-decoration-none text-dark">{{ $title }}</a>
+                                        <a href="{{ route('posts.show_clean',$post->id) }}" class="text-decoration-none text-dark venobox" data-vbtype="iframe">{{ $title }}</a>
                                     @else
                                         <span class='text-danger'>[ 內部公告 ]</span>
                                         <span class="text-muted text-decoration-line-through">{{ $title }}</span>
@@ -205,7 +205,7 @@
                             <div class="d-flex align-items-start gap-3">
                                 @if($can_see && $post->title_image)
                                     <div class="flex-shrink-0">
-                                        <a href="{{ route('posts.show',$post->id) }}">
+                                        <a href="{{ route('posts.show_clean',$post->id) }}" class="venobox" data-vbtype="iframe">
                                             <img src="{{ asset('storage/'.$school_code.'/posts/'.$post->id.'/title_image.png') }}" class="img-fluid rounded border shadow-sm" style="width: 100px; object-fit: cover;" alt="{{ $post->id }}公告的示意圖片">
                                         </a>
                                     </div>
