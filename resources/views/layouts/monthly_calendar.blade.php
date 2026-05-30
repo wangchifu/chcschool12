@@ -47,6 +47,7 @@ $first_w = get_date_w($this_month_date[1]);
     border-radius: 50rem;
     padding: 3px 8px;
     margin-bottom: 3px;
+    cursor: pointer; /* 🎯 加上這行，滑鼠移上去就會自動變成手型 */
   }
   .cal-event-primary   { background-color: rgba(13,110,253,.1);  color: #084298; }
   .cal-event-success   { background-color: rgba(25,135, 84,.1);  color: #0a3622; }
@@ -188,3 +189,30 @@ $first_w = get_date_w($this_month_date[1]);
     </table>
   </div>  
 </div>
+<script nonce="{{ $csp_nonce }}">
+    document.addEventListener('DOMContentLoaded', function () {
+    
+    // 1. 當點擊行程事項時，執行 sw_alert
+    document.body.addEventListener('click', function (e) {
+        const eventPill = e.target.closest('.cal-event');
+        
+        // 如果點擊的是事項，且點擊的「不是」刪除按鈕本身，才執行 sw_alert
+        if (eventPill && !e.target.closest('.delete-btn1')) {
+            // 你可以把需要傳給 sw_alert 的參數塞在這裡，例如行程文字或日期
+            const itemText = eventPill.textContent.trim(); 
+            
+            // 執行你的 function
+            sw_alert(itemText); 
+        }
+    });
+
+    // 2. 為了保險起見，當點擊刪除按鈕時，阻止事件向外傳遞（阻止冒泡）
+    document.body.addEventListener('click', function (e) {
+        const deleteBtn = e.target.closest('.delete-btn1');
+        if (deleteBtn) {
+            e.stopPropagation(); // 💡 關鍵：停止事件向上擴散，這樣就不會觸發到 cal-event 的點擊
+        }
+    });
+
+});
+</script>
