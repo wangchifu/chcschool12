@@ -84,10 +84,11 @@ class MonthlyCalendarController extends Controller
         if (empty($check)) {
             MonthlyCalendar::create($att);
         }
-        $result = true;
+        //$result = true;
 
-        echo json_encode($result);
-        return;
+        //echo json_encode($result);
+        //return;
+        return redirect('/#monthly_calendar');
     }
 
 
@@ -142,10 +143,11 @@ class MonthlyCalendarController extends Controller
         if ($monthly_calendar->user_id == auth()->user()->id or auth()->user()->admin == 1) {
             $monthly_calendar->delete();
         }
-        $result = true;
+        //$result = true;
 
-        echo json_encode($result);
-        return;
+        //echo json_encode($result);
+        //return;
+        return redirect('/#monthly_calendar');
     }
 
     public function file(Request $request)

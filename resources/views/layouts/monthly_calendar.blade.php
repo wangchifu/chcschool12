@@ -1,6 +1,8 @@
 <?php
 use Carbon\Carbon;
-$this_month =(empty($month))?date('Y-m'):$month;
+//$this_month =(empty($month))?date('Y-m'):$month;
+$this_month = request('month', date('Y-m'));
+$format_this_month = Carbon::parse($this_month)->format('Y 年 n 月');
 
 $items = \App\Models\MonthlyCalendar::where('item_date','like',$this_month.'%')->get();
 $item_array = [];
@@ -20,246 +22,169 @@ $last_month = $dt->subMonthsNoOverflow(1)->format('Y-m');
 $this_month_date = get_month_date($this_month);
 $first_w = get_date_w($this_month_date[1]);
 ?>
-@can('create',\App\Models\Post::class)
-    <script src="{{ asset('gijgo/js/gijgo.min.js') }}" type="text/javascript"></script>
-    <link href="{{ asset('gijgo/css/gijgo.min.css') }}" rel="stylesheet" type="text/css">
-    {{ Form::open(['route' => 'monthly_calendars.block_store', 'method' => 'POST','id'=>'create_calendar_form','onsubmit'=>'return false']) }}
-    <form action="{{ route('monthly_calendars.block_store') }}" method="POST" id="create_calendar_form" onsubmit="return false">
-    @csrf
-    <table>
-        <tr>
-            <td>
-                <input id="item_date" name="item_date" required maxlength="10" value="{{ date('Y-m-d') }}">
-            </td>
-            <td>
-                {{ Form::text('item',null,['id'=>'item','class' => 'form-control','required'=>'required', 'placeholder' => '事項']) }}
-            </td>
-            <td>
-                <button type="submit" class="btn btn-success btn-sm" onclick="if(confirm('您確定送出嗎?')) add_item('{{ $this_month }}');else return false">
-                    <i class="fas fa-plus"></i> 新增事項
+<style nonce="{{ $csp_nonce }}">
+  /* ── Table layout ── */
+  .cal-table {
+    table-layout: fixed;
+    width: 100%;
+  }
+  .cal-table col {
+    width: 14.2857%;
+  }
+
+  /* ── Cell height ── */
+  .cal-table tbody tr {
+    height: 110px;
+  }
+
+  /* ── Event pill ── */
+  .cal-event {
+    display: block;
+    font-size: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    border-radius: 50rem;
+    padding: 3px 8px;
+    margin-bottom: 3px;
+  }
+  .cal-event-primary   { background-color: rgba(13,110,253,.1);  color: #084298; }
+  .cal-event-success   { background-color: rgba(25,135, 84,.1);  color: #0a3622; }
+  .cal-event-danger    { background-color: rgba(220, 53, 69,.1);  color: #842029; }
+  .cal-event-warning   { background-color: rgba(255,193,  7,.15); color: #664d03; }
+  .cal-event-info      { background-color: rgba( 13,202,240,.1);  color: #055160; }
+  .cal-event-today     { background-color: #0d6efd;               color: #fff;    }
+
+  /* ── Today cell ── */
+  .cal-today {
+    background-color: rgba(13,110,253,.07) !important;
+  }
+
+  /* ── Today date badge ── */
+  .cal-today-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 50%;
+    background-color: #0d6efd;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+
+  /* ── Legend pills ── */
+  .legend-pill {
+    font-size: 11px;
+    border-radius: 50rem;
+    padding: 3px 10px;
+  }
+  #monthly_calendar {
+    scroll-margin-top: 120px; /* 數字越大，定位點就越往上（視覺上下載點會往下移） */
+  }
+</style>
+<div class="container">
+<div id="monthly_calendar"></div>
+@can('create', \App\Models\Post::class)        
+    <form action="{{ route('monthly_calendars.block_store') }}" method="POST" class="mb-4" id="add_calendar_item">
+        @csrf
+        
+        <div class="row g-2 align-items-center" style="max-width: 600px;">
+            
+            <div class="col-sm-4">
+                <input type="date" id="item_date" name="item_date" class="form-control form-control-sm bg-white" required maxlength="10" value="{{ date('Y-m-d') }}">
+            </div>
+            
+            <div class="col-sm-5">
+                <input type="text" id="item" name="item" class="form-control form-control-sm" required placeholder="請輸入行程事項...">
+            </div>
+            
+            <div class="col-sm-3 d-grid">
+                <button type="button" class="btn btn-success btn-sm fw-bold save-btn" data-form="add_calendar_item">
+                    <i class="fas fa-plus me-1"></i> 新增事項
                 </button>
-            </td>
-        </tr>
-    </table>
-    <script src="{{ asset('gijgo/js/messages/messages.zh-TW.js') }}"></script>
-    <script>
-        $('#item_date').datepicker({
-            uiLibrary: 'bootstrap4',
-            format: 'yyyy-mm-dd',
-            locale: 'zh-TW',
-        });
-    </script>
-    <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
+            </div>
+            
+        </div>
+        
+        <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
     </form>
 @endcan
-<script>
-    function add_item(){
-        $.ajax({
-            url: '{{ route('monthly_calendars.block_store') }}',
-            type : 'post',
-            dataType : 'json',
-            data : $('#create_calendar_form').serialize(),
-            success : function(result) {
-                if(result != 'failed') {
-                    var m = document.getElementById("item_date").value;
-                    month = m.substring(0,7);
-                    go_submit(month);
-                    document.getElementById("item").value = "";
-                }
-            },
-            error: function(result) {
-                alert('是不是忘了填事項？！');
-            }
-        })
-    }
+  <!-- Navigation -->
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <a href="?month={{ $last_month }}#monthly_calendar" class="btn btn-outline-secondary btn-sm px-3">← 上個月</a>
+    <h4 class="mb-0 fw-semibold">{{ $format_this_month }}</h4>
+    <a href="?month={{ $next_month }}#monthly_calendar" class="btn btn-outline-secondary btn-sm px-3">下個月 →</a>
+  </div>
 
-    function del_item(id,this_month){
-        $.ajax({
-            url: './monthly_calendars/block_destroy/'+id,
-            type : 'get',
-            dataType : 'json',
-            //data : $('#create_calendar_form').serialize(),
-            success : function(result) {
-                if(result != 'failed') {
-                    go_submit(this_month);
-                }
-            },
-            error: function(result) {
-                alert('？！');
-            }
-        })
-    }
-    function go_submit(month){
-        $('#item_month').val(month);
-        $.ajax({
-            url: '{{ route('monthly_calendars.return_month') }}',
-            type : 'post',
-            dataType : 'json',
-            data : $('#calendar_month').serialize(),
-            success : function(result) {
-                if(result != 'failed') {
-                    total_data = show_calendar(result);
-                    document.getElementById('calendar_content').innerHTML = total_data;
-                }
-            },
-            error: function(result) {
-                alert('失敗！');
-            }
-        })
-    }
+  <!-- Calendar -->
+  <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+    <table class="table table-bordered mb-0 cal-table">
+      <colgroup>
+        <col><col><col><col><col><col><col>
+      </colgroup>
 
-    function show_calendar(result){        
-        data = '<a href="#!" style="text-decoration:none;font-size: 24px" onclick="go_submit(\''+result['last_month']+'\')"><i class="fas fa-arrow-alt-circle-left text-primary"></i></a> '+result['this_month']+' <a href="#!" style="text-decoration:none;font-size: 24px" onclick="go_submit(\''+result['next_month']+'\')"><i class="fas fa-arrow-alt-circle-right text-primary"></i></a>';        
-        data = data+'<div class="table-responsive"><table class="table table-bordered table-sm">';
-        data = data+'<thead>';
-        data = data+'<tr style="background-color: #888888">';
-        data = data+'<th class="text-danger">日</th>';
-        data = data+'<th>一</th>';
-        data = data+'<th>二</th>';
-        data = data+'<th>三</th>';
-        data = data+'<th>四</th>';
-        data = data+'<th>五</th>';
-        data = data+'<th class="text-success">六</th>';
-        data = data+'</tr>';
-        data = data+'</thead>';
-        data = data+'<tbody>';
-        data = data+'<tr>';
-        for(var k in result['this_month_date']){
-            if(k==1){
-                for(i=1;i<=result['this_month_date_w'][result['this_month_date'][k]];i++){
-                    data = data+'<td width="14%"></td>';
-                }
-            }
-            if(result['today'] == result['this_month_date'][k]){
-                data = data+'<td width="14%" style="background-color:#FFFFBB;">';
-                data = data+'<div style="font-weight: bold;font-size: 17px;color:green;">';
-            }else{
-                data = data+'<td width="14%" style="background-color:#FFFFFF;">';
-                data = data+'<div style="font-weight: bold;font-size: 17px;">';
-            }
-
-            this_date = result['this_month_date'][k].substring(8,10);
-            this_month = result['this_month_date'][k].substring(0,7);
-            data = data + this_date;
-
-            var bg_array = ['info','success','warning','primary','secondary','danger'];
-            var qq=0;
-
-            for(var k1 in result['item_array']){
-                if(result['item_array'][k1]['item_date'] == [result['this_month_date'][k]]){
-                    var cht = cht_str(result['item_array'][k1]['item'],20);
-                    var q = qq%6;
-                    data = data+'<div class="bg-'+bg_array[q]+'" style="font-size:16px;width: 100%;border-radius: 3px;margin: 2px;color: #FFFFFF;padding: 2px;" data-toggle="tooltip" data-placement="top" title="'+result['item_array'][k1]['item']+'" onclick="alert(\''+[result['this_month_date'][k]]+'\\r\\n'+result['item_array'][k1]['item']+'\')">';
-                    data = data+cht;
-                    data = data+'</div>';
-                    if(result['user_id'] == result['item_array'][k1]['user_id'] || result['admin'] == "1"){
-                        //data = data + '<a href="./monthly_calendars/destroy/'+k1+'" onclick="return confirm(\'確定刪除嗎？\')">';
-                        data = data + '<img src="{{ asset('images/remove.png') }}" height="15px" onclick="if(confirm(\'確定刪除嗎?\')) del_item(\''+k1+'\',\''+this_month+'\');else return false">';
-                        //data = data + '</a>';
-                    }
-                    qq++;
-                }
-            }
-            data =data+'</div>';
-            data = data+'</td>';
-
-            if(result['this_month_date_w'][result['this_month_date'][k]]==6){
-                data = data+'</tr>';
-            }
-        }
-        $nn = 6-result['last_w'];
-        for($i=1;$i<=$nn;$i++){
-            data = data + '<td></td>';
-        }
-        data = data+'</tr>';
-        data = data+'</tbody>';
-        data = data+'</table></div>';
-
-        return data;
-    }
-
-    function cht_str(str,n){
-        var r=/[^\x00-\xff]/g;
-        if(str.replace(r,"mm").length<=n){return str;}
-        var m=Math.floor(n/2);
-        for(var i=m;i<str.length;i++){
-            if(str.substr(0,i).replace(r,"mm").length>=n){
-                return str.substr(0,i)+"...";
-            }
-        }
-        return str;
-    };
-
-</script>
-<form action="{{ route('monthly_calendars.return_month') }}" method="POST" id="calendar_month" onsubmit="return false">
-    @csrf
-<input type="hidden" name="item_month" id="item_month">
-</form>
-<div id="calendar_content">    
-    <a href="#!" style="text-decoration:none;font-size: 24px;" onclick="go_submit('{{ $last_month }}')"><i class="fas fa-arrow-alt-circle-left text-primary"></i></a> {{ $this_month }} <a href="#!" style="text-decoration:none;font-size: 24px" onclick="go_submit('{{ $next_month }}')"><i class="fas fa-arrow-alt-circle-right text-primary"></i></a>    
-    <div class="table-responsive">
-    <table class="table table-bordered table-sm">
-        <thead>
-        <tr style="background-color: #888888">
-            <th class="text-danger">日</th>
-            <th>一</th>
-            <th>二</th>
-            <th>三</th>
-            <th>四</th>
-            <th>五</th>
-            <th class="text-success">六</th>
+      <thead class="table-light">
+        <tr>
+          <th class="text-center small fw-semibold text-danger py-2">日</th>
+          <th class="text-center small fw-semibold text-secondary py-2">一</th>
+          <th class="text-center small fw-semibold text-secondary py-2">二</th>
+          <th class="text-center small fw-semibold text-secondary py-2">三</th>
+          <th class="text-center small fw-semibold text-secondary py-2">四</th>
+          <th class="text-center small fw-semibold text-secondary py-2">五</th>
+          <th class="text-center small fw-semibold text-success py-2">六</th>
         </tr>
-        </thead>
-        <tr>
-        <tr>
-            @foreach($this_month_date as $k => $v)
+      </thead>
+
+      <tbody>
+        <tr>            
+            @foreach($this_month_date as $k => $v)            
                 <?php
                 $this_date_w = get_date_w($v);
-                $bgcolor = ($v == date('Y-m-d'))?"background-color:#FFFFBB;":"background-color:#FFFFFF;";
+                $num = substr($v,8,2);        
+                $bg_array = ['cal-event-primary','cal-event-success','cal-event-danger','cal-event-warning','cal-event-info'];                    
+                $today_bg = ($v == date('Y-m-d'))?"bg-primary bg-opacity-10":"";                
                 ?>
                 @if($k == 1)
                     @for($i=1;$i<=$first_w;$i++)
-                        <td width="14%"></td>
+                        <td class="table-light p-2 align-top"></td>
                     @endfor
                 @endif
-                <td width="14%" style="{{ $bgcolor }}">
-                    <?php
-                    $num = substr($v,8,2);
-                    $c =($v==date('Y-m-d'))?"color:green;":"";
-                    $bg_array = ['info','success','warning','primary','secondary','danger'];
-                    $qq = 0;
-                    ?>
-                    <div style="font-weight: bold;font-size: 17px;{{ $c }}">
-                        {{ $num }}
-                    </div>
-                    @foreach($item_array as $k1=>$v1)
-                        <?php
-                            $q = $qq%6;
+                <td class="{{ $today_bg }} p-2 align-top">
+                    <div class="small fw-semibold mb-1">{{ $num }}</div>
+                    <?php $n=0; ?>
+                    @foreach($item_array as $k1=>$v1)                        
+                        <?php 
+                            $n = $n%5;
+                            $pill_bg = ($v == date('Y-m-d'))?"cal-event-today":$bg_array[$n];
+                            $n++;                            
                         ?>
-                        @if($v1['item_date'] == $v)
-                            <div class="bg-{{ $bg_array[$q] }}" style="font-size:16px;width: 100%;border-radius: 3px;margin: 2px;color: #FFFFFF;padding: 2px;" data-toggle="tooltip" data-placement="top" title="{{ $v1['item'] }}" onclick="alert('{{ $v }}\r\n{{ $v1['item'] }}')">
-                                {{ str($v1['item'])->limit(20) }}
-                            </div>
+                        @if($v1['item_date'] == $v)                            
+                            <span class="cal-event {{ $pill_bg }}">
                             @auth
                                 @if($v1['user_id'] == auth()->user()->id or auth()->user()->admin ==1)
-                                    <img src="{{ asset('images/remove.png') }}" height="15px" onclick="if(confirm('確定刪除嗎?')) del_item('{{ $k1 }}','{{ $this_month }}');else return false">
+                                    <a href="#!" class="delete-btn1" data-url="{{ route('monthly_calendars.block_destroy',$k1) }}">
+                                        <i class="fas fa-times text-danger"></i>                 
+                                    </a>                   
                                 @endif
-                            @endauth
-                                <?php
-                                $qq++;
-                                ?>
+                            @endauth                            
+                            {{ $v1['item'] }}
+                            </span>                            
                         @endif
                     @endforeach
-                </td>
+                </td>        
                 @if($this_date_w == 6)
                     </tr>
-                @endif
-        @endforeach
-        @for($i=1;$i<=6-$this_date_w;$i++)
-            <td></td>
-        @endfor
+                @endif                  
+            @endforeach    
+            @for($i=1;$i<=6-$this_date_w;$i++)
+                <td class="table-light p-2 align-top"></td>
+            @endfor
         </tr>
-        </tbody>
+
+      </tbody>
     </table>
-    </div>
+  </div>  
 </div>
