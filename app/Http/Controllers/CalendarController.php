@@ -132,7 +132,7 @@ class CalendarController extends Controller
                     $att['calendar_kind'] = $request->input('calendar_kind');
                     $att['content'] = $v;
                     $att['user_id'] = auth()->user()->id;
-                    $att['job_title'] = auth()->user()->title;
+                    $att['job_title'] = auth()->user()->title ?? '無職稱';
                     $att['order_by'] = auth()->user()->order_by;
 
                     $one = [
@@ -169,7 +169,22 @@ class CalendarController extends Controller
         }
 
 
-        return redirect()->route('calendars.index');
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
     /**
@@ -205,12 +220,26 @@ class CalendarController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
-    {
-        $calendar = Calendar::find($request->input('id'));
+    public function update(Request $request,Calendar $calendar)
+    {        
         $att['content'] = $request->input('content');
         $calendar->update($att);
-        echo "<body onload='opener.location.reload();window.close();'>";
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
     /**
