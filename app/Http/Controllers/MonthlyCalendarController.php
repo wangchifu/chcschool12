@@ -88,7 +88,7 @@ class MonthlyCalendarController extends Controller
 
         //echo json_encode($result);
         //return;
-        return redirect('/#monthly_calendar');
+        return back();
     }
 
 
@@ -147,7 +147,8 @@ class MonthlyCalendarController extends Controller
 
         //echo json_encode($result);
         //return;
-        return redirect('/#monthly_calendar');
+        //return redirect('/#monthly_calendar');
+        return back();
     }
 
     public function file(Request $request)
