@@ -31,7 +31,7 @@ class MeetingController extends Controller
      */
     public function index()
     {
-        $meetings = Meeting::orderBy('open_date', 'DESC')->paginate(20);
+        $meetings = Meeting::orderBy('open_date', 'DESC')->orderBy('created_at','DESC')->paginate(20);
         $data = [
             'meetings' => $meetings,
         ];
@@ -65,7 +65,23 @@ class MeetingController extends Controller
         }
 
         Meeting::create($att);
-        return redirect()->route('meetings.index');
+        //return redirect()->route('meetings.index');
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
     /**
@@ -120,7 +136,23 @@ class MeetingController extends Controller
     public function update(Request $request, Meeting $meeting)
     {
         $meeting->update($request->all());
-        return redirect()->route('meetings.index');
+        //return redirect()->route('meetings.index');
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
     /**

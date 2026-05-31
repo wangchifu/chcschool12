@@ -4,7 +4,9 @@
 
 @section('content')
     <div class="container-fluid pt-3">
-        <h1>修改檔案</h1>
+        <div class="mb-4">
+            <h1 class="fw-bold text-dark mb-2">修改檔案</h1>
+        </div>                
         @include('layouts.errors')
         
         <form action="{{ route('inside_files.update', $inside_file->id) }}" method="POST" id="this_form1">

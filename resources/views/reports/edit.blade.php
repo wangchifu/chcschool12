@@ -1,4 +1,4 @@
-@extends('layouts.master')
+@extends('layouts.master_clean')
 
 @section('nav_school_active', 'active')
 
@@ -7,59 +7,67 @@
 @section('content')
     <div class="row justify-content-center">
         <div class="col-md-11">
-            <h1>修改報告</h1>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('index') }}">首頁</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('meetings.index') }}">會議列表</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('meetings.show',$report->meeting_id) }}">{{ $report->meeting->open_date }} {{ $report->meeting->name }}</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">修改報告</li>
-                </ol>
-            </nav>
-            {{ Form::model($report,['route' => ['meetings_reports.update',$report->id], 'method' => 'PATCH','id'=>'this_form', 'files' => true]) }}
-            <div class="card my-4">
-                <h3 class="card-header">{{ $report->meeting->open_date }} {{ $report->meeting->name }} 報告資料</h3>
-                <div class="card-body">
-                    @include('layouts.errors')
-                    <div class="form-group">
-                        <label for="job_title"><strong>職稱*</strong></label>
-                        {{ Form::text('job_title',auth()->user()->title,['id'=>'job_title','class' => 'form-control', 'readonly' => 'readonly']) }}
-                    </div>
-                    <div class="form-group">
-                        <label for="content"><strong>內容*</strong></label>
-                        {{ Form::textarea('content', null, ['id' => 'content', 'class' => 'form-control', 'rows' => 10, 'placeholder' => '請輸入內容','required'=>'required']) }}
-                    </div>
-                    @include('layouts.hd')
-                    <div class="form-group">
-                        <label for="files[]">( 不大於5MB )</label>
-                        <br>
-                        @if(!empty($files))
-                            @foreach($files as $k=>$v)
-                                <?php
-                                $file = "reports/".$report->id."/".$v;
-                                $file = str_replace('/','&',$file);
-                                ?>
-                                <a href="{{ url('meetings_reports/'.$file.'/fileDel') }}" class="btn btn-danger btn-sm" id="fileDel{{ $k }}" onclick="bbconfirm_Link('fileDel{{ $k }}','確定刪附件？')"><i class="fas fa-times-circle"></i> {{ $v }}</a>
-                            @endforeach
-                        @endif
-                        @if($per < 100)
-                            {{ Form::file('files[]', ['class' => 'form-control','multiple'=>'multiple']) }}
-                        @else
-                            <span class="text-danger">容量已滿！無法加附件！</span>
-                        @endif
-                    </div>
-                    <div class="form-group">
-                        <a href="{{ route('meetings.show',$report->meeting_id) }}" class="btn btn-secondary btn-sm"><i class="fas fa-backward"></i> 返回</a>
-                        <button type="submit" class="btn btn-primary btn-sm" onclick="return confirm('確定嗎？')">
-                            <i class="fas fa-save"></i> 儲存設定
-                        </button>
+            <h1 class="fw-bold text-dark mb-4">修改報告</h1>
+            
+            <form action="{{ route('meetings_reports.update', $report->id) }}" method="POST" enctype="multipart/form-data" id="this_form1">
+                @csrf
+                @method('PATCH')
+                
+                <div class="card border border-secondary border-opacity-10 shadow-sm rounded-3 overflow-hidden my-4">
+                    <h3 class="card-header bg-light fs-5 fw-bold py-3 px-4 text-dark border-bottom">
+                        {{ $report->meeting->open_date }} {{ $report->meeting->name }} 報告資料
+                    </h3>
+                    <div class="card-body p-4">
+                        @include('layouts.errors')
+                        
+                        <div class="mb-3">
+                            <label for="job_title" class="form-label fw-bold text-secondary">職稱*</label>
+                            <input type="text" name="job_title" id="job_title" value="{{ empty(auth()->user()->title) ? '無職稱' : auth()->user()->title }}" class="form-control" readonly>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="content" class="form-label fw-bold text-secondary">內容*</label>
+                            <textarea name="content" id="content" class="form-control" rows="10" placeholder="請輸入內容" required>{{ $report->content }}</textarea>
+                        </div>
+                        
+                        @include('layouts.hd')
+                        
+                        <div class="mb-4">
+                            <label for="files" class="form-label fw-bold text-secondary">附件管理 <span class="text-muted fw-normal small">(不大於 5MB)</span></label>
+                            
+                            @if(!empty($files))
+                                <div class="d-flex flex-wrap gap-1.5 mb-3">
+                                    @foreach($files as $k=>$v)
+                                        <?php
+                                        $file = "reports/".$report->id."/".$v;
+                                        $file = str_replace('/','&',$file);
+                                        ?>
+                                        <a href="#!" class="btn btn-danger btn-sm fw-semibold btn-file-delete delete-btn1" data-url="{{ url('meetings_reports/'.$file.'/fileDel') }}">
+                                            <i class="fas fa-times-circle me-1"></i> 刪除 {{ $v }}
+                                        </a>
+                                    @endforeach
+                                </div>
+                            @endif
+                            
+                            @if($per < 100)
+                                <input type="file" name="files[]" id="files" class="form-control" multiple>
+                            @else
+                                <div class="mt-1">
+                                    <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-1.5 fw-bold small">
+                                        <i class="fas fa-exclamation-triangle me-1"></i> 容量已滿！無法加附件！
+                                    </span>
+                                </div>
+                            @endif
+                        </div>
+                        
+                        <div class="d-flex gap-2 pt-2">
+                            <button type="button" class="btn btn-primary btn-sm fw-bold px-3 shadow-sm save-btn" data-form="this_form1">
+                                <i class="fas fa-save me-1"></i> 儲存設定
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            {{ Form::close() }}
+            </form>
         </div>
     </div>
-    <script>
-        var validator = $("#this_form").validate();
-    </script>
 @endsection

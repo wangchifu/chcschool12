@@ -1,4 +1,4 @@
-@extends('layouts.master')
+@extends('layouts.master_clean')
 
 @section('nav_school_active', 'active')
 
@@ -7,25 +7,24 @@
 @section('content')
     <div class="row justify-content-center">
         <div class="col-md-11">
-            <h1>修改會議</h1>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('index') }}">首頁</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('meetings.index') }}">會議列表</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">修改會議</li>
-                </ol>
-            </nav>
+            <div class="mb-4">
+                <h1 class="fw-bold text-dark mb-2">修改會議</h1>
+            </div>
+            
             @include('layouts.errors')
+            
             <?php
             $default_date = $meeting->open_date;
-            $default_name=$meeting->name;
+            $default_name = $meeting->name;
             ?>
-            {{ Form::model($meeting,['route' => ['meetings.update',$meeting->id], 'method' => 'PATCH','id'=>'this_form']) }}
-            @include('meetings.form')
-            {{ Form::close() }}
+            
+            <form action="{{ route('meetings.update', $meeting->id) }}" method="POST" id="this_form1">
+                @csrf
+                @method('PATCH')
+                
+                @include('meetings.form')
+                
+            </form>
         </div>
     </div>
-    <script>
-        var validator = $("#this_form").validate();
-    </script>
 @endsection

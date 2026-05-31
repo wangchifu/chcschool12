@@ -1,27 +1,20 @@
-<script src="{{ asset('gijgo/js/gijgo.min.js') }}" type="text/javascript"></script>
-<link href="{{ asset('gijgo/css/gijgo.min.css') }}" rel="stylesheet" type="text/css">
-<div class="card my-4">
-    <h3 class="card-header">會議資料</h3>
-    <div class="card-body">
-        <div class="form-group">
-            <label for="datepicker">會議日期(西元/月/日)*</label>
-            <input id="datepicker" width="276" name="open_date" value="{{ $default_date }}" required>
-            <script src="{{ asset('gijgo/js/messages/messages.zh-TW.js') }}"></script>
-            <script>
-                $('#datepicker').datepicker({
-                    uiLibrary: 'bootstrap4',
-                    format: 'yyyy-mm-dd',
-                    locale: 'zh-TW',
-                });
-            </script>
+<div class="card my-4 border border-secondary border-opacity-10 shadow-sm rounded-3 overflow-hidden">
+    <h3 class="card-header bg-light fs-5 fw-bold py-3 px-4 text-dark border-bottom">會議資料</h3>
+    <div class="card-body p-4">
+        
+        <div class="mb-3">
+            <label for="datepicker" class="form-label fw-bold text-secondary">會議日期 (西元/月/日)*</label>
+            <input type="date" name="open_date" id="datepicker" value="{{ $default_date }}" class="form-control" required>            
         </div>
-        <div class="form-group">
-            <label for="title">會議名稱*</label>
-            {{ Form::text('name',$default_name,['id'=>'title','class' => 'form-control','required'=>'required','placeholder' => '會議名稱']) }}
+        
+        <div class="mb-3">
+            <label for="title" class="form-label fw-bold text-secondary">會議名稱*</label>
+            <input type="text" name="name" id="title" value="{{ $default_name }}" class="form-control" placeholder="會議名稱" required>
         </div>
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary btn-sm" onclick="return confirm('確定儲存嗎？')">
-                <i class="fas fa-save"></i> 儲存設定
+        
+        <div class="mt-4">
+            <button type="button" class="btn btn-primary btn-sm fw-bold px-3 shadow-sm save-btn" data-form="this_form1">
+                <i class="fas fa-save me-1"></i> 儲存設定
             </button>
         </div>
 

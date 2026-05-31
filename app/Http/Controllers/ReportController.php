@@ -56,7 +56,7 @@ class ReportController extends Controller
     {
         $school_code = school_code();
         $att['user_id'] = auth()->user()->id;
-        $att['job_title'] = auth()->user()->title;
+        $att['job_title'] = empty(auth()->user()->title) ? '無職稱' : auth()->user()->title;
         $att['meeting_id'] = $request->input('meeting_id');
         $att['content'] = $request->input('content');
         $att['order_by'] = auth()->user()->order_by;
@@ -71,7 +71,7 @@ class ReportController extends Controller
                     //'mime-type' => $file->getMimeType(),
                     'original_filename' => $file->getClientOriginalName(),
                     'extension' => $file->getClientOriginalExtension(),
-                    'size' => $file->getClientSize(),
+                    //'size' => $file->getClientSize(),
                 ];
 
                 $file->storeAs('privacy/'.$school_code.'/'. $folder, $info['original_filename']);
@@ -79,7 +79,23 @@ class ReportController extends Controller
             }
         }
 
-        return redirect()->route('meetings.show',$att['meeting_id']);
+        //return redirect()->route('meetings.show',$att['meeting_id']);
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
     /**
@@ -136,7 +152,7 @@ class ReportController extends Controller
     {
         $school_code = school_code();
 
-        $att['job_title'] = auth()->user()->title;
+        $att['job_title'] = empty(auth()->user()->title) ? '無職稱' : auth()->user()->title;
         $att['content'] = $request->input('content');
         $att['order_by'] = auth()->user()->order_by;
         $report->update($att);
@@ -150,7 +166,7 @@ class ReportController extends Controller
                     //'mime-type' => $file->getMimeType(),
                     'original_filename' => $file->getClientOriginalName(),
                     'extension' => $file->getClientOriginalExtension(),
-                    'size' => $file->getClientSize(),
+                    //'size' => $file->getClientSize(),
                 ];
 
                 $file->storeAs('privacy/'.$school_code.'/'. $folder, $info['original_filename']);
@@ -158,7 +174,23 @@ class ReportController extends Controller
             }
         }
 
-        return redirect()->route('meetings.show',$report->meeting_id);
+        //return redirect()->route('meetings.show',$report->meeting_id);
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
     /**
