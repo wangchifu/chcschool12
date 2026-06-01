@@ -109,7 +109,7 @@
                     {{-- 如果有分頁功能可在此加入 --}}
                     @if(method_exists($contents, 'links'))
                         <div class="mt-4">
-                            {{ $contents->links() }}
+                            {{ $contents->links('layouts.pagination') }}
                         </div>
                     @endif
                 </div>
