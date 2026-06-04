@@ -1,4 +1,4 @@
-@extends('layouts.master')
+@extends('layouts.master_clean')
 
 @section('title', '填報學生')
 
@@ -21,16 +21,20 @@
                         <tr>                    
                             <td>
                                 <form>
-                                    <select class="form-control" id="select_class" onchange="jump()">
+                                    <select class="form-control" id="select_class">
                                         @foreach($student_classes as $student_class)
-                                        <?php  $selected=($this_class->id==$student_class->id)?"selected":"";  ?>
-                                            <option value="{{ $student_class->id }}" {{ $selected }}>
+                                            <?php $selected = ($this_class->id == $student_class->id) ? "selected" : ""; ?>
+                                            
+                                            {{-- 🎯 完美對接：完全對應你的路由參數名稱 'student_class_id' --}}
+                                            <option value="{{ $student_class->id }}" 
+                                                    {{ $selected }} 
+                                                    data-url="{{ route('report_students.stu_adm_more', ['semester' => $semester, 'student_class_id' => $student_class->id]) }}">
                                                 @if(empty($student_class->class_name))
-                                                {{ $student_class->student_year }}年{{ $student_class->student_class }}班
-                                                - {{ $student_class->user_names }}
+                                                    {{ $student_class->student_year }}年{{ $student_class->student_class }}班
+                                                    - {{ $student_class->user_names }}
                                                 @else
-                                                {{ $student_class->class_name }}
-                                                - {{ $student_class->user_names }}
+                                                    {{ $student_class->class_name }}
+                                                    - {{ $student_class->user_names }}
                                                 @endif
                                             </option>
                                         @endforeach
@@ -40,27 +44,18 @@
                         </tr>
                     </table>                     
                 </div>
-                <div class="card-body">
-                    <a href="{{ route('report_students.admin') }}" class="btn btn-secondary btn-sm"><i class="fas fa-backward"></i> 返回</a>                    
-                    <br>                    
+                <div class="card-body">                             
                     <table class="table table-hover">
-                        <tr>
-                            <th>
-                                序
-                            </th>
-                            <th>
-                                學號
-                            </th>
-                            <th>
-                                班級座號
-                            </th>
-                            <th>
-                                姓名
-                            </th>
-                            <th>
-                                動作
-                            </th>
-                        </tr>
+                        <thead>
+                            <tr>
+                                <th>序</th>
+                                <th>學號</th>
+                                <th>班級座號</th>
+                                <th>姓名</th>
+                                <th>動作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                         <?php $i=1; ?>
                         @foreach($club_students as $club_student)
                             @if($club_student->disable == null)
@@ -72,36 +67,52 @@
                                 }
                             ?>
                             <tr class="{{ $black }}">
+                                <td>{{ $i }}</td>
+                                <td>{{ $club_student->no }}</td>
+                                <td>{{ $club_student->class_num }}</td>                                
+                                <td>{{ $club_student->name }}</td>        
                                 <td>
-                                    {{ $i }}
-                                </td>
-                                <td>
-                                    {{ $club_student->no }}
-                                </td>
-                                <td>
-                                    {{ $club_student->class_num }}
-                                </td>                                
-                                <td>
-                                    {{ $club_student->name }}
-                                </td>        
-                                <td>
-                                    <a href="{{ route('report_students.stu_disable',['club_student'=>$club_student->id,'student_class_id'=>$this_class->id]) }}" class="btn btn-warning btn-sm" onclick="return confirm('確定停用？座號將被改為99號！！')">停用</a>
+                                    <a href="#!" class="btn btn-warning btn-sm delete-btn1" data-msg="確定停用？" data-url="{{ route('report_students.stu_disable',['club_student'=>$club_student->id,'student_class_id'=>$this_class->id]) }}">
+                                        停用
+                                    </a>
                                 </td>                       
                             </tr>
                             <?php $i++; ?>
                             @endif
                         @endforeach
+                        </tbody>
                     </table>
                 </div>
             </div>
             @endif
         </div>
     </div>
-    <script>
-        function jump(){
-          if($('#select_class').val() !=''){
-            location="/sport_meeting/"+{{ $semester }}+"/stu_adm_more/" + $('#select_class').val();
-          }
-        }
+
+    {{-- 🎯 使用事件代理（Event Delegation），解決非同步刷新後監聽器死掉的問題，並綁定 CSP Nonce --}}
+    <script nonce="{{ $csp_nonce }}">
+        // 1. 全域監聽下拉選單變更事件
+        document.addEventListener('change', function(e) {
+            if (e.target && e.target.id === 'select_class') {
+                // 抓取選中的 option 元素
+                const selectedOption = e.target.options[e.target.selectedIndex];
+                // 讀取 Laravel route() 事前渲染好的絕對網址
+                const targetUrl = selectedOption.getAttribute('data-url');
+                
+                if (targetUrl) {
+                    // 執行精準跳轉（由後端直接控制路徑，前端再也不怕少斜線或子目錄累積問題）
+                    window.location.href = targetUrl;
+                }
+            }
+        });
+
+        // 2. 全域監聽停用按鈕點擊確認
+        document.addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('disable-student-btn')) {
+                const isConfirmed = confirm('確定停用？座號將被改為99號！！');
+                if (!isConfirmed) {
+                    e.preventDefault(); // 使用者按取消，攔截跳轉
+                }
+            }
+        });
     </script>
 @endsection

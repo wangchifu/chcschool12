@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Setup;
-use App\StudentClass;
-use App\ClubStudent;
-use App\ReportStudent;
-use App\ReportStudentItem;
-use App\ReportStudentAnswer;
+use App\Models\Setup;
+use App\Models\StudentClass;
+use App\Models\ClubStudent;
+use App\Models\ReportStudent;
+use App\Models\ReportStudentItem;
+use App\Models\ReportStudentAnswer;
 use Rap2hpoutre\FastExcel\FastExcel;
 
 class ReportStudentController extends Controller
@@ -56,7 +56,7 @@ class ReportStudentController extends Controller
             ->where('class_num','like',$class_num.'%')            
             ->orderBy('class_num')
             ->where('disable',null)
-            ->get();            
+            ->get();                          
         
         $girls = [];
         $boys = [];
@@ -74,6 +74,7 @@ class ReportStudentController extends Controller
         foreach($answers as $answer){
             $answers[$answer->report_student_item_id] = $answer->student_id;
         }
+        
         $data = [            
             'report_student' => $report_student,
             'student_year'=>$student_class->student_year,
@@ -112,7 +113,22 @@ class ReportStudentController extends Controller
             ReportStudentAnswer::insert($data);
         }
         
-        echo "<body onload='opener.location.reload();window.close();'>";
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
     public function admin()
@@ -230,9 +246,11 @@ class ReportStudentController extends Controller
     public function admin_item(ReportStudent $report_student)
     {
         $admin = check_power('填報學生', 'A', auth()->user()->id);
+        $items = ReportStudentItem::where('report_student_id', $report_student->id)->get();
         $data = [
             'admin'=>$admin,
             'report_student' => $report_student,
+            'items'=>$items,
         ];
         return view('report_students.admin_item',$data);
     }
@@ -257,7 +275,22 @@ class ReportStudentController extends Controller
             // 使用 Model 的 insert 方法一次存入
             ReportStudentItem::insert($data);
         }
-        echo "<body onload='opener.location.reload();window.close();'>";
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
     public function admin_item_delete(ReportStudentItem $report_student_item)
@@ -282,8 +315,13 @@ class ReportStudentController extends Controller
               //更新
               $report_student->update($att);
           }elseif($att['action']=="複製"){
+            /**
               //複製
               unset($att['report_student_id']);
+              $att['semester'] = $report_student->semester;
+              $att['name'] = $report_student->name;
+              $att['started_at'] = $report_student->started_at;
+              $att['stopped_at'] = $report_student->stopped_at;
               $att['user_id'] = auth()->user()->id;
               $new_report_student = ReportStudent::create($att);
               // 1. 取得舊有的 items
@@ -302,9 +340,64 @@ class ReportStudentController extends Controller
                 // 3. 一次性寫入資料庫
                 if (!empty($data)) {
                     ReportStudentItem::insert($data);
-                }         
+                }     
+            */    
             }                    
           return redirect()->back();
+    }
+
+    public function copy_report_student(ReportStudent $report_student)
+    {
+        $items = ReportStudentItem::where('report_student_id', $report_student->id)->get();
+        $data = [
+            'report_student'=>$report_student,
+            'items'=>$items,
+        ];
+        return view('report_students.copy',$data);
+    }
+
+    public function do_copy_report_student(Request $request,ReportStudent $report_student)
+    {
+        $att = $request->all(); 
+        //複製
+        unset($att['report_student_id']);        
+        $att['user_id'] = auth()->user()->id;
+        $new_report_student = ReportStudent::create($att);
+        // 1. 取得舊有的 items
+        $items = ReportStudentItem::where('report_student_id', $report_student->id)->get();
+
+        // 2. 將資料轉換為陣列格式
+        $data = $items->map(function ($item) use ($new_report_student) {
+            return [
+                'report_student_id' => $new_report_student->id,
+                'name'              => $item->name,
+                'created_at'        => now(),
+                'updated_at'        => now(),
+            ];
+        })->toArray();
+
+        // 3. 一次性寫入資料庫
+        if (!empty($data)) {
+            ReportStudentItem::insert($data);
+        }    
+
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
+
     }
 
     public function delete_report_student(ReportStudent $report_student)
@@ -377,5 +470,99 @@ class ReportStudentController extends Controller
         }
 
         return $input; // 如果格式不符，回傳原字串
+    }
+
+    public function stu_import(Request $request)
+    {
+        $admin = check_power('填報學生', 'A', auth()->user()->id);        
+        if(!$admin) return back();
+        
+        $semester = $request->input('semester');        
+        
+        // 處理檔案上傳
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $collection = (new FastExcel)->import($file);
+
+            // 🎯 預備容器：用來收集待會要「批次寫入/更新」的整包資料
+            $studentsToUpsert = [];
+            $classTeacherMap = [];
+
+            foreach ($collection as $line) {
+                // 欄位防呆檢查
+                if (!isset($line['姓名']) || !isset($line['性別']) || !isset($line['年級(數字)']) || !isset($line['班序(數字)']) || !isset($line['生日(西元)']) || !isset($line['學號']) || !isset($line['座號']) || !isset($line['導師姓名'])) {
+                    return back()->withErrors(['欄位有錯，請檢查 excel 檔']);
+                }
+
+                // 遇空行中斷
+                if (empty($line['姓名']) && empty($line['年級(數字)'])) {
+                    break;
+                }
+
+                // 收集班級導師對應表（暫存於記憶體，重複的班級會自動覆蓋，只保留最後一筆）
+                $classTeacherMap[$line['年級(數字)']][$line['班序(數字)']] = $line['導師姓名'];
+
+                // 處理生日與密碼
+                $b = explode('/', $line['生日(西元)']->format('Y/m/d'));
+                $pwd = $b[0] . sprintf("%02s", $b[1]) . sprintf("%02s", $b[2]);
+                $class_num = $line['年級(數字)'] . sprintf("%02s", $line['班序(數字)']) . sprintf("%02s", $line['座號']);
+
+                // 🎯 將這一筆學生包成陣列，丟進大池子，不再單獨敲資料庫
+                $studentsToUpsert[] = [
+                    'semester'    => $semester,
+                    'no'          => $line['學號'],
+                    'name'        => $line['姓名'],
+                    'pwd'         => $pwd,
+                    'class_num'   => $class_num,
+                    'birthday'    => $pwd,
+                    'sex'         => $line['性別'],
+                    'created_at'  => now(), // 批次寫入時原生時間戳需要手動帶入
+                    'updated_at'  => now(),
+                ];
+            }
+
+            // ==========================================
+            // 🎯 核心優化 A：學生資料「一條 SQL 處理全部」
+            // ==========================================
+            if (!empty($studentsToUpsert)) {
+                // Laravel Upsert 機制：
+                // 參數 1：所有學生資料陣列
+                // 參數 2：唯一識別不重複的欄位 (必須是資料庫的 PRIMARY 或 UNIQUE 鍵，這裡以學期+學號為例)
+                // 參數 3：如果重複了，要更新哪些欄位
+                ClubStudent::upsert(
+                    $studentsToUpsert, 
+                    ['semester', 'no'], 
+                    ['name', 'pwd', 'class_num', 'birthday', 'sex', 'updated_at']
+                );
+            }
+
+            // ==========================================
+            // 🎯 核心優化 B：班級資料「一條 SQL 處理全部」
+            // ==========================================
+            $classesToUpsert = [];
+            foreach ($classTeacherMap as $year => $classes) {
+                foreach ($classes as $classNum => $teacherName) {
+                    $classesToUpsert[] = [
+                        'semester'      => $semester,
+                        'student_year'  => $year,
+                        'student_class' => $classNum,
+                        'user_names'    => $teacherName,
+                        'user_ids'      => null, // 避免先前拉過 API 已經有導師了，依你原作邏輯清空
+                        'created_at'    => now(),
+                        'updated_at'    => now(),
+                    ];
+                }
+            }
+
+            if (!empty($classesToUpsert)) {
+                StudentClass::upsert(
+                    $classesToUpsert,
+                    ['semester', 'student_year', 'student_class'],
+                    ['user_names', 'user_ids', 'updated_at']
+                );
+            }
+        }
+
+        return back();
     }
 }

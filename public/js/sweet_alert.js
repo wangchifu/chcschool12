@@ -3,21 +3,30 @@ document.addEventListener('DOMContentLoaded', function() {
 		
 		const saveBtns = document.querySelectorAll('.save-btn');    
 		saveBtns.forEach(function(btn) {
-			btn.addEventListener('click', function() {  
+			// 🎯 1. 在這裡的 function 括號內加上 "e" 接收事件物件
+			btn.addEventListener('click', function(e) {  
+				
+				// 🎯 2. 在第一行加上這一句，立刻阻止瀏覽器原生的表單直接送出行為
+				e.preventDefault();
+
 				const formId = this.getAttribute('data-form');
 				const $form = $("#" + formId); // 取得 jQuery 物件
 
-				// 1. 手動觸發 jquery-validate 驗證
-				if ($form.valid()) {
-					// 驗證成功：才隱藏按鈕並執行後續
+				// 核心關鍵修正：改用原生的 reportValidity() 進行跨表格驗證
+				// $form[0] 可以把 jQuery 物件轉回原生的 DOM 節點物件
+				if ($form[0] && $form[0].reportValidity()) {
+					
+					// 驗證成功：隱藏按鈕並執行原本的 sweet alert 確認視窗
 					btn.style.display = 'none';
-					sw_confirm2('確定儲存嗎？', formId, btn);
+					const message = this.getAttribute('data-msg') || '確定要儲存嗎？';
+					sw_confirm2(message, formId, btn);
+
 				} else {
-					// 驗證失敗：按鈕保持顯示，提示訊息會由 jquery-validate 自動顯示在欄位旁
-					console.log('表單驗證失敗，請檢查必填欄位');
+					// 驗證失敗：按鈕保持顯示，瀏覽器會自動把畫面滾動到漏填的欄位並跳出提示
+					console.log('表單驗證失敗，請檢查跨表格的必填欄位');
 				}
 			});
-		});
+		});		
     
 
         // 抓取畫面上所有 class 含有 delete-btn 的元素 a 連結

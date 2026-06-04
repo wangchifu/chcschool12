@@ -368,7 +368,8 @@ Route::group(['middleware' => 'auth'], function () {
 
 //填報學生
     Route::get('report_student/index', [ReportStudentController::class,'index'])->name('report_students.index');    
-    Route::get('report_student/admin', [ReportStudentController::class,'admin'])->name('report_students.admin');    
+    Route::get('report_student/admin', [ReportStudentController::class,'admin'])->name('report_students.admin');   
+    Route::post('report_student/stu_import', [ReportStudentController::class, 'stu_import'])->name('report_students.stu_import'); 
     Route::get('report_student/{report_student}/admin_result', [ReportStudentController::class,'admin_result'])->name('report_students.admin_result');    
     Route::get('report_student/{report_student}/admin_result_download', [ReportStudentController::class,'admin_result_download'])->name('report_students.admin_result_download');    
     Route::get('report_student/{report_student}/admin_item', [ReportStudentController::class,'admin_item'])->name('report_students.admin_item');    
@@ -378,6 +379,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('report_student/{club_student}/stu_disable/{student_class_id}', [ReportStudentController::class,'stu_disable'])->name('report_students.stu_disable');
     Route::post('report_student/store_report_student', [ReportStudentController::class,'store_report_student'])->name('report_students.store_report_student');
     Route::post('report_student/{report_student}/update_report_student', [ReportStudentController::class,'update_report_student'])->name('report_students.update_report_student');
+    Route::get('report_student/{report_student}/copy_report_student', [ReportStudentController::class,'copy_report_student'])->name('report_students.copy_report_student');
+    Route::post('report_student/{report_student}/do_copy_report_student', [ReportStudentController::class,'do_copy_report_student'])->name('report_students.do_copy_report_student');
     Route::get('report_student/{report_student}/delete_report_student', [ReportStudentController::class,'delete_report_student'])->name('report_students.delete_report_student');    
     Route::get('report_student/{report_student}/teacher_fill', [ReportStudentController::class,'teacher_fill'])->name('report_students.teacher_fill');
     Route::post('report_student/{report_student}/save_teacher_fill', [ReportStudentController::class,'save_teacher_fill'])->name('report_students.save_teacher_fill');
