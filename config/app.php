@@ -126,6 +126,7 @@ return [
     'database'=>[
         //網址轉換資料庫代碼        
         'chcschool12.localhost'=>'s074999',        
+        'w2.hdes.chc.edu.tw'=>'s074999',    
         'www.chash.chc.edu.tw'=>'s074308',
         'www.smes.chc.edu.tw'=>'s074608',
         'www.dches.chc.edu.tw'=>'s074775',
