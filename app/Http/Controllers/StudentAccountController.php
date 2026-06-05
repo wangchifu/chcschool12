@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Setup;
+use App\Models\Setup;
 use Rap2hpoutre\FastExcel\FastExcel;
 
 class StudentAccountController extends Controller
