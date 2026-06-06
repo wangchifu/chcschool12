@@ -62,6 +62,7 @@ class StudentAccountController extends Controller
         ];
         $school_code = school_code();
         $folder = 'privacy/' . $school_code . '/student_account/';
+        del_folder(storage_path('app/'.$folder));
         //執行上傳檔案
         $file->storeAs($folder, $info['original_filename']);             
         return redirect()->route('student_account.index')->withErrors(['message' => ['上傳成功']]);        
@@ -143,7 +144,7 @@ class StudentAccountController extends Controller
          if (isset($stu_data[$classnum][$birthday])) {
                 session(['student_check_error' => 0]); // 成功找到帳號，重置錯誤計數
                 $account = $stu_data[$classnum][$birthday];
-                return redirect()->route('student_account.check')->withErrors(['message' => ['找到帳號：'.$account]]);                                
+                return redirect()->route('student_account.check')->with('success_account', $account);
           } else {
                 return redirect()->route('student_account.check')->withErrors(['message' => ['查無此帳號，請確認班級座號和生日是否正確。']]);                
           }

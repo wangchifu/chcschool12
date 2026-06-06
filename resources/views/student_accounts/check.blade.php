@@ -13,7 +13,29 @@
                 <div class="card-body p-4">
                     @if($has_file)
                         @include('layouts.errors')
-                        
+                        @if(session('success_account'))
+                            <div class="alert alert-success border-2 border-success rounded-3 p-4 mb-4 shadow-sm">
+                                <div class="text-center mb-2 text-success fw-bold">
+                                    <i class="fas fa-check-circle fa-2x mb-2 d-block"></i>
+                                    <span style="font-size: 1.2rem;">🎉 恭喜！已成功找到您的帳號</span>
+                                </div>
+                                
+                                <div class="bg-white border rounded-3 p-3 my-3 text-center">
+                                    <div class="text-muted small fw-bold mb-1">彰化縣 OpenID 帳號</div>
+                                    <span class="d-block text-danger fw-black font-monospace text-break" 
+                                        id="account_text" 
+                                        style="font-size: 2.5rem; letter-spacing: 2px;">
+                                        {{ session('success_account') }}
+                                    </span>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <button type="button" class="btn btn-outline-success fw-bold" id="copy_btn">
+                                        <i class="fas fa-copy me-1"></i> 點我複製帳號
+                                    </button>
+                                </div>
+                            </div>
+                        @endif
                         {{-- 嘗試次數提示 --}}
                         @if(session('student_check_error') > 0)
                             <div class="alert alert-danger d-flex align-items-center mb-3" role="alert">
@@ -101,4 +123,77 @@
         </div>
     </div>
 </div>
+{{-- 🎯 升級版：通吃 HTTP/HTTPS 的複製帳號腳本，完美帶上 CSP Nonce 安全憑證 --}}
+<script nonce="{{ $csp_nonce }}">
+    document.addEventListener('DOMContentLoaded', function() {
+        const copyBtn = document.getElementById('copy_btn');
+        const accountText = document.getElementById('account_text');
+
+        if (copyBtn && accountText) {
+            copyBtn.addEventListener('click', function() {
+                const textToCopy = accountText.innerText.trim();
+                
+                // 執行安全複製的函式
+                secureCopyText(textToCopy, copyBtn);
+            });
+        }
+
+        // 核心複製機制（解決非 HTTPS 環境下 navigator.clipboard 癱瘓的問題）
+        function secureCopyText(text, buttonElement) {
+            if (navigator.clipboard && window.isSecureContext) {
+                // 1. 如果是標準 HTTPS 環境，優先使用現代化 API
+                navigator.clipboard.writeText(text).then(function() {
+                    showSuccessStatus(buttonElement);
+                }).catch(function(err) {
+                    fallbackCopyMethod(text, buttonElement); // 失敗時走退路做法
+                });
+            } else {
+                // 2. 如果是傳統 HTTP 或學校內網 IP 環境，直接走相容性最高的退路寫法
+                fallbackCopyMethod(text, buttonElement);
+            }
+        }
+
+        // 傳統退路寫法：透過動態隱藏輸入框來騙過瀏覽器
+        function fallbackCopyMethod(text, buttonElement) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            
+            // 讓這個輸入框完全隱形，不影響畫面
+            textArea.style.position = "fixed";
+            textArea.style.left = "-999999px";
+            textArea.style.top = "-999999px";
+            document.body.appendChild(textArea);
+            
+            // 選取文字並執行複製
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showSuccessStatus(buttonElement);
+                } else {
+                    alert('複製失敗，請手動選取文字複製。');
+                }
+            } catch (err) {
+                console.error('退路複製方法失敗: ', err);
+                alert('您的瀏覽器不支援自動複製，請手動選取文字複製。');
+            }
+            
+            // 任務完成後，把臨時建立的輸入框銷毀
+            document.body.removeChild(textArea);
+        }
+
+        // 動態改變按鈕狀態的 UI 提示
+        function showSuccessStatus(btn) {
+            btn.className = "btn btn-success fw-bold";
+            btn.innerHTML = '<i class="fas fa-check me-1"></i> 複製成功！';
+            
+            setTimeout(function() {
+                btn.className = "btn btn-outline-success fw-bold";
+                btn.innerHTML = '<i class="fas fa-copy me-1"></i> 點我複製帳號';
+            }, 1500);
+        }
+    });
+</script>
 @endsection
