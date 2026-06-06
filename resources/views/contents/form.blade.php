@@ -33,7 +33,7 @@
         {{-- 內文 (CKEditor) --}}
         <div class="mb-3">
             <label for="my_editor" class="form-label fw-bold">內文 <span class="text-danger">*</span></label>
-            <textarea name="content" id="my_editor" class="form-control" required>{{ $content->content ?? old('content') }}</textarea>
+            <textarea name="content" id="my_editor" class="form-control">{{ $content->content ?? old('content') }}</textarea>
         </div>        
 
         <hr class="my-4">

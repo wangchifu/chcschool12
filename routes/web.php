@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\GLoginController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\MLoginController;
+use App\Http\Controllers\BlogsController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CalendarWeekController;
 use App\Http\Controllers\ClassroomOrderController;

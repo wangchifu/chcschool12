@@ -85,7 +85,23 @@ class BlogsController extends Controller
             $title_image->storeAs($folder, 'title_image.png');
         }
 
-        return redirect()->route('blogs.index');
+        //return redirect()->route('blogs.index');
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
     /**
@@ -144,7 +160,23 @@ class BlogsController extends Controller
             $title_image->storeAs($folder, 'title_image.png');
         }
 
-        return redirect()->route('blogs.index');
+        //return redirect()->route('blogs.index');
+        echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
     }
 
 
@@ -164,7 +196,8 @@ class BlogsController extends Controller
         $att['title_image'] = null;
         $blog->update($att);
 
-        return redirect()->route('blogs.edit', $blog->id);
+        //return redirect()->route('blogs.edit', $blog->id);
+        return back();
     }
 
 
@@ -174,7 +207,7 @@ class BlogsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Blog $blog)
+    public function destroy(Request $request,Blog $blog)
     {
         if (auth()->user()->id != $blog->user_id and auth()->user()->admin != 1) {
             return back();
@@ -187,7 +220,27 @@ class BlogsController extends Controller
 
         $blog->delete();
 
-        return redirect()->route('blogs.index');
+        if($request->input('close_window')=="1"){
+            echo "
+            <script>
+            // 確保頁面加載完成後執行
+            window.onload = function() {
+                // 檢查父頁面是否存在且可以訪問 jQuery
+                if (window.parent && window.parent.$) {
+                    // 關閉 venobox 視窗
+                    if (typeof window.parent.$.venobox !== 'undefined') {
+                        window.parent.$.venobox.close();  // 關閉 venobox 視窗
+                    }
+
+                    // 可選：刷新父頁面，這樣可以讓父頁面顯示最新的內容
+                    window.parent.location.reload();                
+                }
+            };
+            </script>";
+        }else{
+            return redirect()->route('blogs.index');
+        }
+        
     }
 
 

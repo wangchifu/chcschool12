@@ -110,7 +110,7 @@
                         {{-- 6. 內文 --}}
                         <div class="mb-3">
                             <label for="content" class="form-label"><strong class="text-danger">6.內文*</strong></label>
-                            <textarea name="content" id="my_editor2" class="form-control" rows="10" required placeholder="請輸入內容">{{ $post->content }}</textarea>
+                            <textarea name="content" id="my_editor2" class="form-control" rows="10" placeholder="請輸入內容">{{ $post->content }}</textarea>
                         </div>                                                                                                               
                         
                         @include('layouts.hd')                    

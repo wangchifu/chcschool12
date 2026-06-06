@@ -1,53 +1,69 @@
-@extends('layouts.master')
+@extends('layouts.master_clean')
 
 @section('nav_school_active', 'active')
 
 @section('title', '新增文章 | ')
 
 @section('content')
-    <div class="row justify-content-center">
+    <div class="row justify-content-center py-4">
         <div class="col-md-11">
-            <h1>新增文章</h1>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('index') }}">首頁</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('blogs.index') }}">文章列表</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">新增文章</li>
-                </ol>
-            </nav>            
-            <form action="{{ route('blogs.store') }}" method="POST" id="this_form" enctype="multipart/form-data">
+            
+            <!-- 標頭區塊 -->
+            <div class="d-flex align-items-center border-bottom pb-3 mb-4">
+                <h1 class="fw-bold text-secondary mb-0">
+                    <i class="fas fa-pen-nib me-2 text-success opacity-75"></i>新增文章
+                </h1>
+            </div>          
+            
+            <form action="{{ route('blogs.store') }}" method="POST" id="this_form1" enctype="multipart/form-data">
                 @csrf
-                <div class="card my-4">
-                    <h3 class="card-header">文章資料</h3>
-                    <div class="card-body">
+                <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
+                    <!-- 輕量化卡片標頭 -->
+                    <div class="card-header bg-light border-bottom py-3">
+                        <h5 class="card-title mb-0 fw-bold text-dark">
+                            <i class="fas fa-file-alt me-2 text-muted"></i>文章資料設定
+                        </h5>
+                    </div>
+                    
+                    <div class="card-body p-4">
                         @include('layouts.errors')
-                        <div class="form-group">
-                            <label for="content">標題圖片( 不大於5MB )
-                                <small class="text-secondary">jpeg, png 檔</small>
+                        
+                        <!-- 1. 標題圖片區塊 -->
+                        <div class="mb-4">
+                            <label for="title_image" class="form-label fw-bold text-secondary d-flex align-items-center mb-2">
+                                <span>標題圖片</span>
+                                <span class="badge bg-light text-dark border ms-2 font-monospace small">不大於 5MB</span>
                             </label>                            
-                            <input type="file" name="title_image" class="form-control">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-secondary"><i class="fas fa-image"></i></span>
+                                <input type="file" name="title_image" id="title_image" class="form-control" accept="image/jpeg, image/png">
+                            </div>
+                            <div class="form-text text-muted small mt-1">僅支援 jpeg, png 格式圖片</div>
                         </div>
-                        <div class="form-group">
-                            <label for="title">標題*</label>                            
-                            <input type="text" name="title" id="title" value="{{ old('title') }}" class="form-control" placeholder="標題" required>
+
+                        <!-- 2. 文章標題區塊 -->
+                        <div class="mb-4">
+                            <label for="title" class="form-label fw-bold text-secondary mb-2">標題 <span class="text-danger">*</span></label>                            
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-secondary"><i class="fas fa-heading"></i></span>
+                                <input type="text" name="title" id="title" value="{{ old('title') }}" class="form-control py-2" placeholder="請輸入文章標題" required>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="content">內文*</label>
-                            <textarea name="content" id="my-editor" class="form-control" required>{{ old('content') }}</textarea>
-                        </div>
-                        <script src="{{ asset('mycke/ckeditor.js') }}"></script>
-                        <script>
-                            CKEDITOR.replace('my-editor'
-                                ,{
-                                    filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
-                                    filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images',
-                                    filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
-                                    filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files',
-                                });
-                        </script>
-                        <div class="form-group">
-                            <button type="submit" class="btn btn-primary btn-sm" onclick="return confirm('確定儲存嗎？')">
-                                <i class="fas fa-save"></i> 儲存設定
+
+                        <!-- 3. 文章內文區塊 -->
+                        <div class="mb-4">
+                            <label for="my_editor" class="form-label fw-bold text-secondary mb-2">內文 <span class="text-danger">*</span></label>
+                            <div class="border rounded-3 p-1 bg-light">
+                                <textarea name="content" id="my_editor" class="form-control border-0" rows="10" placeholder="撰寫你的精彩內容...">{{ old('content') }}</textarea>
+                            </div>
+                        </div>                        
+                        
+                        <hr class="text-muted opacity-25 my-4">
+
+                        <!-- 4. 動作按鈕區（完全保留原本的 save-btn 類別與屬性） -->
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-primary px-4 py-2 shadow-sm rounded-pill fw-bold save-btn" data-form="this_form1">
+                                <i class="fas fa-save me-1"></i> 儲存設定
                             </button>
                         </div>
                     </div>
@@ -55,7 +71,4 @@
             </form>
         </div>
     </div>
-    <script>
-        var validator = $("#this_form").validate();
-    </script>
 @endsection
