@@ -261,14 +261,7 @@
                             <i class="fas fa-user"></i>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownUser">
-                            <a class="dropdown-item" href="#" onclick="click_count()"><i class="fas fa-user"></i> {{ auth()->user()->title }} {{ auth()->user()->name }}</a>
-                            <script>
-                                var n=0;
-                                function click_count(){
-                                    n = n+1;
-                                    alert('點了'+n+'下!');
-                                }
-                            </script>
+                            <span class="dropdown-item" href="#"><i class="fas fa-user"></i> {{ auth()->user()->title }} {{ auth()->user()->name }}</span>                            
                             @if(auth()->user()->login_type=="openID")
                                 <a class="dropdown-item" href="{{ route('edit_title') }}"><i class="fas fa-user-tag"></i> 更改職稱</a>
                             @endif
