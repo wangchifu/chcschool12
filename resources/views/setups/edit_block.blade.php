@@ -100,7 +100,7 @@
                     @elseif(!str_contains($block->title,'系統區塊'))
                         <div class="mb-3">
                             <label for="my_editor" class="form-label">6.內文*</label>
-                            <textarea name="content" id="my_editor" class="form-control" required rows="10">{{ $block->content }}</textarea>
+                            <textarea name="content" id="my_editor" class="form-control" rows="10">{{ $block->content }}</textarea>
                         </div>
                     @endif
                 </td>

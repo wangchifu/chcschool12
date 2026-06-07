@@ -37,7 +37,7 @@
         {{-- 內文 (CKEditor) --}}
         <div class="mb-4">
             <label for="my_editor" class="form-label fw-bold">內文 <span class="text-danger">*</span></label>
-            <textarea name="content" id="my_editor" class="form-control" required>{{ $department->content ?? '' }}</textarea>
+            <textarea name="content" id="my_editor" class="form-control">{{ $department->content ?? '' }}</textarea>
         </div>        
 
         <hr class="my-4">
