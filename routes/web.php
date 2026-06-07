@@ -158,6 +158,7 @@ Route::get('tasks/{task}/disable', [TaskController::class, 'disable'])->name('ta
 Route::post('tasks/store', [TaskController::class, 'store'])->name('tasks.store');
 Route::post('tasks/self_store', [TaskController::class, 'self_store'])->name('tasks.self_store');
 Route::post('tasks/user_condition', [TaskController::class, 'user_condition'])->name('tasks.user_condition');
+Route::get('file_open/{file}', [HomeController::class, 'openFile'])->name('openFile');
 
 // --- 借用系統 ---
 Route::get('lends/clean/{lend_class_id?}/{this_date?}', [LendsController::class, 'index'])->name('lends.clean');
@@ -196,8 +197,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('sims/impersonate_leave', [SimulationController::class, 'impersonate_leave'])->name('sims.impersonate_leave');
 
     // 檔案操作
-    Route::get('file/{file}', [HomeController::class, 'getFile'])->name('getFile');
-    Route::get('file_open/{file}', [HomeController::class, 'openFile'])->name('openFile');
+    Route::get('file/{file}', [HomeController::class, 'getFile'])->name('getFile');    
     Route::get('img/{path}', [HomeController::class, 'getImg'])->name('getImg');
 
     // 會議文稿

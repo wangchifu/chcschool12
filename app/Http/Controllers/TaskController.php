@@ -218,7 +218,7 @@ class TaskController extends Controller
                     //'mime-type' => $file->getMimeType(),
                     'original_filename' => $file->getClientOriginalName(),
                     'extension' => $file->getClientOriginalExtension(),
-                    'size' => $file->getClientSize(),
+                    //'size' => $file->getClientSize(),
                 ];
 
                 $file->storeAs('privacy/' . $school_code . '/' . $folder, $info['original_filename']);

@@ -28,19 +28,25 @@
                     <?php
                         $files = get_files(storage_path('app/privacy/'.$school_code.'/tasks/'.$user_task->task_id));
                     ?>
-                    {{ Form::open(['route' => ['tasks.user_condition',$user_task->id], 'method' => 'POST','id'=>'user_condition'.$user_task->id,'onsubmit'=>'return false']) }}
-                    <input type="hidden" name="user_id" value="{{ $user->id }}">
-                    <input type="hidden" name="user_task_id" value="{{ $user_task->id }}">
-                    <input type="hidden" name="old_condition" value="{{ $user_task->condition }}">
-                    <input type="hidden" name="condition" value="1">
-                    {{ Form::close() }}
+                    {{-- 🛠️ Form::open 改為標準 <form> 並補上 @csrf --}}
+                    <form action="{{ route('tasks.user_condition', $user_task->id) }}" method="POST" id="user_condition{{ $user_task->id }}">
+                        @csrf
+                        <input type="hidden" name="user_id" value="{{ $user->id }}">
+                        <input type="hidden" name="user_task_id" value="{{ $user_task->id }}">
+                        <input type="hidden" name="old_condition" value="{{ $user_task->condition }}">
+                        <input type="hidden" name="condition" value="1">
+                    </form>
+
                     @if($user_task->task->disable)
                     <span style="text-decoration:line-through;text-decoration-color: red;word-wrap:break-word;">
-                        <i class="fas fa-check-circle text-success" onclick="go_submit('{{ $user_task->id }}')"></i> <span class="badge badge-danger">已廢</span> {{ $user_task->task->title }}
+                        {{-- 🛠️ 移除 onclick，改加 class="task-check-icon" 做全域事件委派監聽 --}}
+                        <i class="fas fa-check-circle text-success task-check-icon" style="cursor: pointer;"></i> 
+                        {{-- 🛠️ Bootstrap 5 樣式修正：badge badge-danger -> badge bg-danger --}}
+                        <span class="badge bg-danger">已廢</span> {{ $user_task->task->title }}
                     </span>
                     @else
                     <span style="text-decoration:line-through;word-wrap:break-word;">
-                        <i class="fas fa-check-circle text-success" onclick="go_submit('{{ $user_task->id }}')"></i> {{ $user_task->task->title }}
+                        <i class="fas fa-check-circle text-success task-check-icon" style="cursor: pointer;"></i> {{ $user_task->task->title }}
                     </span>
                     @endif
                         @if(!empty($files))
@@ -52,14 +58,16 @@
                                 $file = $school_code."/tasks/".$user_task->task_id."/".$v;
                                 $file = str_replace('/','&',$file);
                                 ?>
-                                <a href="{{ url('file_open/'.$file) }}" class="badge badge-primary" target="_blank"><i class="fas fa-download"></i> 檔{{ $n }}</a>
+                                {{-- 🛠️ Bootstrap 5 樣式修正：badge badge-primary -> badge bg-primary text-decoration-none --}}
+                                <a href="{{ url('file_open/'.$file) }}" class="badge bg-primary text-decoration-none" target="_blank"><i class="fas fa-download"></i> 檔{{ $n }}</a>
                             <?php $n++; ?>
                             @endforeach
                         @endif
                     <br>
                     <small class="text-secondary">({{ $user_task->task->user->name }} {{ $user_task->task->created_at }})</small>
                     @if($user_task->task->user->id == $user->id and $user_task->task->disable==null)
-                        <a href="{{ route('tasks.disable',$user_task->task_id) }}" onclick="if(confirm('作廢嗎?')) return true;else return false"><i class="fas fa-times-circle text-danger"></i></a>
+                        {{-- 🛠️ 移除行內 onclick confirm，統一改用你的自訂 sweet alert class: delete-btn1 --}}
+                        <a href="#!" class="delete-btn1" data-msg="作廢嗎?" data-url="{{ route('tasks.disable',$user_task->task_id) }}"><i class="fas fa-times-circle text-danger"></i></a>
                     @endif
                     <hr>
                 @endforeach
@@ -67,64 +75,110 @@
             </div>
         </div>
     </div>
-    <script>
-        function go_submit(id){
-            $.ajax({
-                url: '{{ route('tasks.user_condition') }}',
-                type : 'post',
-                dataType : 'json',
-                data : $('#user_condition'+id).serialize(),
-                success : function(result) {
-                    if(result != 'failed') {
-                        total_data = show_conntent(result);
-                        document.getElementById('task_content').innerHTML = total_data;
-                    }
-                },
-                error: function(result) {
-                    alert('失敗！');
+
+    {{-- 🛠️ 補上 CSP 安全所需的 nonce 權杖 --}}
+    <script nonce="{{ $csp_nonce }}">
+        // ─── 1. 原生全域事件委派監聽（完全相容 CSP，重繪後絕不失效） ───
+        
+        // A. 監聽綠色勾勾圖標的點擊（把完成改回待辦）
+        document.addEventListener('click', function(event) {
+            if (event.target && event.target.classList.contains('task-check-icon')) {
+                // 尋找跟勾勾同層、前方的那個表單
+                var form = event.target.closest('span').previousElementSibling;
+                // 安全防護：如果前方不是 form，嘗試向外尋找最近的關聯 form
+                if (!form || form.tagName !== 'FORM') {
+                    form = event.target.parentElement.previousElementSibling;
+                }
+                
+                if (form && form.tagName === 'FORM') {
+                    var formData = new FormData(form);
+                    go_submit_native(formData);
+                }
+            }
+        });
+
+        // ─── 2. 原生 AJAX 提交函式（替代原本失效的 jQuery $.ajax） ───
+        function go_submit_native(formData) {
+            fetch('{{ route('tasks.user_condition') }}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
             })
-        };
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(result) {
+                if (result !== 'failed') {
+                    // 🔄 重新生成完整的 HTML 清單並刷回畫面
+                    var total_data = show_conntent(result);
+                    document.getElementById('task_content').innerHTML = total_data;
+
+                    // ✨【關鍵】：畫面上網頁結構被 innerHTML 洗掉後，重新呼叫你專案原有的初始化函式
+                    // 讓新長出來的 .delete-btn1 重新掛上你寫好的漂亮 SweetAlert 監聽
+                    if (typeof init_delete_btn === 'function') {
+                        init_delete_btn();
+                    }
+                }
+            })
+            .catch(function(error) {
+                alert('失敗！');
+                console.error(error);
+            });
+        }
+
+        // ─── 3. 原生動態渲染畫面（重繪列表 HTML） ───
         function show_conntent(result){
-            data = '';
+            var data = '';
+            // 事先將帶有 PLACEHOLDER 的 Laravel 路由編譯好，供迴圈內 replace 使用
+            var routeUrl = "{{ route('tasks.disable', 'PLACEHOLDER') }}";
+
             for(var k in result['user_task']){
-                data = data + '<form method="POST" action="{{ route('tasks.user_condition') }}'+result['user_task'][k]['user_task_id']+'" accept-charset="UTF-8" id="user_condition'+result['user_task'][k]['user_task_id']+'" onsubmit="return false">';
+                data = data + '<form method="POST" action="{{ route('tasks.user_condition') }}'+result['user_task'][k]['user_task_id']+'" accept-charset="UTF-8" id="user_condition'+result['user_task'][k]['user_task_id']+'">';
                 data = data + '<input name="_token" type="hidden" value="'+result['token']+'">';
                 data = data + '<input type="hidden" name="user_id" value="{{ $user->id }}">';
-                data = data + '<input type="hidden" name="user_task_id" value="'+result['user_task'][k]['user_task_id']+'">';
+                data = data + '<input type="hidden" name="user_task_id" value="' + result['user_task'][k]['user_task_id'] + '">';
                 data = data + '<input type="hidden" name="old_condition" value="'+result['old_condition']+'">';
                 data = data + '<input type="hidden" name="condition" value="1">';
                 data = data + '</form>';
-                if(result['user_task'][k]['disable']==1){
+                
+                if(result['user_task'][k]['disable'] == 1){
                     data = data + '<span style="text-decoration:line-through;text-decoration-color: red;word-wrap:break-word;">';
-                    data = data + '<i class="fas fa-check-circle text-success" onclick="go_submit(\''+result['user_task'][k]['user_task_id']+'\')"></i> <span class="badge badge-danger">已廢</span> '+result['user_task'][k]['title'];
+                    data = data + '<i class="fas fa-check-circle text-success task-check-icon" style="cursor: pointer;"></i> <span class="badge bg-danger">已廢</span> ' + result['user_task'][k]['title'];
                     data = data + '</span>';
-                }else{
+                } else {
                     data = data + '<span style="text-decoration:line-through;word-wrap:break-word;">';
-                    data = data +'<i class="fas fa-check-circle text-success" onclick="go_submit(\''+result['user_task'][k]['user_task_id']+'\')"></i> '+result['user_task'][k]['title'];
-                    data = data +'</span>';
+                    data = data + '<i class="fas fa-check-circle text-success task-check-icon" style="cursor: pointer;"></i> ' + result['user_task'][k]['title'];
+                    data = data + '</span>';
                 }
+                
                 if(result['files'][k] != null){
                     if(result['files'][k][1] != 0){
-                        data = data + '<br>';
-                        data = data + '附件：';
+                        data = data + '<br>附件：';
                         for(var j in result['files'][k]){
-                            data = data + '<a href="{{ url('file_open') }}/'+result['files'][k][j]+'" class="badge badge-primary" target="_blank"><i class="fas fa-download"></i> 檔'+j+'</a> ';
+                            data = data + '<a href="{{ url('file_open') }}/'+result['files'][k][j]+'" class="badge bg-primary text-decoration-none" target="_blank"><i class="fas fa-download"></i> 檔'+j+'</a> ';
                         }
                     }
                 }
+                
                 data = data + '<br>';
-                t = result['user_task'][k]['created_at'].replace(',',' ');
-                data = data +'<small class="text-secondary">('+result['user_task'][k]['name']+' '+t+')</small>';
-                if(result['user_task'][k]['user_id'] == {{ $user->id }} && result['user_task'][k]['disable']==null){
-                    data = data + '<a href="{{ url('tasks.disable') }}/'+result['user_task'][k]['user_task_id']+'" onclick="if(confirm(\'作廢嗎?\')) return true;else return false"><i class="fas fa-times-circle text-danger"></i></a>';
+                var t = result['user_task'][k]['created_at'].replace(',',' ');
+                data = data + '<small class="text-secondary">('+result['user_task'][k]['name']+' '+t+')</small>';
+                
+                if(result['user_task'][k]['user_id'] == {{ $user->id }} && result['user_task'][k]['disable'] == null){
+                    var finalUrl = routeUrl.replace('PLACEHOLDER', result['user_task'][k]['task_id']);
+                    // 保持你最原本乾淨的 SweetAlert 格式
+                    data = data + ' <a href="#!" class="delete-btn1" data-msg="作廢嗎?" data-url="' + finalUrl + '"><i class="fas fa-times-circle text-danger"></i></a>';
                 }
 
-                data =data + '<hr>';
+                data = data + '<hr>';
             }
+            
             if(result['count'] > 20){
-                data = data +'<a href="?page=2" class="btn btn-secondary">更多...</a><br><br>';
+                data = data + '<a href="?page=2" class="btn btn-secondary">更多...</a><br><br>';
             }
+            
             return data;
         }
     </script>

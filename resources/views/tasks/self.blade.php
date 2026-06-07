@@ -23,29 +23,37 @@
                 </li>
             </ul>
             <hr>
-            {{ Form::open(['route' => 'tasks.self_store', 'method' => 'POST','id'=>'tasks_self_store','files' => true]) }}
-            <table width="100%">
-                <tr>
-                    <td width="60%">
-                        {{ Form::text('title',null,['id'=>'title','class' => 'form-control','required'=>'required', 'placeholder' => '自己的事項']) }}
-                    </td>
-                    <td>
-                        {{ Form::file('files[]', ['class' => 'form-control','multiple'=>'multiple']) }}
-                    </td>
-                    <td>
-                        <button type="submit" class="btn btn-success btn-sm" onclick="if(confirm('您確定送出嗎?')) return true;else return false">
-                            <i class="fas fa-plus"></i> 新增
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <small>請簡短扼要；一次新增一事項。</small>
-                    </td>
-                </tr>
-            </table>
-            <input type="hidden" name="user_id" value="{{ $user->id }}">
-            {{ Form::close() }}
+            
+            {{-- 🛠️ 1. 改為標準 HTML <form> 標籤，並加上 enctype 確保檔案能正常上傳 --}}
+            <form action="{{ route('tasks.self_store') }}" method="POST" id="tasks_self_store" enctype="multipart/form-data">
+                {{-- 🛠️ 2. 補上 Laravel 必要的 CSRF 權杖 --}}
+                @csrf
+                
+                <table width="100%">
+                    <tr>
+                        <td width="60%">
+                            {{-- 🛠️ 3. 改為標準 <input type="text"> --}}
+                            <input type="text" name="title" id="title" class="form-control" required="required" placeholder="自己的事項">
+                        </td>
+                        <td>
+                            {{-- 🛠️ 4. 改為標準 <input type="file"> --}}
+                            <input type="file" name="files[]" class="form-control" multiple="multiple">
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-success btn-sm save-btn" data-form="tasks_self_store">
+                                <i class="fas fa-plus"></i> 新增
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <small>請簡短扼要；一次新增一事項。</small>
+                        </td>
+                    </tr>
+                </table>
+                <input type="hidden" name="user_id" value="{{ $user->id }}">
+            {{-- 🛠️ 5. 改為標準 </form> --}}
+            </form>
 
         </div>
     </div>
