@@ -231,7 +231,7 @@
                                 <table class="table table-bordered align-middle">
                                     <thead class="table-light">
                                         <tr class="small text-center">
-                                            <th>首頁</th><th>公告系統</th><th>檔案庫</th><th>學校介紹</th><th>校務行政</th><th>系統設定</th>
+                                            <th>首頁</th><th>公告系統</th><th>檔案庫</th><th>學校介紹</th><th>校務行政</th><th>系統設定</th><th>登入</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -242,6 +242,7 @@
                                             <td><input type="text" name="department_name" value="{{ old('department_name', $setup->department_name) }}" class="form-control form-control-sm"></td>
                                             <td><input type="text" name="schoolexec_name" value="{{ old('schoolexec_name', $setup->schoolexec_name) }}" class="form-control form-control-sm"></td>
                                             <td><input type="text" name="setup_name" value="{{ old('setup_name', $setup->setup_name) }}" class="form-control form-control-sm"></td>
+                                            <td><input type="text" name="login_name" value="{{ old('login_name', $setup->login_name) }}" class="form-control form-control-sm"></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -251,11 +252,9 @@
                         <span class="btn btn-primary btn-sm save-btn" data-form="this_form2">
                             <i class="fas fa-save"></i> 儲存設定二
                         </span>
-                        @if($setup->nav_color != "#DD0F20,#F18A31,#F8EB48,#16813D")
-                            <span id="saveBtn3" class="btn btn-danger btn-sm" data-url="{{ route('setups.nav_default') }}">
-                                <i class="fa-solid fa-trash"></i> 還原「設定二」回預設
-                            </span>
-                        @endif
+                        <span id="saveBtn3" class="btn btn-danger btn-sm delete-btn1" data-msg="確定要還原成預設？" data-url="{{ route('setups.nav_default') }}">
+                            <i class="fa-solid fa-trash"></i> 還原「設定二」回預設
+                        </span>                                                
                     </div>
                 </div>
             </form>

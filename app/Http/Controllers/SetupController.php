@@ -185,6 +185,7 @@ class SetupController extends Controller
         $att['department_name'] = null;
         $att['schoolexec_name'] = null;
         $att['setup_name'] = null;
+        $att['login_name'] = null;
         $setup->update($att);
         return redirect()->route('setups.index');
     }
