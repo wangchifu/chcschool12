@@ -2,9 +2,8 @@
 //檢查有無新版本的sql檔
 $sqls = get_files(database_path('sqls'));
 
-if (isset($_SERVER['HTTP_HOST'])) {
+if (isset($_SERVER['HTTP_HOST']) and $_SERVER['HTTP_HOST'] != 'chcschool2.localhost' and $_SERVER['HTTP_HOST'] != 'chcschool.chc.edu.tw') {
     $install_sqls = \App\Models\Sql::where('install', 1)->pluck('name')->toArray();
-
     foreach ($sqls as $k => $v) {
         if (!in_array($v, $install_sqls)) {
             $file = database_path('sqls') . '/' . $v;
@@ -60,6 +59,10 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\WrenchController;
 use App\Http\Controllers\ReportStudentController;
 use App\Http\Controllers\StudentAccountController;
+use App\Http\Controllers\ChcSchoolController;
+
+Route::get('pages', [ChcSchoolController::class,'pages'])->name('pages');
+Route::get('chc_air', [ChcSchoolController::class,'chc_air'])->name('chc_air');
 
 Route::post('webhook', [HomeController::class, 'webhook'])->name('webhook');
 Route::get('close', [SetupController::class, 'close'])->name('close');

@@ -12,7 +12,8 @@ class WrenchController extends Controller
 {
     public function __construct()
     {
-        $this->db = new SQLite3(env('SQLITE'));
+        $dbPath = storage_path(env('SQLITE', 'app/privacy/chcschool_qa.db'));
+        $this->db = new SQLite3($dbPath);  
     }
     public function index($page=null)
     {
@@ -27,6 +28,9 @@ class WrenchController extends Controller
         $page = (empty($page))?"1":$page;
         $n1 = ($page-1)*10;
         $admin =(auth()->user()->code == env('ADMIN_CODE') and auth()->user()->username == env('ADMIN_USERNAME'))?"1":"";
+        if(session('sys_login')==1){
+            $admin = "1";
+        }
         $sql = "select * from wrenches order by id DESC limit ".$n1.",10";
         $this->db->exec($sql);
         $ret = $this->db->query($sql);
@@ -100,12 +104,13 @@ class WrenchController extends Controller
         $subject = '學校網站平台'.$user->school.'回報系統錯誤與建議';
         $body = $request->input('content');
         $string = $subject."\n\n".$body;
-        //line_notify(env('ADMIN_LINE_KEY'),$string);
-        
-        //send_mail(env('ADMIN_EMAIL'),$subject,$body);
-        Mail::raw($body, function ($body) use ($subject){
-            $body->to(env('ADMIN_EMAIL'))->subject($subject);
-        });
+        // 只有在 $adminEmail 有值且不為空時才執行寄信
+        $adminEmail = env('ADMIN_EMAIL');
+        if (!empty($adminEmail)) {
+            Mail::raw($body, function ($message) use ($subject, $adminEmail) {
+                $message->to($adminEmail)->subject($subject);
+            });
+        }      
         return redirect()->route('wrench.index');
     }
 

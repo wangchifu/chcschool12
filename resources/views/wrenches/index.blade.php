@@ -23,49 +23,51 @@
                     </h3>
                 </div>
                 <div class="card-body">
-                    {{ Form::open(['route' => 'wrench.store', 'method' => 'POST', 'files' => true]) }}
-                    <div class="form-group">
-                        <label class="text-primary"><strong>填 EMail 可收回覆信件</strong></label>
-                        <input type="email" name="email" value="{{ auth()->user()->email }}" class="form-control">
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="iknow" required>
-                        <label class="form-check-label text-danger" for="iknow">
-                          <strong>我知道這裡不是報修物品的地方</strong>
-                        </label>
-                    </div>
-                    <br>
-                    <div class="form-group">
-                        <label class="text-danger"><strong>反應內容*</strong></label>
-                        <textarea name="content" class="form-control" required placeholder="學校網頁系統有什麼問題，請詳細描述，或留公務電話聯絡"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>附件</label><br>
-                        {{ Form::file('files[]', ['class' => 'form-control','multiple'=>'multiple']) }}
-                    </div>
-                    <div class="form-group">
-                        <button class="btn btn-primary btn-sm" onclick="return confirm('確定送出？')">送出</button>
-                    </div>
-                    <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
-                    {{ Form::close() }}
+                    <form action="{{ route('wrench.store') }}" method="POST" enctype="multipart/form-data" id="this_form1">
+                        @csrf
+                        <div class="mb-3">
+                            <label class="form-label text-primary"><strong>填 EMail 可收回覆信件</strong></label>
+                            <input type="email" name="email" value="{{ auth()->user()->email }}" class="form-control">
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="iknow" required value="1">
+                            <label class="form-check-label text-danger" for="iknow">
+                                <strong>我知道這裡不是報修物品的地方</strong>
+                            </label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-danger"><strong>反應內容*</strong></label>
+                            <textarea name="content" class="form-control" required placeholder="學校網頁系統有什麼問題，請詳細描述，或留公務電話聯絡"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">附件</label>
+                            <input type="file" name="files[]" class="form-control" multiple>
+                        </div>
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-primary btn-sm save-btn" data-form="this_form1">送出</button>
+                        </div>
+                        <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
+                    </form>
+
                     <hr>
                     若不願意公開留言，可 email 至 {{ env('ADMIN_EMAIL') }} 反應。
                     <hr>
+
                     <h4>已填報列表</h4>
                     @foreach($wrenches as $k=>$wrench)
-                        <div class="card">
+                        <div class="card mb-3">
                             <div class="card-header" style="background-color: #FFCC22">
                                 @if($admin==1)
                                     @if($wrench['show'] !=1)
                                         <a href="{{ route('wrench.set_show',$wrench['id']) }}" class="btn btn-success btn-sm" onclick="return confirm('確定嗎？')">設為顯示</a>
                                     @endif
-				    {{ $wrench['school'] }} / {{ $wrench['job_title']  }} / {{ $wrench['name'] }} /
+                                    {{ $wrench['school'] }} / {{ $wrench['job_title'] }} / {{ $wrench['name'] }} /
                                 @else
                                     {{ mb_substr($wrench['name'],0,1) }}** /
                                 @endif
                                 {{ $wrench['created_at'] }}
                                 @if($admin==1)
-                                    <a href="{{ route('wrench.destroy',$wrench['id']) }}" onclick="return confirm('確定刪除？')"><i class="fas fa-times-circle text-danger"></i></a>
+                                    <a href="#!" data-url="{{ route('wrench.destroy',$wrench['id']) }}" class="delete-btn1"><i class="fas fa-times-circle text-danger"></i></a>
                                 @endif
                             </div>
                             <div class="card-body" style="background-color: #FFFFBB">
@@ -92,29 +94,32 @@
                                 @else
                                     <span class="text-danger">**審核中**</span>
                                 @endif
+
                                 @if($admin==1)
                                     @if(empty($wrench['reply']))
-                                        {{ Form::open(['route' => 'wrench.reply', 'method' => 'POST']) }}
-                                        <div class="form-group">
-                                            <textarea name="reply" class="form-control" placeholder="管理者回覆"></textarea>
-                                        </div>
-                                        <div class="form-group">
-                                            <button class="btn btn-primary btn-sm" onclick="return confirm('確定送出？')">送出</button>
-                                        </div>
-                                        <input type="hidden" name="id" value="{{ $wrench['id'] }}">
-                                        {{ Form::close() }}
+                                        <form action="{{ route('wrench.reply') }}" method="POST" class="mt-3" id="reply_form{{ $wrench['id'] }}">
+                                            @csrf
+                                            <div class="mb-3">
+                                                <textarea name="reply" class="form-control" placeholder="管理者回覆"></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <button type="button" class="btn btn-primary btn-sm save-btn" data-form="reply_form{{ $wrench['id'] }}">送出</button>
+                                            </div>
+                                            <input type="hidden" name="id" value="{{ $wrench['id'] }}">
+                                        </form>
                                     @endif
                                 @endif
+
                                 @if(!empty($wrench['reply']))
                                     <hr>
-                                    <strong>管理者回覆：</strong><small class="text-secondary">{{ $wrench['updated_at']  }}</small><br>
+                                    <strong>管理者回覆：</strong><small class="text-secondary">{{ $wrench['updated_at'] }}</small><br>
                                     <span class="text-danger">{!! nl2br($wrench['reply']) !!}</span>
                                 @endif
                             </div>
                         </div>
-                        <br>
                     @endforeach
-                    <div style="text-align:center">
+
+                    <div class="text-center">
                         <a href="{{ route('wrench.index',$page1) }}" class="btn btn-secondary btn-sm {{ $disabled1 }}">
                             <i class="fas fa-arrow-alt-circle-left"></i> 上一頁
                         </a>
