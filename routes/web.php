@@ -1,19 +1,4 @@
 <?php
-//檢查有無新版本的sql檔
-$sqls = get_files(database_path('sqls'));
-
-if (isset($_SERVER['HTTP_HOST']) and $_SERVER['HTTP_HOST'] != 'chcschool2.localhost' and $_SERVER['HTTP_HOST'] != 'chcschool.chc.edu.tw') {
-    $install_sqls = \App\Models\Sql::where('install', 1)->pluck('name')->toArray();
-    foreach ($sqls as $k => $v) {
-        if (!in_array($v, $install_sqls)) {
-            $file = database_path('sqls') . '/' . $v;
-            \Illuminate\Support\Facades\DB::unprepared(file_get_contents($file));
-            $att['name'] = $v;
-            $att['install'] = 1;
-            \App\Models\Sql::create($att);
-        }
-    }
-}
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\GLoginController;

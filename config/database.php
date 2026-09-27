@@ -2,14 +2,6 @@
 
 use Illuminate\Support\Str;
 
-//若是瀏覽器用DNS連線，取得該校的database，否則是使用示範database
-$database = config('app.database');
-if(isset($_SERVER['HTTP_HOST'])){
-    $d = $database[$_SERVER['HTTP_HOST']];
-}else{
-    $d = env('DB_DATABASE');
-}
-
 return [
 
     /*
@@ -56,8 +48,7 @@ return [
             'url' => env('DB_URL'),
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '3306'),
-            //'database' => env('DB_DATABASE', 'laravel'),
-            'database' => $d,
+            'database' => env('DB_DATABASE', 'laravel'),            
             'username' => env('DB_USERNAME', 'root'),
             'password' => env('DB_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),

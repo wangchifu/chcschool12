@@ -11,6 +11,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // 1. 註冊全域中間件（每次 HTTP 請求都會先執行切換資料庫）
+        $middleware->append(\App\Http\Middleware\SwitchDatabaseMiddleware::class);
 // 這裡對應您原本在 Kernel.php 中的 $routeMiddleware
         $middleware->alias([
             'admin'      => \App\Http\Middleware\AdminMiddleware::class,
