@@ -773,7 +773,7 @@ class SetupController extends Controller
         $cht_key = session('cht_chaptcha');
 
         header("Content-type: image/gif");
-        $images = asset('images/captcha_bk' . $back . '.gif');
+        $images = public_path('images/captcha_bk' . $back . '.gif');
 
         $context = stream_context_create([
             "ssl" => [

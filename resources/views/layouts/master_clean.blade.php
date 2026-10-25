@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant-TW">
 
 <head>
     <?php        
         $school_code = school_code();
         $setup = \App\Models\Setup::first();
 
-        // 完整保留你的瀏覽統計邏輯
+        // 完整保留瀏覽統計邏輯
         $setup_key = "setup".$school_code;
         if(!session($setup_key)){
             $att['views'] = $setup->views+1;
@@ -15,7 +15,7 @@
         session([$setup_key => '1']);
 
         $nav_color = (empty($setup->nav_color))?"navbar-dark bg-dark":"navbar-custom";
-        $bg_color = (empty($setup->bg_color))?"#f0f1f6":$setup->bg_color;
+        $bg_color = (empty($setup->bg_color))?"#f8fafc":$setup->bg_color;
         $navbar_custom = (empty($setup->nav_color))?['0'=>'','1'=>'','2'=>'','3'=>'']:explode(",",$setup->nav_color);        
     ?>
     
@@ -33,58 +33,52 @@
     <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
     script-src 'self' 'nonce-{{ $csp_nonce }}' https://cdn.jsdelivr.net;
-    style-src 'self' 'nonce-{{ $csp_nonce }}' https://cdn.jsdelivr.net;
-    font-src 'self' https://cdn.jsdelivr.net;
+    style-src 'self' 'nonce-{{ $csp_nonce }}' https://cdn.jsdelivr.net https://fonts.googleapis.com;
+    font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com;
     img-src 'self' data:;
     connect-src 'self';">
     
     @yield('my_meta')
-    <title>@yield('title'){{ $setup->site_name }}</title>
+    <title>@yield('title') @if(View::hasSection('title')) - @endif{{ $setup->site_name }}</title>
     
     @include('layouts.css')    
     @yield('in_head')
-    <link href="{{ asset('css/my_css.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/my.css') }}" rel="stylesheet">
 
-    {{-- 只改這裡：確保背景色與導覽列顏色符合 CSP 規範 --}}
     <style nonce="{{ $csp_nonce }}">
         body#page-top {        
             background-color: {{ str_starts_with($bg_color, '#') ? $bg_color : '#' . $bg_color }};
-            font-family: 'Arial', 'Microsoft YaHei', sans-serif;
         }
-        
-        {{-- 保留你的 $navbar_custom 變數判斷 --}}
-        @if($nav_color == "navbar-custom" && count($navbar_custom) >= 4)
-        .navbar-custom {
-            background-color: {{ $navbar_custom[0] }} !important;
-        }
-        .navbar-custom .navbar-brand, .navbar-custom .nav-link {
-            color: {{ $navbar_custom[1] }} !important;
-        }
-        .navbar-custom .nav-link:hover {
-            color: {{ $navbar_custom[3] }} !important;
-        }
-        @endif
 
         .text-decoration-none { text-decoration: none !important; }
     </style>
 </head>
 
 <body id="page-top">            
-    {{-- 使用 pt-4 替代 <br> --}}
-    <main class="container-fluid pt-4 mb-5">
+    <!-- 無障礙快速跳轉連結 -->
+    <a href="#main-content" class="skip-link">跳至主要內容區塊</a>
+
+    <!-- 主要內容區 (Main Landmark) -->
+    <main id="main-content" class="container-fluid pt-4 pb-5" tabindex="-1">
+        <!-- 無障礙定位點 C (Accesskey C) -->
+        <a href="#main-content" id="a-c" accesskey="C" title="中央主要內容區塊" class="visually-hidden-focusable">:::</a>
         @yield('content')
     </main>
     
-    <div class="table-responsive">
-        @yield('footer')
-    </div>
+    <!-- 頁尾區 (Footer Landmark) -->
+    <footer class="footer">
+        <!-- 無障礙定位點 Z (Accesskey Z) -->
+        <a href="#footer-content" id="a-z" accesskey="Z" title="下方頁尾資訊區塊" class="visually-hidden-focusable">:::</a>
+        <div id="footer-content" class="container text-center">
+            @yield('footer')
+        </div>
+    </footer>
     
     @include('layouts.js')
-    {{-- 加上 nonce --}}
     <script src="{{ asset('js/tinymce.js') }}" nonce="{{ $csp_nonce }}"></script>
     <script src="{{ asset('js/sweet_alert.js') }}" nonce="{{ $csp_nonce }}"></script>
     <script src="{{ asset('js/venobox.js') }}" nonce="{{ $csp_nonce }}"></script>
-    <script src="{{ asset('js/my_js.js') }}" nonce="{{ $csp_nonce }}"></script>
+    <script src="{{ asset('js/my.js') }}" nonce="{{ $csp_nonce }}"></script>
     @auth
         <script src="{{ asset('js/logout.js') }}" nonce="{{ $csp_nonce }}"></script>
     @endauth

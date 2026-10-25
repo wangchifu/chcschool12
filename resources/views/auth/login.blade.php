@@ -3,21 +3,23 @@
 @section('title','管理登入 | ')
 
 @section('content')
-<div class="row justify-content-center">
-    <div class="col-md-6">
+<div class="row justify-content-center py-4">
+    <div class="col-md-7 col-lg-5">
         <div class="card">
-            <div class="card-header"><h4>登入</h4></div>
+            <div class="card-header">
+                <h4><i class="fas fa-user-shield me-2" aria-hidden="true"></i>登入</h4>
+            </div>
 
-            <div class="card-body">
+            <div class="card-body p-4">
                 @if(session('login_error') < 3)
                 <form method="POST" action="{{ route('auth') }}" id="this_form">
                     @csrf
 
-                    <div class="row mb-3">
-                        <label for="username" class="col-sm-4 col-form-label text-md-end">本機帳號</label>
+                    <div class="row mb-3 align-items-center">
+                        <label for="username" class="col-md-4 col-form-label text-md-end fw-bold">本機帳號</label>
 
-                        <div class="col-md-6">
-                            <input tabindex="1" id="username" type="text" class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}" name="username" value="{{ old('username') }}" required autofocus>
+                        <div class="col-md-7">
+                            <input tabindex="1" id="username" type="text" class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}" name="username" value="{{ old('username') }}" required autofocus placeholder="請輸入帳號">
 
                             @if ($errors->has('username'))
                                 <span class="invalid-feedback" role="alert">
@@ -27,11 +29,11 @@
                         </div>
                     </div>
 
-                    <div class="row mb-3">
-                        <label for="password" class="col-md-4 col-form-label text-md-end">密碼</label>
+                    <div class="row mb-3 align-items-center">
+                        <label for="password" class="col-md-4 col-form-label text-md-end fw-bold">密碼</label>
 
-                        <div class="col-md-6">
-                            <input id="password" type="password" tabindex="2" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" required>
+                        <div class="col-md-7">
+                            <input id="password" type="password" tabindex="2" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" required placeholder="請輸入密碼">
 
                             @if ($errors->has('password'))
                                 <span class="invalid-feedback" role="alert">
@@ -41,30 +43,34 @@
                         </div>
                     </div>
 
-                    <div class="row mb-3">
-                        <div class="col-md-4 text-md-start">
-                        </div>
-                        <div class="col-md-6 text-md-start">
-                            <a href="{{ route('admin_login') }}"><img src="{{ route('pic') }}" class="img-fluid" alt="驗證碼圖片"></a>                       
-                            <a href="#!" id="loadAudio" class="text-decoration-none"><i class="fas fa-volume-up"></i> [語音播放]</a>
+                    <div class="row mb-3 align-items-center">
+                        <div class="col-md-7 offset-md-4 d-flex align-items-center gap-2 flex-nowrap">
+                            <!-- 無障礙無刷新按鈕 -->
+                            <button type="button" id="refreshCaptcha" class="btn p-0 border-0 bg-transparent d-inline-flex flex-shrink-1 overflow-hidden" title="點擊換一張驗證碼" aria-label="點擊換一張驗證碼">
+                                <img id="captchaImage" src="{{ route('pic') }}" class="rounded border img-fluid" style="max-height: 38px; max-width: 150px; object-fit: contain;" alt="驗證碼圖片">
+                            </button>
+                            
+                            <button type="button" id="loadAudio" class="audio-captcha-btn border-0 flex-shrink-0" aria-label="播放驗證碼語音">
+                                <i class="fas fa-volume-up" aria-hidden="true"></i> [語音播放]
+                            </button>
                             <audio id="myAudio">
                                 <source src="" type="audio/mp3">                                
                             </audio>                            
                         </div>
                     </div>
                     
-                    <div class="row mb-3">
-                        <label for="chaptcha" class="col-md-4 col-form-label text-md-end">驗證碼</label>
+                    <div class="row mb-4 align-items-center">
+                        <label for="chaptcha" class="col-md-4 col-form-label text-md-end fw-bold">驗證碼</label>
 
-                        <div class="col-md-6">
+                        <div class="col-md-7">
                             <input type="text" id="chaptcha" tabindex="3" class="form-control" name="chaptcha" required placeholder="上圖國字轉阿拉伯數字" maxlength="5" title="請輸入驗證碼">
                         </div>
                     </div>
 
                     <div class="row mb-0">
-                        <div class="col-md-8 offset-md-4">
-                            <button type="submit" class="btn btn-primary btn-sm" tabindex="4">
-                                <i class="fas fa-sign-in-alt"></i> 登入
+                        <div class="col-md-7 offset-md-4">
+                            <button type="submit" class="btn btn-primary btn-sm px-4" tabindex="4">
+                                <i class="fas fa-sign-in-alt me-1" aria-hidden="true"></i> 登入
                             </button>
                         </div>
                     </div>
@@ -74,17 +80,25 @@
                         $k = rand(100,999);
                         session(['check_bot'=>$k]);
                     ?>
-                    <span class="text-danger">登入錯誤超過三次，請輸入三碼數字後送出： </span>
-                        <form action="{{ route('not_bot') }}" method="post" class="mt-2">
+                    <div class="alert alert-warning border-0 shadow-sm" role="alert">
+                        <i class="fas fa-exclamation-triangle me-1" aria-hidden="true"></i> 登入錯誤超過三次，請輸入三碼數字後送出：
+                    </div>
+                    <form action="{{ route('not_bot') }}" method="post" class="mt-3 d-flex align-items-center gap-2">
                         @csrf
-                        <input type="text" name="check_bot" placeholder="請輸入：{{ session('check_bot') }}" class="form-control d-inline-block w-auto">
-                            <button class="btn btn-primary btn-sm">我不是機器人</button>
-                        </form>
+                        <input type="text" name="check_bot" aria-label="防機器人驗證碼，請輸入：{{ session('check_bot') }}" placeholder="請輸入：{{ session('check_bot') }}" class="form-control w-auto" required>
+                        <button class="btn btn-primary btn-sm">我不是機器人</button>
+                    </form>
                 @endif
+
                 @include('layouts.errors')
                 
-                <div class="text-end">
-                    <a href="{{ route('sso') }}" class="image-button"><img src="{{ asset('images/chc.jpg') }}" alt="彰化chc的logo" width="80"></a><br>OpenID登入
+                <hr class="my-4">
+
+                <div class="text-center text-md-end">
+                    <a href="{{ route('sso') }}" class="image-button text-decoration-none">
+                        <img src="{{ asset('images/chc.jpg') }}" alt="彰化縣教育雲端 OpenID 登入圖示" width="80" class="mb-1"><br>
+                        <span class="small text-muted fw-bold">OpenID 登入</span>
+                    </a>
                 </div>
             </div>
         </div>
@@ -96,31 +110,32 @@
     <script nonce="<?php echo $csp_nonce; ?>">
         var validator = $("#this_form").validate();
 
+        $(document).ready(function () {
+            // 點擊驗證碼圖片：無刷新更新 Session 驗證碼與圖片
+            $('#refreshCaptcha').click(function () {
+                $('#captchaImage').attr('src', '{{ route('pic') }}?' + new Date().getTime());
+            });
 
-            $(document).ready(function () {
-                $('#loadAudio').click(function () {
-                    // 發送 AJAX 請求到 PHP 文件
-                    $.ajax({
-                        url: '{{ route('voice') }}', // PHP 文件路徑
-                        type: 'GET',
-                        success: function (response) {
-                            if (response.startsWith('Error')) {
-                                alert(response); // 錯誤提示
-                            } else {
-                                // 動態設置 <audio> 的 src
-                                const base64Src = `data:audio/mpeg;base64,${response}`;
-                                $('#myAudio source').attr('src', base64Src);
-                                
-                                // 必須重新加載音頻以使新設置生效
-                                $('#myAudio')[0].load();
-                                $('#myAudio')[0].play(); // 播放音頻
-                            }
-                        },
-                        error: function () {
-                            alert('無法載入音頻數據！');
+            // 點擊播放語音驗證碼
+            $('#loadAudio').click(function () {
+                $.ajax({
+                    url: '{{ route('voice') }}',
+                    type: 'GET',
+                    success: function (response) {
+                        if (response.startsWith('Error')) {
+                            alert(response);
+                        } else {
+                            const base64Src = `data:audio/mpeg;base64,${response}`;
+                            $('#myAudio source').attr('src', base64Src);
+                            $('#myAudio')[0].load();
+                            $('#myAudio')[0].play();
                         }
-                    });
+                    },
+                    error: function () {
+                        alert('無法載入音頻數據！');
+                    }
                 });
             });
+        });
     </script>
 @endsection

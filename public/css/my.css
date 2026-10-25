@@ -1,0 +1,224 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap');
+
+/* ==========================================
+   全域變數與基礎設定 (Variables & Reset)
+   ========================================== */
+:root {
+    --primary-gradient: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    --primary-color: #1e293b;
+    --primary-hover: #0f172a;
+    --accent-color: #0284c7;
+    --accent-hover: #0369a1;
+    --bg-main: #f8fafc;
+    --card-border: rgba(226, 232, 240, 0.8);
+    --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+    --font-sans: 'Inter', 'Noto Sans TC', system-ui, -apple-system, sans-serif;
+}
+
+body#page-top {
+    font-family: var(--font-sans);
+    color: #334155;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.text-decoration-none {
+    text-decoration: none !important;
+}
+
+/* ==========================================
+   無障礙專用樣式 (WCAG 2.1 AA)
+   ========================================== */
+
+/* 1. 鍵盤 Focus 視覺聚焦框 (WCAG 2.4.7) */
+a:focus-visible, 
+button:focus-visible, 
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+    outline: 3px solid #0284c7 !important;
+    outline-offset: 2px !important;
+}
+
+/* 2. 無障礙跳轉連結 (Skip Link) */
+.skip-link {
+    position: absolute;
+    top: -100px;
+    left: 10px;
+    background: #000000;
+    color: #ffffff !important;
+    padding: 10px 18px;
+    z-index: 10000;
+    transition: top 0.2s ease-in-out;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 0 0 6px 6px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.skip-link:focus {
+    top: 0;
+    outline: 3px solid #ffc107 !important;
+    outline-offset: 2px !important;
+}
+
+/* 3. 無障礙定位點 (Accesskey :::) 視覺隱藏與聚焦顯示 */
+.visually-hidden-focusable:not(:focus):not(:focus-within) {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+.visually-hidden-focusable:focus {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    z-index: 1051;
+    display: inline-block;
+    padding: 4px 10px;
+    background-color: #000000;
+    color: #ffffff !important;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 4px;
+    outline: 3px solid #ffc107 !important;
+}
+
+/* ==========================================
+   導覽列樣式 (Navigation)
+   ========================================== */
+.navbar-custom {
+    background: var(--primary-gradient) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.custom-toggler.navbar-toggler {
+    border: 1.5px solid rgba(255, 255, 255, 0.4);
+    padding: 0.4rem 0.65rem;
+    border-radius: 0.5rem;
+}
+
+.custom-toggler .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255,255,255,0.9)' stroke-width='2.5' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E");
+}
+
+/* ==========================================
+   卡片與登入模組 (Cards & Auth Components)
+   ========================================== */
+.card {
+    border: 1px solid var(--card-border);
+    border-radius: 0.85rem;
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+    background: #ffffff;
+}
+
+.card .card-header {
+    background: var(--primary-gradient);
+    color: #ffffff;
+    font-weight: 600;
+    padding: 1rem 1.25rem;
+    border-bottom: none;
+}
+
+.card .card-header h4 {
+    margin: 0;
+    font-size: 1.15rem;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* 按鈕與表單控制件 */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+}
+
+.form-control:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 0.25rem rgba(2, 132, 199, 0.15);
+}
+
+/* OpenID 圖片點擊縮放 */
+.image-button {
+    display: inline-block;
+    transition: transform 0.2s ease, filter 0.2s ease;
+    border-radius: 0.5rem;
+    padding: 0.25rem;
+}
+
+.image-button:hover {
+    transform: translateY(-2px) scale(1.03);
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.12));
+}
+
+/* 語音驗證碼按鈕 (改用 <button> 標準鍵盤焦點語意) */
+.audio-captcha-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--accent-color);
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    background-color: #f0f9ff;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    cursor: pointer;
+}
+
+.audio-captcha-btn:hover {
+    background-color: #e0f2fe;
+    color: var(--accent-hover);
+}
+
+.img-brand-icon {
+    border: 1px solid #e2e8f0;
+    border-radius: 0.375rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* 無障礙：高對比度黃色按鈕 (WCAG 1.4.3 色彩對比 4.5:1) */
+.btn-outline-warning-custom {
+    color: #92400e;
+    border: 1px solid #f59e0b;
+    background-color: transparent;
+    font-weight: 600;
+}
+
+.btn-outline-warning-custom:hover, 
+.btn-outline-warning-custom:focus {
+    color: #ffffff;
+    background-color: #d97706;
+    border-color: #d97706;
+}
+
+/* ==========================================
+   頁尾與列印樣式 (Footer & Print)
+   ========================================== */
+.footer {
+    margin-top: auto;
+    padding: 1.5rem 0;
+    background-color: transparent;
+}
+
+@media print {
+    .no-print { display: none !important; }
+    @page { margin: 1cm; }
+    body#page-top { background: white !important; }
+}

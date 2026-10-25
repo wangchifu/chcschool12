@@ -1,111 +1,122 @@
 <?php $module_setup = get_module_setup(); ?>
 <style nonce="<?php echo $csp_nonce; ?>">
-    /** 客製化 navbar */
     .navbar-custom {
-        background-color: {{ $navbar_custom[0] }};
+        background: linear-gradient(135deg, {{ $navbar_custom[0] }} 0%, #1e293b 100%) !important;
     }
     
-    /* 修改品牌(Brand)與文字顏色 */
     .navbar-custom .navbar-brand,
     .navbar-custom .navbar-text {
         color: {{ $navbar_custom[1] }};
     }
     
-    /* 修改連結顏色 */
     .navbar-custom .navbar-nav .nav-link {
         color: {{ $navbar_custom[2] }};
     }
     
-    /* 修改「啟用中(active)」或「滑過(hover)」的連結顏色 */
-    /* BS5 修正：.active 類別現在多數直接在 .nav-link 上 */
     .navbar-custom .navbar-nav .nav-link.active, 
-    .navbar-custom .navbar-nav .nav-link:hover {
+    .navbar-custom .navbar-nav .nav-link:hover,
+    .navbar-custom .navbar-nav .nav-link:focus {
         color: {{ $navbar_custom[3] }};
     }
 
-    /* 1. 自定義選單按鈕邊框 */
     .custom-toggler.navbar-toggler {
-        /* 使用 BS5 變數或直接指定 */
-        border-color: rgba(255, 255, 255, 0.5);
+        border: 1.5px solid rgba(255, 255, 255, 0.4);
+        padding: 0.4rem 0.65rem;
+        border-radius: 0.5rem;
     }
 
-    /* 2. 自定義漢堡選單圖示顏色 (SVG) */
     .custom-toggler .navbar-toggler-icon {
-        /* 修正了 stroke 的 rgba 格式確保解析正確 */
-        background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255,255,255,0.5)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E");
+        background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255,255,255,0.9)' stroke-width='2.5' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E");
     }
 
-    /* 3. 解決手機狀態下固定 Navbar 時下拉選單無法滾動的問題 */
-    /* BS5 的斷點建議使用 991.98px (lg) 或 767.98px (md)，視你的選單在哪裡折疊而定 */
+    /* 多層選單無障礙 CSS：支援 Hover 與 Focus 自動顯示 */
+    .dropdown-submenu {
+        position: relative;
+    }
+    .dropdown-submenu .dropdown-menu {
+        top: 0;
+        left: 100%;
+        margin-top: -1px;
+        display: none;
+    }
+    .dropdown-submenu:hover > .dropdown-menu,
+    .dropdown-submenu:focus-within > .dropdown-menu {
+        display: block;
+    }
+
     @media (max-width: 991.98px) {
-        .navbar.fixed-top {
-            /* 修正：避免整個 navbar 滾動造成版面跳動，改為針對內部 collapse 限制 */
-            overflow-y: visible !important; 
-        }
         .navbar-collapse {
-            /* 設定最大高度為視窗高度減去 Navbar 高度 (約 56px - 60px) */
             max-height: calc(100vh - 65px); 
             overflow-y: auto; 
-            /* 增加一點平滑滾動感 */
             -webkit-overflow-scrolling: touch;
+            padding: 1rem 0;
+        }
+        .dropdown-submenu .dropdown-menu {
+            left: 0;
         }
     }
 </style>
 <?php
-    //$setup = \App\Models\Setup::first();
     $fixed_top = ($setup->fixed_nav)?"sticky-top ":null;
 ?>
 
-<nav class="navbar navbar-expand-lg {{ $nav_color }} {{ $fixed_top }}" id="mainNav">
-    <div class="container-fluid">
-        <a href="#page-top" style="margin-right: 10px;">
+<nav class="navbar navbar-expand-lg {{ $nav_color }} {{ $fixed_top }}" id="mainNav" aria-label="主要導覽區">
+    <div class="container-fluid px-3 px-lg-4">
+        <!-- 首頁連結：合併圖文 -->
+        <a href="{{ route('index') }}" class="d-flex align-items-center me-2 text-decoration-none navbar-brand js-scroll-trigger fs-5" aria-label="{{ $setup->site_name }} 首頁">
             @if(file_exists(storage_path('app/public/'.$school_code.'/title_image/logo.ico')))
-                <img src="{{ asset('storage/'.$school_code.'/title_image/logo.ico') }}" width="30" height="30" class="d-inline-block align-top" alt="學校logo">
+                <img src="{{ asset('storage/'.$school_code.'/title_image/logo.ico') }}" width="32" height="32" class="d-inline-block align-top me-2" alt="">
             @else
-                <img src="{{ asset('images/site_logo.png') }}" width="30" height="30" class="d-inline-block align-top" alt="預設的學校logo">
+                <img src="{{ asset('images/site_logo.png') }}" width="32" height="32" class="d-inline-block align-top me-2" alt="">
             @endif
+            <span style="white-space:pre-wrap;">{{ $setup->site_name }}</span>
         </a>
-        <a class="navbar-brand js-scroll-trigger" href="{{  route('index') }}" style="white-space:pre-wrap;">{{ $setup->site_name }}</a>
+        
         @auth
-            <div class="session-timer text-light text-center">剩餘時間: -- 後登出</div>
+            <div class="session-timer text-light text-center px-3 py-1 rounded-pill bg-dark bg-opacity-75 ms-2 me-auto fs-7 border border-light border-opacity-25" aria-live="polite">
+                剩餘時間: -- 後登出
+            </div>
         @endauth
         
-        <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <!-- 手機版選單切換按鈕 -->
+        <button class="navbar-toggler custom-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="切換導覽選單">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarResponsive">
-            <ul class="navbar-nav ms-auto">
+            <ul class="navbar-nav ms-auto fw-semibold">
                 <li class="nav-item @yield('nav_home_active')">
                     <?php $homepage_name = ($setup->homepage_name)?$setup->homepage_name:"首頁"; ?>
-                    <a class="nav-link" href="{{ route('index') }}">{{ $homepage_name }}</a>
+                    <a class="nav-link px-3" href="{{ route('index') }}">{{ $homepage_name }}</a>
                 </li>
                 @if(isset($module_setup['公告系統']))
                     <li class="nav-item @yield('nav_post_active')">
                         <?php $post_name = ($setup->post_name)?$setup->post_name:"公告系統"; ?>
-                        <a class="nav-link" href="{{ route('posts.index') }}">{{ $post_name }}</a>
+                        <a class="nav-link px-3" href="{{ route('posts.index') }}">{{ $post_name }}</a>
                     </li>
                 @endif
                 @if(isset($module_setup['檔案庫']))
                     <li class="nav-item @yield('nav_open_files_active')">
                         <?php $openfile_name = ($setup->openfile_name)?$setup->openfile_name:"檔案庫"; ?>
-                        <a class="nav-link" href="{{ route('open_files.index') }}">{{ $openfile_name }}</a>
+                        <a class="nav-link px-3" href="{{ route('open_files.index') }}">{{ $openfile_name }}</a>
                     </li>
                 @endif
                 @if(isset($module_setup['學校介紹']))
                     <li class="nav-item dropdown @yield('nav_departments_active')">
                         <?php $department_name = ($setup->department_name)?$setup->department_name:"學校介紹"; ?>
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownDepartments" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle px-3" href="#" id="navbarDropdownDepartments" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             {{ $department_name }}
                         </a>
                         <?php $departments = \App\Models\Department::orderBy('order_by')->get(); ?>
-                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownDepartments">
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownDepartments">
                             @foreach($departments as $department)
-                                <a class="dropdown-item" href="{{ route('departments.show',$department->id) }}">
-                                    <i class="fas fa-puzzle-piece"></i> {{ $department->title }}
-                                </a>
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('departments.show',$department->id) }}">
+                                        <i class="fas fa-puzzle-piece me-2 text-primary" aria-hidden="true"></i> {{ $department->title }}
+                                    </a>
+                                </li>
                             @endforeach
-                        </div>
+                        </ul>
                     </li>
                 @endif
                 @if(isset($module_setup['選單連結']))
@@ -128,28 +139,30 @@
                     ?>
                     @foreach($types as $type)
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown{{ $type->id }}" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle px-3" href="#" id="navbarDropdown{{ $type->id }}" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 {{ $type->name }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown{{ $type->id }}">
                                 @if(isset($type2_data[$type->id]))
                                     @foreach($type2_data[$type->id] as $k=>$v)
-                                    <li class="dropdown-submenu"> <a class="dropdown-item dropdown-toggle" href="#">
-                                            <i class="fas fa-folder"></i> {{ $v['name'] }}
-                                        </a>
+                                    <li class="dropdown-submenu">
+                                        <button type="button" class="dropdown-item dropdown-toggle border-0 bg-transparent text-start w-100" aria-expanded="false">
+                                            <i class="fas fa-folder me-2 text-warning" aria-hidden="true"></i> {{ $v['name'] }}
+                                        </button>
                                         <ul class="dropdown-menu">
                                             @if(isset($link_data[$k]))
                                                 @foreach($link_data[$k] as $k2=>$v2)
-                                                <?php
-                                                    $target = ($v2['target'] == null) ? "_blank" : "_self";
-                                                ?>
-                                                    <li><a class="dropdown-item" href="{{ $v2['url'] }}" target="{{ $target }}">
-                                                        <i class="{{ $v2['icon'] ?? 'fas fa-globe' }}"></i>
-                                                        {{ $v2['name'] }}
-                                                        @if($v2['target'] == null)
-                                                        <i class="fas fa-level-up-alt"></i>
-                                                        @endif
-                                                    </a></li>
+                                                <?php $target = ($v2['target'] == null) ? "_blank" : "_self"; ?>
+                                                    <li>
+                                                        <a class="dropdown-item" href="{{ $v2['url'] }}" target="{{ $target }}" @if($target == '_blank') rel="noopener noreferrer" @endif>
+                                                            <i class="{{ $v2['icon'] ?? 'fas fa-globe' }} me-2 text-secondary" aria-hidden="true"></i>
+                                                            {{ $v2['name'] }}
+                                                            @if($v2['target'] == null)
+                                                                <i class="fas fa-external-link-alt ms-1 fs-7" aria-hidden="true"></i>
+                                                                <span class="visually-hidden">（開新分頁）</span>
+                                                            @endif
+                                                        </a>
+                                                    </li>
                                                 @endforeach
                                             @endif
                                         </ul>
@@ -158,16 +171,17 @@
                                 @endif
                                 @if(isset($link_data[$type->id]))
                                     @foreach($link_data[$type->id] as $k=>$v)
-                                        <?php
-                                            $target = ($v['target'] == null) ? "_blank" : "_self";
-                                        ?>
-                                        <li><a class="dropdown-item" href="{{ $v['url'] }}" target="{{ $target }}">
-                                            <i class="{{ $v['icon'] ?? 'fas fa-globe' }}"></i>
-                                            {{ $v['name'] }}
-                                            @if($v['target'] == null)
-                                            <i class="fas fa-level-up-alt"></i>
-                                            @endif
-                                        </a></li>
+                                        <?php $target = ($v['target'] == null) ? "_blank" : "_self"; ?>
+                                        <li>
+                                            <a class="dropdown-item" href="{{ $v['url'] }}" target="{{ $target }}" @if($target == '_blank') rel="noopener noreferrer" @endif>
+                                                <i class="{{ $v['icon'] ?? 'fas fa-globe' }} me-2 text-secondary" aria-hidden="true"></i>
+                                                {{ $v['name'] }}
+                                                @if($v['target'] == null)
+                                                    <i class="fas fa-external-link-alt ms-1 fs-7" aria-hidden="true"></i>
+                                                    <span class="visually-hidden">（開新分頁）</span>
+                                                @endif
+                                            </a>
+                                        </li>
                                     @endforeach
                                 @endif
                             </ul>
@@ -176,121 +190,143 @@
                 @endif
             </ul>
 
-            <ul class="navbar-nav">                
+            <ul class="navbar-nav fw-semibold ms-lg-2">                
                 @auth
                     @if(isset($module_setup['校務行政']))
                         <li class="nav-item dropdown @yield('nav_school_active')">
                             <?php $schoolexec_name = ($setup->schoolexec_name)?$setup->schoolexec_name:"校務行政"; ?>
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownSchool" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle px-3" href="#" id="navbarDropdownSchool" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 {{ $schoolexec_name }}
                             </a>
-                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownSchool">
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownSchool">
                                 @if(isset($module_setup['校務行事曆']))
-                                    <a class="dropdown-item" href="{{ route('calendars.index') }}"><i class="fas fa-calendar"></i> 校務行事曆</a>
+                                    <li><a class="dropdown-item" href="{{ route('calendars.index') }}"><i class="fas fa-calendar me-2 text-primary" aria-hidden="true"></i> 校務行事曆</a></li>
                                 @endif
                                 @if(isset($module_setup['校務月曆']))
-                                    <a class="dropdown-item" href="{{ route('monthly_calendars.index') }}"><i class="fas fa-calendar-alt"></i> 校務月曆</a>
+                                    <li><a class="dropdown-item" href="{{ route('monthly_calendars.index') }}"><i class="fas fa-calendar-alt me-2 text-primary" aria-hidden="true"></i> 校務月曆</a></li>
                                 @endif
                                 @if(isset($module_setup['內部文件']))
-                                    <a class="dropdown-item" href="{{ route('inside_files.index') }}"><i class="fab fa-linkedin-in"></i> 內部文件</a>
+                                    <li><a class="dropdown-item" href="{{ route('inside_files.index') }}"><i class="fab fa-linkedin-in me-2 text-info" aria-hidden="true"></i> 內部文件</a></li>
                                 @endif
                                 @if(isset($module_setup['會議文稿']))
-                                    <a class="dropdown-item" href="{{ route('meetings.index') }}"><i class="fas fa-comments"></i> 會議文稿</a>
+                                    <li><a class="dropdown-item" href="{{ route('meetings.index') }}"><i class="fas fa-comments me-2 text-success" aria-hidden="true"></i> 會議文稿</a></li>
                                 @endif
                                 @if(isset($module_setup['報修系統']))
-                                    <a class="dropdown-item" href="{{ route('fixes.index') }}"><i class="fas fa-wrench"></i> 報修系統</a>
+                                    <li><a class="dropdown-item" href="{{ route('fixes.index') }}"><i class="fas fa-wrench me-2 text-warning" aria-hidden="true"></i> 報修系統</a></li>
                                 @endif
                                 @if(isset($module_setup['教室預約']))
-                                    <a class="dropdown-item" href="{{ route('classroom_orders.index') }}"><i class="fas fa-chess-rook"></i> 教室預約</a>
+                                    <li><a class="dropdown-item" href="{{ route('classroom_orders.index') }}"><i class="fas fa-chess-rook me-2 text-danger" aria-hidden="true"></i> 教室預約</a></li>
                                 @endif
                                 @if(isset($module_setup['午餐系統']))
-                                    <a class="dropdown-item" href="{{ route('lunches.index') }}"><i class="fas fa-utensils"></i> 午餐系統</a>
+                                    <li><a class="dropdown-item" href="{{ route('lunches.index') }}"><i class="fas fa-utensils me-2 text-warning" aria-hidden="true"></i> 午餐系統</a></li>
                                 @endif
                                 @if(isset($module_setup['社團報名']))
-                                    <a class="dropdown-item" href="{{ route('clubs.index') }}"><i class="fas fa-table-tennis"></i> 社團報名</a>
+                                    <li><a class="dropdown-item" href="{{ route('clubs.index') }}"><i class="fas fa-table-tennis me-2 text-info" aria-hidden="true"></i> 社團報名</a></li>
                                 @endif
                                 @if(isset($module_setup['校園部落格']))
-                                    <a class="dropdown-item" href="{{ route('blogs.index') }}"><i class="fas fa-newspaper"></i> 校園部落格</a>
+                                    <li><a class="dropdown-item" href="{{ route('blogs.index') }}"><i class="fas fa-newspaper me-2 text-primary" aria-hidden="true"></i> 校園部落格</a></li>
                                 @endif
                                 @if(isset($module_setup['行政待辦']))
-                                    <a class="dropdown-item" href="{{ route('tasks.index') }}"><i class="fas fa-tasks"></i> 行政待辦</a>
+                                    <li><a class="dropdown-item" href="{{ route('tasks.index') }}"><i class="fas fa-tasks me-2 text-success" aria-hidden="true"></i> 行政待辦</a></li>
                                 @endif
                                 @if(isset($module_setup['借用系統']))
-                                    <a class="dropdown-item" href="{{ route('lends.index') }}"><i class="fas fa-archive"></i> 借用系統</a>
+                                    <li><a class="dropdown-item" href="{{ route('lends.index') }}"><i class="fas fa-archive me-2 text-secondary" aria-hidden="true"></i> 借用系統</a></li>
                                 @endif
                                 @if(isset($module_setup['校園跑馬燈']))
-                                    <a class="dropdown-item" href="{{ route('school_marquee.index') }}"><i class="fas fa-running"></i> 校園跑馬燈</a>
+                                    <li><a class="dropdown-item" href="{{ route('school_marquee.index') }}"><i class="fas fa-running me-2 text-danger" aria-hidden="true"></i> 校園跑馬燈</a></li>
                                 @endif
                                 @if(isset($module_setup['運動會報名']))
-                                    <a class="dropdown-item" href="{{ route('sport_meeting.index') }}"><i class="fas fa-volleyball-ball"></i> 運動會報名</a>
+                                    <li><a class="dropdown-item" href="{{ route('sport_meeting.index') }}"><i class="fas fa-volleyball-ball me-2 text-warning" aria-hidden="true"></i> 運動會報名</a></li>
                                 @endif        
                                 @if(isset($module_setup['填報學生']))
-                                    <a class="dropdown-item" href="{{ route('report_students.index') }}"><i class="fas fa-child"></i> 填報學生</a>
+                                    <li><a class="dropdown-item" href="{{ route('report_students.index') }}"><i class="fas fa-child me-2 text-info" aria-hidden="true"></i> 填報學生</a></li>
                                 @endif                      
                                 @if(isset($module_setup['學生帳號']))
-                                    <a class="dropdown-item" href="{{ route('student_account.index') }}"><i class="far fa-user-circle"></i> 學生帳號</a>
+                                    <li><a class="dropdown-item" href="{{ route('student_account.index') }}"><i class="far fa-user-circle me-2 text-primary" aria-hidden="true"></i> 學生帳號</a></li>
                                 @endif                                    
-                                <a class="dropdown-item" href="{{ route('photo_links.index') }}"><i class="fas fa-image"></i> 圖片連結</a>
-                            </div>
+                                <li><a class="dropdown-item" href="{{ route('photo_links.index') }}"><i class="fas fa-image me-2 text-success" aria-hidden="true"></i> 圖片連結</a></li>
+                            </ul>
                         </li>
                     @endif
 
                     @if(auth()->user()->admin)
                         <li class="nav-item dropdown @yield('nav_setup_active')">
                             <?php $setup_name = ($setup->setup_name)?$setup->setup_name:"系統設定"; ?>
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownSetup" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle px-3" href="#" id="navbarDropdownSetup" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 {{ $setup_name }}
                             </a>
-                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownSetup">
-                                <a class="dropdown-item" href="{{ route('users.index') }}"><i class="fas fa-user"></i> 帳號管理</a>
-                                <a class="dropdown-item" href="{{ route('groups.index') }}"><i class="fas fa-users"></i> 群組管理</a>
-                                <a class="dropdown-item" href="{{ route('departments.index') }}"><i class="fas fa-puzzle-piece"></i> 學校介紹管理</a>
-                                <a class="dropdown-item" href="{{ route('school_marquee.setup') }}"><i class="fas fa-running"></i> 校園跑馬燈管理</a>
-                                <a class="dropdown-item" href="{{ route('contents.index') }}"><i class="fas fa-file-alt"></i> 內容管理</a>
-                                <a class="dropdown-item" href="{{ route('links.index') }}"><i class="fas fa-link"></i> 選單連結</a>
-                                <a class="dropdown-item" href="{{ route('photo_links.index') }}"><i class="fas fa-image"></i> 圖片連結</a>
-                                <a class="dropdown-item" href="{{ route('trees.index') }}"><i class="fas fa-tree"></i> 樹狀目錄</a>
-                                <a class="dropdown-item" href="{{ route('rss_feeds.index') }}"><i class="fas fa-rss"></i> RSS 訊息</a>
-                                <a class="dropdown-item" href="{{ route('setups.index') }}"><i class="fas fa-desktop"></i> 網站設定</a>
-                            </div>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownSetup">
+                                <li><a class="dropdown-item" href="{{ route('users.index') }}"><i class="fas fa-user me-2 text-primary" aria-hidden="true"></i> 帳號管理</a></li>
+                                <li><a class="dropdown-item" href="{{ route('groups.index') }}"><i class="fas fa-users me-2 text-info" aria-hidden="true"></i> 群組管理</a></li>
+                                <li><a class="dropdown-item" href="{{ route('departments.index') }}"><i class="fas fa-puzzle-piece me-2 text-warning" aria-hidden="true"></i> 學校介紹管理</a></li>
+                                <li><a class="dropdown-item" href="{{ route('school_marquee.setup') }}"><i class="fas fa-running me-2 text-danger" aria-hidden="true"></i> 校園跑馬燈管理</a></li>
+                                <li><a class="dropdown-item" href="{{ route('contents.index') }}"><i class="fas fa-file-alt me-2 text-secondary" aria-hidden="true"></i> 內容管理</a></li>
+                                <li><a class="dropdown-item" href="{{ route('links.index') }}"><i class="fas fa-link me-2 text-success" aria-hidden="true"></i> 選單連結</a></li>
+                                <li><a class="dropdown-item" href="{{ route('photo_links.index') }}"><i class="fas fa-image me-2 text-info" aria-hidden="true"></i> 圖片連結</a></li>
+                                <li><a class="dropdown-item" href="{{ route('trees.index') }}"><i class="fas fa-tree me-2 text-success" aria-hidden="true"></i> 樹狀目錄</a></li>
+                                <li><a class="dropdown-item" href="{{ route('rss_feeds.index') }}"><i class="fas fa-rss me-2 text-warning" aria-hidden="true"></i> RSS 訊息</a></li>
+                                <li><a class="dropdown-item" href="{{ route('setups.index') }}"><i class="fas fa-desktop me-2 text-dark" aria-hidden="true"></i> 網站設定</a></li>
+                            </ul>
                         </li>
                     @endif
 
                     <li class="nav-item dropdown @yield('nav_user_active')">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownUser" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-user"></i>
+                        <a class="nav-link dropdown-toggle px-3" href="#" id="navbarDropdownUser" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="使用者選單">
+                            <i class="fas fa-user-circle fs-5" aria-hidden="true"></i>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownUser">
-                            <span class="dropdown-item" href="#"><i class="fas fa-user"></i> {{ auth()->user()->title }} {{ auth()->user()->name }}</span>                            
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownUser">
+                            <li><span class="dropdown-item-text fw-bold text-primary"><i class="fas fa-user-tag me-2" aria-hidden="true"></i> {{ auth()->user()->title }} {{ auth()->user()->name }}</span></li>
+                            <li><hr class="dropdown-divider my-1"></li>
                             @if(auth()->user()->login_type=="openID")
-                                <a class="dropdown-item" href="{{ route('edit_title') }}"><i class="fas fa-user-tag"></i> 更改職稱</a>
+                                <li><a class="dropdown-item" href="{{ route('edit_title') }}"><i class="fas fa-pen me-2 text-secondary" aria-hidden="true"></i> 更改職稱</a></li>
                             @endif
                             @if(auth()->user()->login_type=="local")
-                                <a class="dropdown-item" href="{{ route('edit_password') }}"><i class="fas fa-key"></i> 更改密碼</a>
+                                <li><a class="dropdown-item" href="{{ route('edit_password') }}"><i class="fas fa-key me-2 text-warning" aria-hidden="true"></i> 更改密碼</a></li>
                             @endif
                             @if(auth()->user()->admin)
-                                <a class="dropdown-item" href="{{ route('teach_system') }}"><i class="fas fa-tag"></i> 系統教學</a>
+                                <li><a class="dropdown-item" href="{{ route('teach_system') }}"><i class="fas fa-graduation-cap me-2 text-info" aria-hidden="true"></i> 系統教學</a></li>
                             @endif
-                            <a class="dropdown-item" href="{{ route('wrench.index') }}"><i class="fas fa-wrench"></i> 系統報錯與建議</a>
+                            <li><a class="dropdown-item" href="{{ route('wrench.index') }}"><i class="fas fa-wrench me-2 text-danger" aria-hidden="true"></i> 系統報錯與建議</a></li>
                             @impersonating
-                            <a class="dropdown-item" href="{{ route('sims.impersonate_leave') }}" onclick="return confirm('確定返回原本帳琥？')"><i class="fas fa-user-ninja"></i> 結束模擬</a>
+                                <li><a class="dropdown-item" href="{{ route('sims.impersonate_leave') }}" onclick="return confirm('確定返回原本帳號？')"><i class="fas fa-user-ninja me-2 text-dark" aria-hidden="true"></i> 結束模擬</a></li>
                             @endImpersonating
-                            <a class="dropdown-item delete-btn2" href="#!" data-form="logout-form" data-msg="確定要登出嗎？">
-                                <i class="fas fa-sign-out-alt"></i> 登出
-                            </a>
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                @csrf
-                            </form>
-                        </div>
+                            <li><hr class="dropdown-divider my-1"></li>
+                            <li>
+                                <button type="button" class="dropdown-item text-danger fw-bold delete-btn2 border-0 bg-transparent w-100 text-start" data-form="logout-form" data-msg="確定要登出嗎？">
+                                    <i class="fas fa-sign-out-alt me-2" aria-hidden="true"></i> 登出
+                                </button>
+                            </li>
+                        </ul>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                            @csrf
+                        </form>
                     </li>
                 @endauth
                 @guest
-                <?php $login_name = ($setup->login_name)?$setup->login_name:"登入"; ?>
+                    <?php $login_name = ($setup->login_name)?$setup->login_name:"登入"; ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('logins') }}">{{ $login_name }}</a>
+                        <a class="nav-link px-3 btn btn-outline-light rounded-pill btn-sm my-1 ms-lg-2" href="{{ route('logins') }}">{{ $login_name }}</a>
                     </li>
                 @endguest
             </ul>
         </div>
     </div>
 </nav>
+
+<script nonce="<?php echo $csp_nonce; ?>">
+    document.addEventListener('DOMContentLoaded', function () {
+        // 多層選單 (Submenu) 鍵盤 Focus 時同步 aria-expanded 屬性
+        const submenus = document.querySelectorAll('.dropdown-submenu');
+        submenus.forEach(function (submenu) {
+            const toggleBtn = submenu.querySelector('.dropdown-toggle');
+            if (toggleBtn) {
+                submenu.addEventListener('focusin', function () {
+                    toggleBtn.setAttribute('aria-expanded', 'true');
+                });
+                submenu.addEventListener('focusout', function () {
+                    toggleBtn.setAttribute('aria-expanded', 'false');
+                });
+            }
+        });
+    });
+</script>

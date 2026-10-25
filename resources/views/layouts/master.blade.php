@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant-TW">
 
 <head>
     <?php        
@@ -14,7 +14,7 @@
         session([$setup_key => '1']);
 
         $nav_color = (empty($setup->nav_color))?"navbar-dark bg-dark":"navbar-custom";
-        $bg_color = (empty($setup->bg_color))?"#f0f1f6":$setup->bg_color;
+        $bg_color = (empty($setup->bg_color))?"#f8fafc":$setup->bg_color;
         $navbar_custom = (empty($setup->nav_color))?['0'=>'','1'=>'','2'=>'','3'=>'']:explode(",",$setup->nav_color);        
     ?>
     @if(file_exists(storage_path('app/public/'.$school_code.'/title_image/logo.ico')))
@@ -29,37 +29,34 @@
     <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
     script-src 'self' 'nonce-{{ $csp_nonce }}' https://cdn.jsdelivr.net;
-    style-src 'self' 'nonce-{{ $csp_nonce }}' https://cdn.jsdelivr.net;
-    font-src 'self' https://cdn.jsdelivr.net;
+    style-src 'self' 'nonce-{{ $csp_nonce }}' https://cdn.jsdelivr.net https://fonts.googleapis.com;
+    font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com;
     img-src 'self' data:;
     connect-src 'self';">
     @yield('my_meta')
-    <title>@yield('title'){{ $setup->site_name }}</title>
+    <title>@yield('title') @if(View::hasSection('title')) - @endif{{ $setup->site_name }}</title>
     @include('layouts.css')    
     @yield('in_head')
-    <link href="{{ asset('css/my_css.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/my.css') }}" rel="stylesheet">
 
-    {{-- 修正：將 style 移入 head，並加入導覽列自定義樣式 --}}
     <style nonce="{{ $csp_nonce }}">
         body#page-top {
             background-color: {{ str_starts_with($bg_color, '#') ? $bg_color : '#' . $bg_color }};
-            font-family: 'Arial', 'Microsoft YaHei', sans-serif;
         }
 
-        /* 處理 navbar-custom 樣式 */
+        /* 若資料庫有自訂色彩，自動生成漸層與高質感邊框 */
         @if($nav_color == "navbar-custom" && count($navbar_custom) >= 4)
         .navbar-custom {
-            background-color: {{ $navbar_custom[0] }} !important;
+            background: linear-gradient(135deg, {{ $navbar_custom[0] }} 0%, #1e293b 100%) !important;
         }
         .navbar-custom .navbar-brand, .navbar-custom .nav-link {
             color: {{ $navbar_custom[1] }} !important;
         }
-        .navbar-custom .nav-link:hover {
+        .navbar-custom .nav-link:hover, .navbar-custom .nav-link:focus {
             color: {{ $navbar_custom[3] }} !important;
         }
         @endif
 
-        /* 移除底線通用類別 */
         .text-decoration-none {
             text-decoration: none !important;
         }
@@ -67,24 +64,39 @@
 </head>
 
 <body id="page-top">
-    @include('layouts.nav', ['csp_nonce' => $csp_nonce])
+    <!-- 無障礙快速跳轉連結 (Tab 第一個出現) -->
+    <a href="#main-content" class="skip-link">跳至主要內容區塊</a>
+
+    <!-- 頁首導覽 (Header Landmark) -->
+    <header style="position: relative; z-index: 1050;">
+        <!-- 無障礙定位點 U (Accesskey U) -->
+        <a href="#mainNav" id="a-u" accesskey="U" title="上方導覽頁首區塊" class="visually-hidden-focusable">:::</a>
+        @include('layouts.nav', ['csp_nonce' => $csp_nonce])
+    </header>
     
     @yield('top_image')
         
-    {{-- 修正：加入 pt-4 增加與導覽列的間距 --}}
-    <div class="container-fluid pt-4 mb-5">
+    <!-- 主要內容區 (Main Landmark) -->
+    <main id="main-content" class="container-fluid pt-4 pb-5" tabindex="-1">
+        <!-- 無障礙定位點 C (Accesskey C) -->
+        <a href="#main-content" id="a-c" accesskey="C" title="中央主要內容區塊" class="visually-hidden-focusable">:::</a>
         @yield('content')
-    </div>
+    </main>
 
-    <div class="table-responsive">
-        @yield('footer')
-    </div>
+    <!-- 頁尾區 (Footer Landmark) -->
+    <footer class="footer">
+        <!-- 無障礙定位點 Z (Accesskey Z) -->
+        <a href="#footer-content" id="a-z" accesskey="Z" title="下方頁尾資訊區塊" class="visually-hidden-focusable">:::</a>
+        <div id="footer-content" class="container text-center">
+            @yield('footer')
+        </div>
+    </footer>
+
     @include('layouts.js')
-{{-- 修正：外部 JS 加上 nonce --}}
     <script src="{{ asset('js/tinymce.js') }}" nonce="{{ $csp_nonce }}"></script>
     <script src="{{ asset('js/sweet_alert.js') }}" nonce="{{ $csp_nonce }}"></script>
     <script src="{{ asset('js/venobox.js') }}" nonce="{{ $csp_nonce }}"></script>
-    <script src="{{ asset('js/my_js.js') }}" nonce="{{ $csp_nonce }}"></script>
+    <script src="{{ asset('js/my.js') }}" nonce="{{ $csp_nonce }}"></script>
     @auth
         <script src="{{ asset('js/logout.js') }}" nonce="{{ $csp_nonce }}"></script>
     @endauth
